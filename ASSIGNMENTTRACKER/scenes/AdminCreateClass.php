@@ -53,25 +53,25 @@ if(isset($_POST['backToCodes'])){
         <h1>Create new class</h1>
         <p class="subtitle">Enter the class code and block name for the new class.</p>
  
-        <form method="post" autocomplete="off">
-          <div class="field">
-            <label for="class_code">Class code</label>
-            <input type="text" id="class_code" name="class_code" placeholder="e.g. 10007 - CS107A" maxlength="30" required>
-          </div>
- 
-          <div class="field">
-            <label for="block_name">Block name</label>
-            <input type="text" id="block_name" name="block_name" placeholder="e.g. BSCS 2B" maxlength="30" required>
-          </div>
- 
-          <div class="actions">
-            <button type="submit" class="btn btn-primary">Create Class</button>
-        </form>
-            <form method="POST">
-                <button type="submit" name="backToCodes"class="btn btn-secondary">Cancel</button>
-            </form>
-          </div>
-      </section>
+    <form method="post" autocomplete="off">
+      <div class="field">
+        <label for="class_code">Class code</label>
+        <input type="text" id="class_code" name="class_code" placeholder="e.g. 10007 - CS107A" maxlength="30" required>
+      </div>
+
+      <div class="field">
+        <label for="block_name">Block name</label>
+        <input type="text" id="block_name" name="block_name" placeholder="e.g. BSCS 2B" maxlength="30" required>
+      </div>
+
+      <div class="actions">
+        <!-- Create comes first in the HTML on purpose (see note below) -->
+        <button type="submit" class="btn btn-primary">Create Class</button>
+        <button type="submit" name="backToCodes" class="btn btn-secondary" formnovalidate>Cancel</button>
+      </div>
+    </form>
+        </div>
+    </section>
  
     </div>
   </main>

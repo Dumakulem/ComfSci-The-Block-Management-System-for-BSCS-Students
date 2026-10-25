@@ -444,6 +444,13 @@ button.card-add {
   -webkit-appearance: none;
 }
 
+.actions {
+  display: flex;
+  flex-direction: row-reverse; /* Cancel on the left, Create on the right */
+  gap: 12px;
+  margin-top: 28px;
+}
+
 @media (max-width: 520px) {
   .form-wrap { padding: 20px 0 40px; }
   .form-card { padding: 28px 20px; }
