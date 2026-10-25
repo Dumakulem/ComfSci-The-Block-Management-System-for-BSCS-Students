@@ -1,3 +1,24 @@
+<?php
+session_start();
+
+if (isset($_POST['loginAdminUsername']) && isset($_POST['loginAdminPassword'])){
+
+$name = $_POST['loginAdminUsername'];
+$pass = $_POST['loginAdminPassword'];
+
+require_once __DIR__ . '/../database/admin.php';
+
+if (loginAdmin($pdo, $name, $pass)){
+        session_regenerate_id(true);
+        $_SESSION['name'] = $name;
+
+    header('Location: ../scenes/AdminClassCodes.php');
+    exit;
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,15 +39,15 @@
     <h1>Admin log in</h1>
     <p class="subtitle">Enter your administrator credentials to continue.</p>
 
-    <form method="post" novalidate>
+    <form method="POST">
       <div class="field">
         <label for="username">Admin username</label>
-        <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+        <input type="text" id="username" name="loginAdminUsername" placeholder="Enter your username" autocomplete="username" required>
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <input type="password" id="password" name="loginAdminPassword" placeholder="Enter your password" autocomplete="current-password" required>
       </div>
 
       <button type="submit" class="btn btn-primary">Log in</button>

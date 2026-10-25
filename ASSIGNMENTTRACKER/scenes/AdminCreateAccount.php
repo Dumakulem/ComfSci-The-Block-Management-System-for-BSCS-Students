@@ -1,3 +1,21 @@
+
+<?php
+
+if (isset($_POST['adminUsername']) && isset($_POST['adminPassword']) && isset($_POST['adminConfirmPassword'])){
+
+$name = $_POST['adminUsername'];
+$pass = $_POST['adminPassword'];
+$conPass = $_POST['adminConfirmPassword'];
+
+require_once __DIR__ . '/../database/admin.php';
+createAdmin($pdo, $name, $pass);
+
+header('Location: AdminLoginScene.php');
+exit;
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +36,7 @@
     <h1>Create admin account</h1>
     <p class="subtitle">Set up your administrator credentials.</p>
 
-    <form action="../scenes/AdminClassCodes.php" method="POST">
+    <form method="POST">
       <div class="field">
         <label for="username">Admin username</label>
         <input type="text" id="username" name="adminUsername" placeholder="Choose a username" autocomplete="username" required>

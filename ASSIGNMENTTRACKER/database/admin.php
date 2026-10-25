@@ -15,4 +15,24 @@ function createAdmin(PDO $pdo,$name, $password){
     }
 }
 
+function loginAdmin(PDO $pdo, string $name, string $password){
+    // 1. Look for the name
+    $stmt = $pdo->prepare("SELECT * FROM admins WHERE adminName = ? LIMIT 1");
+    $stmt->execute([$name]);
+    $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // 2. Name doesn't exist
+    if (!$admin) {
+        return false;
+    }
+
+    // 3. Name exists, so check the password against the stored hash
+    if (!password_verify($password, $admin['adminPassword'])) {
+        return false;
+    }
+
+    // 4. Both correct
+    return true;
+}
+
 ?>

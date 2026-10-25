@@ -1,16 +1,17 @@
 <?php
+session_start();
 
-if (isset($_POST['adminUsername']) && isset($_POST['adminPassword']) && isset($_POST['adminConfirmPassword'])){
+if (!isset($_SESSION['name'])) {
+    header('Location: AdminLoginScene.php');
+    exit;
+}
 
-$name = $_POST['adminUsername'];
-$pass = $_POST['adminPassword'];
-$conPass = $_POST['adminConfirmPassword'];
+$name = $_SESSION['name'];
 
-require_once __DIR__ . '/../database/admin.php';
-createAdmin($pdo, $name, $pass);
-
-} else {
-    header('Location: AdminCreateAccount.php');
+if(isset($_POST['back'])){
+    session_start();
+    session_destroy();
+    header('Location: AdminLoginScene.php');
     exit;
 }
 
@@ -27,15 +28,13 @@ createAdmin($pdo, $name, $pass);
 
 <div style="display:flex; flex-direction:column;">
 
-<form action="../scenes/AdminLoginScene.php">
-    <button type="submit">Back</button>
+<form method="POST">
+    <button name="back" type="submit">Back</button>
 </form>
 
 <h1>CLASS CODES</h1>
-
 <h1><?= $name ?></h1>
-<h1><?= $pass ?></h1>
-<h1><?= $conPass ?></h1>
+
 
 </div>
     
