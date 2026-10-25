@@ -287,3 +287,164 @@ body {
   .btn-logout span { display: none; }
   .btn-logout { padding: 0 11px; }
 }
+
+/* ---------- Create class form ---------- */
+.form-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.breadcrumb a:hover { color: var(--accent); }
+
+.breadcrumb a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.28);
+}
+
+.breadcrumb [aria-current] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.form-card {
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(24, 32, 43, 0.04), 0 8px 24px rgba(24, 32, 43, 0.06);
+}
+
+.form-card h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.form-card .subtitle {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.field { margin-bottom: 18px; }
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input::placeholder { color: #98a1ae; }
+
+.field input:hover { border-color: #b9c1cd; }
+
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
+}
+
+.hint {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.28);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-soft);
+  border-color: #b8c8f5;
+}
+
+/* Lets the button sit directly in the grid, so the form doesn't break the layout */
+.add-form { display: contents; }
+
+/* Remove default button styling so it matches the other cards */
+button.card-add {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+@media (max-width: 520px) {
+  .form-wrap { padding: 20px 0 40px; }
+  .form-card { padding: 28px 20px; }
+}

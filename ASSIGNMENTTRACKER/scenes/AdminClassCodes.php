@@ -15,6 +15,13 @@ if(isset($_POST['back'])){
     exit;
 }
 
+if(isset($_POST['createClass'])){
+    //session_start();
+    //session_destroy();
+    header('Location: AdminCreateClass.php');
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -79,15 +86,17 @@ if(isset($_POST['back'])){
         </article>
  
       <!-- "+" card: always rendered after the last card -->
-      <a href="#" class="card card-add" aria-label="Add a new class code">
+    <form method="POST" class="add-form">
+      <button type="submit" name="createClass" class="card card-add" aria-label="Add a new class code">
         <span class="plus" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
+           <line x1="12" y1="5" x2="12" y2="19"/>
             <line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
         </span>
-        <span>Create new class</span>
-      </a>
+        <span>Create new</span>
+      </button>
+    </form>
  
     </section>
   </main>
