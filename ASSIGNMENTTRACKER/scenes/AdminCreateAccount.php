@@ -18,20 +18,20 @@
     <h1>Create admin account</h1>
     <p class="subtitle">Set up your administrator credentials.</p>
 
-    <form method="post" novalidate>
+    <form action="../scenes/AdminClassCodes.php" method="POST">
       <div class="field">
         <label for="username">Admin username</label>
-        <input type="text" id="username" name="admin-username" placeholder="Choose a username" autocomplete="username" required>
+        <input type="text" id="username" name="adminUsername" placeholder="Choose a username" autocomplete="username" required>
       </div>
 
       <div class="field">
         <label for="password">Password</label>
-        <input type="password" id="password" name="admin-password" placeholder="Create a password" autocomplete="new-password" required>
+        <input type="password" id="password" name="adminPassword" placeholder="Create a password" autocomplete="new-password" required>
       </div>
 
       <div class="field">
         <label for="confirm_password">Re-enter password</label>
-        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" autocomplete="new-password" required>
+        <input type="password" id="confirm_password" name="adminConfirmPassword" placeholder="Re-enter your password" autocomplete="new-password" required>
       </div>
 
       <button type="submit" class="btn btn-primary">Create Account</button>
