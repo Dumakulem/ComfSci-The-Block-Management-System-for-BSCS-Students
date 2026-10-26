@@ -35,4 +35,17 @@ function loginAdmin(PDO $pdo, string $name, string $password){
     return true;
 }
 
+function createClass(PDO $pdo, string $adminName, int $classCode, string $blockName){
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("INSERT INTO blocks (adminName, classCode, blockName) VALUES (?, ?, ?)");
+        $stmt->execute([$adminName, $classCode, $blockName]);
+        $pdo->commit();        // commit first...
+        return true;           // ...then return
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
 ?>
