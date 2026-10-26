@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+require_once __DIR__ . '/../database/admin.php';
+$blocks = dislayClasses($pdo, $_SESSION['name']);
+
 if (!isset($_SESSION['name'])) {
     header('Location: AdminLoginScene.php');
     exit;
@@ -69,11 +72,13 @@ if(isset($_POST['createClass'])){
  
     <section class="grid" aria-label="Class codes">
  
-        <article class="card">
+        <?php foreach($blocks as $block): ?>
+
+          <article class="card">
           <div class="card-body">
-            <span class="code-badge">24567</span>
+            <span class="code-badge"><?= $block['classCode'] ?></span>
             <p class="block-label">Block</p>
-            <h2 class="block-name">BSCS-2B</h2>
+            <h2 class="block-name"><?= $block['blockName'] ?></h2>
           </div>
  
           <div class="card-footer">
@@ -84,6 +89,9 @@ if(isset($_POST['createClass'])){
             <a href="#" class="btn-enter" aria-label="Enter">Enter</a>
           </div>
         </article>
+
+
+        <?php endforeach; ?>
  
       <!-- "+" card: always rendered after the last card -->
     <form method="POST" class="add-form">
