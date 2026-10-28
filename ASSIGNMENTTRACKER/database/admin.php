@@ -73,8 +73,9 @@ function createAssignment(PDO $pdo, int $classCode, string $adminName,
         $pdo->rollBack();
         throw $e;
     }
+}
 
-function displayAssignments(PDO $pdo, int $classCode){
+function displayAssignments(PDO $pdo, $classCode){
     $pdo->beginTransaction();
     try {
         $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ?");
@@ -84,8 +85,6 @@ function displayAssignments(PDO $pdo, int $classCode){
         $pdo->rollBack();
         throw $e;
     }
-}
-
 }
 
 ?>

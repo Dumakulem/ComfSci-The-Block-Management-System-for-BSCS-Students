@@ -5,6 +5,8 @@ $classCode = $_SESSION['code'];
 
 require_once __DIR__ . '/../database/admin.php';
 
+$assignments = displayAssignments($pdo, $_SESSION['code']);
+
 if(isset($_POST['toGroupAssignments'])){
     header('Location: AdminGroupAssignments.php');
     exit;
@@ -152,11 +154,14 @@ if(isset($_POST['createAssignment'])){
                Assignments (2)   ->  echo count($class['tasks'])
                Enter button href ->  echo $class['url']
            ========================================================== -->
+
+      <?php foreach($assignments as $as):?>
       <article class="card">
         <header class="card-head">
-          <h2 class="card-title">Data Structures and Algorithms</h2>
-          <span class="block-pill">CS201A</span>
+          <h2 class="card-title"><?= $as['as_subject']; ?></h2>
+          <span class="block-pill"><?= $as['classCode']; ?></span>
         </header>
+
         <div class="card-body">
 
           <!-- ----------------------------------------------------
@@ -181,12 +186,12 @@ if(isset($_POST['createAssignment'])){
             </span>
             <span class="task-text">
               <span class="task-title-row">
-                <span class="task-title">Linked List Implementation</span>
+                <span class="task-title"><?= $as['as_title']; ?></span>
               </span>
               <span class="task-desc" title="Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.">Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.</span>
               <span class="task-meta">
-                <span>Posted: Oct 15, 2026</span>
-                <span class="due">Due: Oct 28, 2026, 11:59 PM</span>
+                <span>Posted: <?= (new DateTime($as['created_at']))->format('M j, Y, g:i A') ?></span>
+                <span class="due">Due: <?= (new DateTime($as['as_deadline']))->format('M j, Y, g:i A') ?></span>
               </span>
             </span>
             <svg class="task-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -227,6 +232,8 @@ if(isset($_POST['createAssignment'])){
           <a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>
         </footer>
       </article>
+
+      <?php endforeach; ?>
       <!-- OUTER FOREACH END  (put endforeach; here) -->
 
 
