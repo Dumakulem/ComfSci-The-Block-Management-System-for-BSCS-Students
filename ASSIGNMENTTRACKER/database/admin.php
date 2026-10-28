@@ -60,4 +60,20 @@ function displayClasses(PDO $pdo, string $adminName){
     }
 }
 
+function createAssignment(PDO $pdo, int $classCode, 
+                          string $title, string $subject,
+                          $file, string $description, $deadline){
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("INSERT INTO assignments (classCode, as_title, as_subject, as_file, as_description, as_deadline) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$classCode, $title, $subject, $file, $description, $deadline]);
+        $pdo->commit();
+        return true; 
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+
+}
+
 ?>

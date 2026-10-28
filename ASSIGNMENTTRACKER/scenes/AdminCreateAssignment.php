@@ -7,6 +7,26 @@ if(isset($_POST['cancel'])){
     header("Location: AdminAssignments.php");
     exit;
 }
+
+if(isset($_POST['createAssignment'])){
+require_once __DIR__ . '/../controllers/AdminCon.php';
+
+$title = $_POST['title'];
+$subject = $_POST['subject'];
+$files = $_FILES['files'] ?? null;
+$des = $_POST['description'];
+$dt = mergeDateAndTime($_POST['date'], $_POST['time']);
+$forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
+
+require_once __DIR__ . '/../database/admin.php';
+createAssignment($pdo, $classCode, $title, $subject, $files, $des, $forDatabase);
+
+//$forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
+//$forDisplay  = $dt->format('M j, Y, g:i A'); // "Nov 20, 2026, 11:59 PM"
+
+    header("Location: AdminAssignments.php");
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -132,7 +152,7 @@ if(isset($_POST['cancel'])){
           <!-- File (multiple files allowed, drag and drop works) -->
           <div class="field">
             <label for="files">File <span class="optional">(optional)</span></label>
-            <input type="file" id="files" name="files[]" multiple>
+            <input type="file" id="files" name="files" multiple>
             <p class="hint">Click to browse or drop files here. You can add more than one file.</p>
           </div>
 
@@ -147,18 +167,18 @@ if(isset($_POST['cancel'])){
           <div class="row-2">
             <div class="field">
               <label for="deadline_date">Deadline <span class="req" aria-hidden="true">*</span></label>
-              <input type="date" id="deadline_date" name="deadline_date" required>
+              <input type="date" id="deadline_date" name="date" required>
             </div>
 
             <div class="field">
               <label for="deadline_time">Time</label>
-              <input type="time" id="deadline_time" name="deadline_time" value="23:59">
+              <input type="time" id="deadline_time" name="time" value="23:59">
             </div>
           </div>
 
           <div class="form-actions">
             <button name="cancel" form="cancelForm" type="submit" class="btn btn-secondary">Cancel</button>
-            <button type="submit" class="btn btn-primary">Create Assignment</button>
+            <button type="submit" name="createAssignment" class="btn btn-primary">Create Assignment</button>
           </div>
 
         </form>
