@@ -289,7 +289,7 @@
                 </button>
 
                 <button class="iconBtn" aria-label="Notifications">
-                    <span class="icon"><img src="./assets/notificationIcon.png" alt=""></span>
+                    <span class="icon"><img src="./assets/notificationsIcon.png" alt=""></span>
                     <span class="dot"></span>
                 </button>
             </header>
