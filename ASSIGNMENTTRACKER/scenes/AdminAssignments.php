@@ -3,6 +3,8 @@ session_start();
 $name = $_SESSION['name'];
 $classCode = $_SESSION['code'];
 
+require_once __DIR__ . '/../database/admin.php';
+
 if(isset($_POST['toGroupAssignments'])){
     header('Location: AdminGroupAssignments.php');
     exit;
@@ -155,7 +157,6 @@ if(isset($_POST['createAssignment'])){
           <h2 class="card-title">Data Structures and Algorithms</h2>
           <span class="block-pill">CS201A</span>
         </header>
-
         <div class="card-body">
 
           <!-- ----------------------------------------------------
@@ -195,7 +196,7 @@ if(isset($_POST['createAssignment'])){
           <!-- INNER FOREACH END  (put endforeach; here)
                Tip: the row below is only a second sample so you can see the divider line.
                Delete it once your foreach is in place. -->
-          <a class="task" href="#">
+          <!-- <a class="task" href="#">
             <span class="task-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -217,7 +218,7 @@ if(isset($_POST['createAssignment'])){
             <svg class="task-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
-          </a>
+          </a> -->
 
         </div>
 

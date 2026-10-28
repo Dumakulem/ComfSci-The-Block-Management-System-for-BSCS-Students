@@ -60,19 +60,31 @@ function displayClasses(PDO $pdo, string $adminName){
     }
 }
 
-function createAssignment(PDO $pdo, int $classCode, 
+function createAssignment(PDO $pdo, int $classCode, string $adminName, 
                           string $title, string $subject,
                           $file, string $description, $deadline){
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare("INSERT INTO assignments (classCode, as_title, as_subject, as_file, as_description, as_deadline) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$classCode, $title, $subject, $file, $description, $deadline]);
+        $stmt = $pdo->prepare("INSERT INTO assignments (classCode, prof, as_title, as_subject, as_file, as_description, as_deadline) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$classCode, $adminName, $title, $subject, $file, $description, $deadline]);
         $pdo->commit();
         return true; 
     } catch (Exception $e) {
         $pdo->rollBack();
         throw $e;
     }
+
+function displayAssignments(PDO $pdo, int $classCode){
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ?");
+        $stmt->execute([$classCode]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
 
 }
 
