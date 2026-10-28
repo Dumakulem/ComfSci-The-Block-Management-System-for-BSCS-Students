@@ -2,7 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../database/admin.php';
-$blocks = dislayClasses($pdo, $_SESSION['name']);
+$blocks = displayClasses($pdo, $_SESSION['name']);
 
 if (!isset($_SESSION['name'])) {
     header('Location: AdminLoginScene.php');
@@ -22,6 +22,14 @@ if(isset($_POST['createClass'])){
     //session_start();
     //session_destroy();
     header('Location: AdminCreateClass.php');
+    exit;
+}
+
+if(isset($_POST['enter'])){
+        session_regenerate_id(true);
+        $_SESSION['code'] = $_POST['classCode'];
+
+    header('Location: AdminAssignments.php');
     exit;
 }
 
@@ -86,7 +94,10 @@ if(isset($_POST['createClass'])){
               <span class="avatar" aria-hidden="true">A</span>
               <span class="person-name"><?= $name ?></span>
             </div>
-            <a href="#" class="btn-enter" aria-label="Enter">Enter</a>
+            <form method="POST" class="enter-form">
+                <input type="hidden" name="classCode" value="<?= $block['classCode'] ?>">
+                <button type="submit" name="enter" class="btn-enter" aria-label="Enter">Enter</button>
+            </form>
           </div>
         </article>
 

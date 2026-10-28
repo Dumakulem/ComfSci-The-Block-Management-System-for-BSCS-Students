@@ -1,11 +1,20 @@
 <?php
 session_start();
 $name = $_SESSION['name'];
+$classCode = $_SESSION['code'];
 
 if(isset($_POST['toGroupAssignments'])){
     header('Location: AdminGroupAssignments.php');
     exit;
 }
+
+if(isset($_POST['createAssignment'])){
+    header('Location: AdminCreateAssignment.php');
+    exit;
+}
+//next = find a way to have two session, so when entered a class, you have the admin name
+//and the class code, after this, do the assignments first..
+//also, when enter button is clicked, get its value and make sure it passes the class code
 
 ?>
 
@@ -83,7 +92,7 @@ if(isset($_POST['toGroupAssignments'])){
           <path d="M9 12h6"/>
           <path d="M9 16h4"/>
         </svg>
-        <span>Assignments</span>
+        <span>Class Code: <?= $classCode; ?></span>
       </div>
 
       <div class="user-chip">
@@ -252,15 +261,17 @@ if(isset($_POST['toGroupAssignments'])){
 
 
       <!-- "+" card: keep it OUTSIDE the foreach so it always stays after the last card -->
-      <a href="AdminCreateAssignment.php?type=assignment" class="card card-add" aria-label="Add assignment">
-        <span class="plus" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-        </span>
-        <span>Add assignment</span>
-      </a>
+      <form method="POST" class="add-form">
+  <button type="submit" name="createAssignment" value="assignment" class="card card-add" aria-label="Add assignment">
+    <span class="plus" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </span>
+    <span>Add assignment</span>
+  </button>
+</form>
 
     </section>
 
