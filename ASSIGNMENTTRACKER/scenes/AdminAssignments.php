@@ -2,6 +2,7 @@
 session_start();
 $name = $_SESSION['name'];
 $classCode = $_SESSION['code'];
+$_SESSION['assignment'] = (int)$_POST['currentAssignment'];
 
 require_once __DIR__ . '/../database/admin.php';
 
@@ -18,6 +19,8 @@ if(isset($_POST['createAssignment'])){
 }
 
 if(isset($_POST['enter'])){
+  $_SESSION['assignment'] = $_POST['currentAssignment'];
+
     header('Location: AdminViewAssignment.php');
     exit;
 }
@@ -238,6 +241,7 @@ if(isset($_POST['enter'])){
           <!--<a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>-->
           <form method="POST">
             <button type="submit" name="enter" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</button>
+            <input type="hidden" name="currentAssignment" value="<?= (int)$as['as_id'] ?>">
           </form>
         </footer>
       </article>

@@ -105,4 +105,14 @@ function displayAssignments(PDO $pdo, $classCode){
     }
 }
 
+function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
+    $stmt = $pdo->prepare(
+        "SELECT as_id, classCode, prof, as_title, as_subject, as_file_name, as_file_type,
+                as_description, as_deadline, created_at
+         FROM assignments
+         WHERE as_id = ? AND classCode = ?"
+    );
+    $stmt->execute([$asId, $classCode]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
 ?>

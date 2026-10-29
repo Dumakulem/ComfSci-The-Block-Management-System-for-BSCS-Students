@@ -1,7 +1,21 @@
 <?php
 session_start();
-$name = $_SESSION['name'];
-$classCode = $_SESSION['code'];
+
+if (!isset($_SESSION['name'], $_SESSION['code'], $_SESSION['assignment'])) {
+    header('Location: AdminAssignments.php');
+    exit;
+}
+
+require_once __DIR__ . '/../database/admin.php';
+
+$name       = $_SESSION['name'];
+$classCode  = $_SESSION['code'];
+$assignment = getAssignment($pdo, (int)$_SESSION['assignment'], $classCode);
+
+if (!$assignment) {
+    header('Location: AdminAssignments.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -86,7 +100,7 @@ $classCode = $_SESSION['code'];
     <section class="banner">
       <div>
         <!-- Subject name: replace with the assignment's subject -->
-        <h1>Data Structures and Algorithms</h1>
+        <h1><?= $assignment['as_subject'] ?></h1>
         <p>Class Code: <?= htmlspecialchars($classCode) ?></p>
       </div>
 
@@ -130,10 +144,10 @@ $classCode = $_SESSION['code'];
           </span>
 
           <div class="detail-titles">
-            <h2>Linked List Implementation</h2>
+            <h2><?= $assignment['as_title']; ?></h2>
             <div class="meta-row">
-              <span><strong>Posted:</strong> Oct 15, 2026, 11:26 AM</span>
-              <span><strong>Due:</strong> <span class="due-value">Oct 28, 2026, 11:59 PM</span></span>
+              <span><strong>Posted:</strong> <?= (new DateTime($assignment['created_at']))->format('M j, Y, g:i A') ?></span>
+              <span><strong>Due:</strong> <span class="due-value"><?= (new DateTime($assignment['created_at']))->format('M j, Y, g:i A') ?></span></span>
             </div>
           </div>
 
@@ -174,7 +188,7 @@ $classCode = $_SESSION['code'];
               </svg>
               Instructions
             </h3>
-            <p class="description">Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values. Kindly upload your answer in PDF format.</p>
+            <p class="description"><?= $assignment['as_description'] ?></p>
           </section>
 
           <section class="section">
@@ -192,8 +206,8 @@ $classCode = $_SESSION['code'];
               <li class="file">
                 <span class="file-type" aria-hidden="true">PDF</span>
                 <span class="file-info">
-                  <span class="file-name">Linked List Guide.pdf</span>
-                  <span class="file-meta">PDF &middot; 1.2 MB</span>
+                  <span class="file-name"><?= $assignment['as_file_name'] ?></span>
+                  <span class="file-meta">Ex. PDF &middot; 1.2 MB</span>
                 </span>
                 <span class="file-actions">
                   <a href="#" class="icon-btn" aria-label="View Linked List Guide.pdf" title="View">
@@ -213,7 +227,7 @@ $classCode = $_SESSION['code'];
               </li>
               <!-- ATTACHMENTS FOREACH END  (put endforeach; here)
                    The two rows below are extra samples. Delete them when your foreach works. -->
-              <li class="file">
+              <!--<li class="file">
                 <span class="file-type" aria-hidden="true">ZIP</span>
                 <span class="file-info">
                   <span class="file-name">Starter Code.zip</span>
@@ -256,7 +270,7 @@ $classCode = $_SESSION['code'];
                     </svg>
                   </a>
                 </span>
-              </li>
+              </li>-->
 
             </ul>
           </section>
