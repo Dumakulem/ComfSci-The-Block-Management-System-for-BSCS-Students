@@ -16,6 +16,11 @@ if(isset($_POST['createAssignment'])){
     header('Location: AdminCreateAssignment.php');
     exit;
 }
+
+if(isset($_POST['enter'])){
+    header('Location: AdminViewAssignment.php');
+    exit;
+}
 //next = find a way to have two session, so when entered a class, you have the admin name
 //and the class code, after this, do the assignments first..
 //also, when enter button is clicked, get its value and make sure it passes the class code
@@ -229,8 +234,11 @@ if(isset($_POST['createAssignment'])){
         </div>
 
         <footer class="card-foot">
-          <span class="count"><?= $as['prof']; ?></span><!--DO SOMETHING ABOUT THIS -->
-          <a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>
+          <span class="count">Prof. <?= $as['prof']; ?></span><!--DO SOMETHING ABOUT THIS -->
+          <!--<a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>-->
+          <form method="POST">
+            <button type="submit" name="enter" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</button>
+          </form>
         </footer>
       </article>
       <?php endif; ?>
