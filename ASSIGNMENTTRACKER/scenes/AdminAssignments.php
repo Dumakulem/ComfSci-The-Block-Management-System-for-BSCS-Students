@@ -228,7 +228,7 @@ if(isset($_POST['createAssignment'])){
         </div>
 
         <footer class="card-foot">
-          <span class="count">Assignments (2)</span><!--DO SOMETHING ABOUT THIS -->
+          <span class="count"><?= $as['prof']; ?></span><!--DO SOMETHING ABOUT THIS -->
           <a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>
         </footer>
       </article>
