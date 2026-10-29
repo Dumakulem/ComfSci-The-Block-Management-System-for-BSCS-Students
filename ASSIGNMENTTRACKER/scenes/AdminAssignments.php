@@ -156,6 +156,7 @@ if(isset($_POST['createAssignment'])){
            ========================================================== -->
 
       <?php foreach($assignments as $as):?>
+      <?php if($as['prof'] == $name):?>
       <article class="card">
         <header class="card-head">
           <h2 class="card-title"><?= $as['as_subject']; ?></h2>
@@ -232,7 +233,7 @@ if(isset($_POST['createAssignment'])){
           <a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>
         </footer>
       </article>
-
+      <?php endif; ?>
       <?php endforeach; ?>
       <!-- OUTER FOREACH END  (put endforeach; here) -->
 
