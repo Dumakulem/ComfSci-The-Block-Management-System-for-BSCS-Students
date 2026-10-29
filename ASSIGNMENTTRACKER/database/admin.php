@@ -48,12 +48,11 @@ function createClass(PDO $pdo, string $adminName, int $classCode, string $blockN
     }
 }
 
-function displayClasses(PDO $pdo, string $adminName){
+function displayClasses(PDO $pdo){
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare("SELECT * FROM blocks WHERE adminName = ?");
-        $stmt->execute([$adminName]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+        $stmt = $pdo->query("SELECT * FROM blocks");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {
         $pdo->rollBack();
         throw $e;

@@ -228,7 +228,7 @@ if(isset($_POST['createAssignment'])){
         </div>
 
         <footer class="card-foot">
-          <span class="count">Assignments (2)</span>
+          <span class="count">Assignments (2)</span><!--DO SOMETHING ABOUT THIS -->
           <a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>
         </footer>
       </article>
@@ -245,28 +245,6 @@ if(isset($_POST['createAssignment'])){
                if (empty($class['tasks'])):   ...this block...   else:   ...task foreach...   endif;
            Then delete this static card.
            ========================================================== -->
-      <article class="card">
-        <header class="card-head">
-          <h2 class="card-title">Arts Appreciation</h2>
-          <span class="block-pill">CS301A</span>
-        </header>
-
-        <div class="card-body">
-          <p class="empty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="8 12 11 15 16 9"/>
-            </svg>
-            No pending tasks!
-          </p>
-        </div>
-
-        <footer class="card-foot">
-          <span class="count">Assignments (0)</span>
-          <a href="#" class="btn-enter" aria-label="Enter 10005 - CS301A">Enter</a>
-        </footer>
-      </article>
-
 
       <!-- "+" card: keep it OUTSIDE the foreach so it always stays after the last card -->
       <form method="POST" class="add-form">

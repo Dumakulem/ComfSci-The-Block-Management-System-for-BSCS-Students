@@ -2,7 +2,7 @@
 session_start();
 
 require_once __DIR__ . '/../database/admin.php';
-$blocks = displayClasses($pdo, $_SESSION['name']);
+$blocks = displayClasses($pdo);
 
 if (!isset($_SESSION['name'])) {
     header('Location: AdminLoginScene.php');
@@ -92,7 +92,7 @@ if(isset($_POST['enter'])){
           <div class="card-footer">
             <div class="person">
               <span class="avatar" aria-hidden="true">A</span>
-              <span class="person-name"><?= $name ?></span>
+              <span class="person-name"><?= $block['adminName'] ?></span>
             </div>
             <form method="POST" class="enter-form">
                 <input type="hidden" name="classCode" value="<?= $block['classCode'] ?>">
