@@ -34,7 +34,6 @@
 <?php
 // Require the files means to connect the files to this page so that it can use the functions and variables defined in those files.
 
-
 require_once "../SQL/actions.php"; // Sql actions ito.
 require_once "../Route/loginChecker.php"; // kung ito ba ay admin or student and dito rin yung condition para makapag login at mapunta sa dashboard page.
 session_start();
@@ -81,6 +80,7 @@ session_start();
 
       <div class="field">
         <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Your Password" required>
+        
         <label for="password">Password</label>
         
       </div>
@@ -89,7 +89,6 @@ session_start();
         font-weight: bold; text-align: center; margin: 0;
         positon: absolute;"><?= htmlspecialchars($error); ?></p>
         <?php endif; ?>
-
       <button class="submit" type="submit" name="login">Login</button>
       
     </form>

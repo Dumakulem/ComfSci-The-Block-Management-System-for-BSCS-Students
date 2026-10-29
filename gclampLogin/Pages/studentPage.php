@@ -3,7 +3,8 @@
 session_start();
 require_once "../SQL/actions.php";
 $std = new User();
-$student = $std->nameTagStudent($_SESSION['studentEmail']);
+$std->nameTagStudent($_SESSION['studentEmail']);
+$students = $std->nameTagStudent($_SESSION['studentEmail']);
 
 ?>
 
@@ -16,8 +17,14 @@ $student = $std->nameTagStudent($_SESSION['studentEmail']);
     <title>Document</title>
 </head>
 <body>
-
-    <p>Hello, <?= htmlspecialchars($student['studentEmail']); ?></p>
+    <?php foreach ($students as $student): ?>
+        <p>Hello, <?= htmlspecialchars($student['studentEmail']); ?></p><br>
+        <p>Role, <?= htmlspecialchars($student['studentRole']); ?></p><br>
+        <?php $isRep = ($student['studentRole'] === 'representative'); ?>
+            <button type="submit" style="background-color: red;" <?= $isRep ? '' : 'disabled' ?>>Delete
+            </button>
+    <?php endforeach; ?>
+        
 
 </body>
 </html>

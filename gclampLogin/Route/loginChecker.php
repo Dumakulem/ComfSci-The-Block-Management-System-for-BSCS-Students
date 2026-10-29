@@ -16,7 +16,17 @@ require_once "../SQL/actions.php";
 
             if (isset($student)){
                 $_SESSION['studentEmail'] = $student['studentEmail'];
-                $_SESSION['role'] = 'student';
+                $role = $_SESSION['role'] = 'student';
+                $stdRole = $_SESSION['studentRole'];
+
+
+                // check if the student is representative or student.
+                if ($stdRole === 'student') {
+                    $_SESSION['studentRole'] = 'student';
+                } else if ($stdRole === 'Representative') {
+                    $_SESSION['role'] = 'Representative';
+                } 
+                
 
                 header('Location: ../Pages/studentPage.php');
                 exit();

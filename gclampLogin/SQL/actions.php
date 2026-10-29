@@ -14,10 +14,16 @@ class User {
     //!!!!!!!!!!!!!!!!!!!!!!!!!     STUDENT ACTIONS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     public function nameTagStudent($email){
-        $stmt = $this->conn->prepare("SELECT studentEmail FROM studenttbl WHERE studentEmail = ?");
+        $stmt = $this->conn->prepare("SELECT * FROM studenttbl WHERE studentEmail = ?");
         $stmt->execute([$email]);
-        return $stmt->fetch();
+        return $stmt->fetchAll();
     }// to display the email of the user specifically the student.
+
+    // public function roleIdentify($studentRole){
+    //     $stmt = $this->conn->prepare("SELECT studentRole FROM studenttbl WHERE studentRole = ?");
+    //     $stmt->execute([$studentRole]);
+    //     return $stmt->fetch();
+    // }
 
     public function studentLogIn($email, $password){
         $stmt = $this->conn->prepare("SELECT studentEmail, studentPassword FROM studenttbl WHERE studentEmail = ?");
@@ -31,6 +37,11 @@ class User {
             }
         }
     }// for student lng din to para sa login.
+
+    public function repDelete($email){
+        $stmt = $this->conn->prepare("DELETE FROM studenttbl WHERE studentEmail = ?");
+        $stmt->execute([$email]);
+    }// eto sa representative lng to para sa delete ng student.
 
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!     ADMIN ACTIONS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
