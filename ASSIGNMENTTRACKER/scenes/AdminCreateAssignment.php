@@ -134,7 +134,7 @@ createAssignment($pdo, $classCode, $name, $title, $subject, $files, $des, $forDa
         </div>
 
         <!-- enctype="multipart/form-data" is required for file uploads -->
-        <form method="POST" autocomplete="off">
+        <form method="POST" autocomplete="off" enctype="multipart/form-data">
 
           <!-- Title -->
           <div class="field">
@@ -152,7 +152,7 @@ createAssignment($pdo, $classCode, $name, $title, $subject, $files, $des, $forDa
           <!-- File (multiple files allowed, drag and drop works) -->
           <div class="field">
             <label for="files">File <span class="optional">(optional)</span></label>
-            <input type="file" id="files" name="files" multiple>
+            <input type="file" id="files" name="files">
             <p class="hint">Click to browse or drop files here. You can add more than one file.</p>
           </div>
 

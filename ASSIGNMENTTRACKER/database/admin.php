@@ -59,19 +59,38 @@ function displayClasses(PDO $pdo){
     }
 }
 
-function createAssignment(PDO $pdo, int $classCode, string $adminName, 
-                          string $title, string $subject,
-                          $file, string $description, $deadline){
-    $pdo->beginTransaction();
-    try {
-        $stmt = $pdo->prepare("INSERT INTO assignments (classCode, prof, as_title, as_subject, as_file, as_description, as_deadline) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$classCode, $adminName, $title, $subject, $file, $description, $deadline]);
-        $pdo->commit();
-        return true; 
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
+function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, ?array $file, $des, $deadline) {
+    
+    $fileData = null;
+    $fileName = null;
+    $fileType = null;
+
+    // $_FILES is set even when nothing was chosen, so check the error code
+    if ($file !== null && $file['error'] === UPLOAD_ERR_OK) {
+        if ($file['size'] > 16000000) {
+            throw new Exception("File is too large (max about 16 MB).");
+        }
+        $fileData = file_get_contents($file['tmp_name']);
+        $fileName = basename($file['name']);
+        $fileType = mime_content_type($file['tmp_name']);
     }
+
+    $sql = "INSERT INTO assignments
+            (classCode, prof, as_title, as_subject, as_file, as_file_name, as_file_type, as_description, as_deadline)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->bindValue(1, $classCode, PDO::PARAM_INT);
+    $stmt->bindValue(2, $prof);
+    $stmt->bindValue(3, $title);
+    $stmt->bindValue(4, $subject);
+    $stmt->bindValue(5, $fileData, $fileData === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+    $stmt->bindValue(6, $fileName);
+    $stmt->bindValue(7, $fileType);
+    $stmt->bindValue(8, $des);
+    $stmt->bindValue(9, $deadline);
+    $stmt->execute();
+    
 }
 
 function displayAssignments(PDO $pdo, $classCode){
