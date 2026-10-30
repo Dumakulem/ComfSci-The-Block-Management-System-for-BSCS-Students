@@ -147,7 +147,7 @@ if (!$assignment) {
             <h2><?= $assignment['as_title']; ?></h2>
             <div class="meta-row">
               <span><strong>Posted:</strong> <?= (new DateTime($assignment['created_at']))->format('M j, Y, g:i A') ?></span>
-              <span><strong>Due:</strong> <span class="due-value"><?= (new DateTime($assignment['created_at']))->format('M j, Y, g:i A') ?></span></span>
+              <span><strong>Due:</strong> <span class="due-value"><?= (new DateTime($assignment['as_deadline']))->format('M j, Y, g:i A') ?></span></span>
             </div>
           </div>
 
@@ -203,6 +203,7 @@ if (!$assignment) {
                    Replace the sample text:  file name, file type (PDF), size
                    Close it after the </li> below with:  endforeach;
                    ====================================================== -->
+            <?php if($assignment['as_file_name'] != null): ?>
               <li class="file">
                 <span class="file-type" aria-hidden="true">PDF</span>
                 <span class="file-info">
@@ -225,6 +226,7 @@ if (!$assignment) {
                   </a>
                 </span>
               </li>
+            <?php endif; ?>
               <!-- ATTACHMENTS FOREACH END  (put endforeach; here)
                    The two rows below are extra samples. Delete them when your foreach works. -->
               <!--<li class="file">

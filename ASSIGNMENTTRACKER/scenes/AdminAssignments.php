@@ -2,7 +2,6 @@
 session_start();
 $name = $_SESSION['name'];
 $classCode = $_SESSION['code'];
-$_SESSION['assignment'] = (int)$_POST['currentAssignment'];
 
 require_once __DIR__ . '/../database/admin.php';
 
@@ -19,7 +18,7 @@ if(isset($_POST['createAssignment'])){
 }
 
 if(isset($_POST['enter'])){
-  $_SESSION['assignment'] = $_POST['currentAssignment'];
+  $_SESSION['assignment'] = (int)$_POST['currentAssignment'];
 
     header('Location: AdminViewAssignment.php');
     exit;
