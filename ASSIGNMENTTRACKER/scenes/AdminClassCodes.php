@@ -15,6 +15,7 @@ if(isset($_POST['back'])){
     session_start();
     session_destroy();
     header('Location: AdminLoginScene.php');
+    unset($_SESSION['name']);
     exit;
 }
 
@@ -31,6 +32,14 @@ if(isset($_POST['enter'])){
 
     header('Location: AdminAssignments.php');
     exit;
+}
+
+if(isset($_POST['addStudent'])){
+  $_SESSION['classCode'] = $_POST['currentClassCode'];
+  $_SESSION['blockName'] = $_POST['currentClassBlock'];
+
+  header('Location: AdminAddStudent.php');
+  exit;
 }
 
 ?>
@@ -94,9 +103,17 @@ if(isset($_POST['enter'])){
               <span class="avatar" aria-hidden="true">A</span>
               <span class="person-name"><?= $block['adminName'] ?></span>
             </div>
-            <form method="POST" class="enter-form">
-                <input type="hidden" name="classCode" value="<?= $block['classCode'] ?>">
+            <form method="POST" class="enter-form" style="display:flex; gap:8px;">
+
+            <input type="hidden" name="currentClassCode" value="<?= $block['classCode'] ?>">
+            <input type="hidden" name="currentClassBlock" value="<?= $block['blockName'] ?>">
+
+                <button type="submit" name="addStudent" class="btn-enter"
+                style="background:#2563eb; border-color:#2563eb; color:#fff;"
+                aria-label="Add Student">Add Student</button>
+
                 <button type="submit" name="enter" class="btn-enter" aria-label="Enter">Enter</button>
+
             </form>
           </div>
         </article>
