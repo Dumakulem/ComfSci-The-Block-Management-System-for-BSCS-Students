@@ -13,9 +13,8 @@ class User {
     
     //!!!!!!!!!!!!!!!!!!!!!!!!!     STUDENT ACTIONS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    public function nameTagStudent($email){
-        $stmt = $this->conn->prepare("SELECT * FROM studenttbl WHERE studentEmail = ?");
-        $stmt->execute([$email]);
+    public function nameTagStudent(){
+        $stmt = $this->conn->query("SELECT * FROM studenttbl");
         return $stmt->fetchAll();
     }// to display the email of the user specifically the student.
 
@@ -46,9 +45,8 @@ class User {
 
     //!!!!!!!!!!!!!!!!!!!!!!!!!     ADMIN ACTIONS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    public function nameTagAdmin($email){
-        $stmt = $this->conn->prepare("SELECT adminEmail FROM admintbl WHERE adminEmail = ?");
-        $stmt->execute([$email]);
+    public function nameTagAdmin(){
+        $stmt = $this->conn->query("SELECT adminEmail FROM admintbl");
         return $stmt->fetch();
 
     }// eto sa admin nmn.

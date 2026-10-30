@@ -4,7 +4,7 @@ session_start();
 require_once "../SQL/actions.php";// we require again kasi ginamit ko siya to view the email of the admin.
 
 $admin = new User();
-$admins = $admin->nameTagAdmin($_SESSION['adminEmail']);// eto nag create ng object sabay ginamit yung function na nameTagAdmin para ma display yung email ng admin sa page na ito.
+$admins = $admin->nameTagAdmin();// eto nag create ng object sabay ginamit yung function na nameTagAdmin para ma display yung email ng admin sa page na ito.
 
 
 ?>

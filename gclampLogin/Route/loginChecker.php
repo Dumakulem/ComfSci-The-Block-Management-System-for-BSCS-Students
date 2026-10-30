@@ -7,26 +7,17 @@ require_once "../SQL/actions.php";
     // for explanation lang, Ang nangyayari lang dito is to check kung yung REQUEST_METHOD ay Post which is nasa loginPage.php naten sa form. Then, nagset lng tayo ng variables para sa $_POST, sa if !empty, kung hindi empty then proceed tas gagamitin and student function to login, under that i-che-check muna kung and role ba ay student or admin, if student then it will redirect to studentPage.php, if admin then it will redirect to adminPage.php, if hindi valid then it will display error na "Unauthorized user!".
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-        $email = $_POST['email'];
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
 
         if (!empty($email) && !empty($password)){
             $user = new User();
             $student = $user->studentLogIn($email, $password);
 
-            if (isset($student)){
+            if ($student){
                 $_SESSION['studentEmail'] = $student['studentEmail'];
                 $role = $_SESSION['role'] = 'student';
-                $stdRole = $_SESSION['studentRole'];
-
-
-                // check if the student is representative or student.
-                if ($stdRole === 'student') {
-                    $_SESSION['studentRole'] = 'student';
-                } else if ($stdRole === 'Representative') {
-                    $_SESSION['role'] = 'Representative';
-                } 
-                
+                $_SESSION['studentRole'] = $student['studentRole'];
 
                 header('Location: ../Pages/studentPage.php');
                 exit();
@@ -34,7 +25,7 @@ require_once "../SQL/actions.php";
             else {
                 $admin = $user->adminLogIn($email, $password);
 
-                if (isset($admin)){
+                if ($admin){
                     $_SESSION['adminEmail'] = $admin['adminEmail'];
                     $_SESSION['role'] = 'admin';
 
