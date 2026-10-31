@@ -196,7 +196,7 @@ if(isset($_POST['enter'])){
               <span class="task-title-row">
                 <span class="task-title"><?= $as['as_title']; ?></span>
               </span>
-              <span class="task-desc" title="Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.">Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.</span>
+              <span class="task-desc"><?= $as['as_description'] ?></span>
               <span class="task-meta">
                 <span>Posted: <?= (new DateTime($as['created_at']))->format('M j, Y, g:i A') ?></span>
                 <span class="due">Due: <?= (new DateTime($as['as_deadline']))->format('M j, Y, g:i A') ?></span>

@@ -51,15 +51,6 @@ if(isset($_POST['enter'])){
 
     <div class="nav-panel">
       <nav class="nav" aria-label="Main">
-        <a class="nav-link" href="AdminClassCodes.php">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="14" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/>
-          </svg>
-          <span>Class Codes</span>
-        </a>
         <a class="nav-link is-active" href="AdminAssignments.php" aria-current="page">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="8" y="2" width="8" height="4" rx="1"/>
@@ -190,7 +181,7 @@ if(isset($_POST['enter'])){
               <span class="task-title-row">
                 <span class="task-title"><?= $as['as_title']; ?></span>
               </span>
-              <span class="task-desc" title="Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.">Implement a singly linked list with insert, delete, and search operations, then test it with at least ten sample values.</span>
+              <span class="task-desc"><?= $as['as_description'] ?></span>
               <span class="task-meta">
                 <span>Posted: <?= (new DateTime($as['created_at']))->format('M j, Y, g:i A') ?></span>
                 <span class="due">Due: <?= (new DateTime($as['as_deadline']))->format('M j, Y, g:i A') ?></span>
