@@ -28,7 +28,7 @@ if(isset($_POST['createClass'])){
 
 if(isset($_POST['enter'])){
         session_regenerate_id(true);
-        $_SESSION['code'] = $_POST['classCode'];
+        $_SESSION['code'] = $_POST['currentClassCode'];
 
     header('Location: AdminAssignments.php');
     exit;
