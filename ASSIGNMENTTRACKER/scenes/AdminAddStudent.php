@@ -9,6 +9,28 @@ if(isset($_POST['cancel'])){
     unset($_SESSION['blockName']);
     exit;
 }
+
+if(isset($_POST['createStudent'])){
+  $id = $_POST['studentID'];
+  $lastName = $_POST['lastName'];
+  $firstName = $_POST['firstName'];
+  $middleName = $_POST['middleName'];
+  $extName = $_POST['extName'];
+  $email = $_POST['email'];
+  $password = $_POST['password'];
+  $confirmPassword = $_POST['confirmPassword'];
+  $isRep = $_POST['isRep'];
+
+  require_once __DIR__ . '/../database/student.php';
+  createStudent($pdo, $id, $classCode, $lastName, $firstName, $middleName, $extName, $email, $password, $isRep);
+
+  header('Location: AdminClassCodes.php');
+    unset($_SESSION['classCode']);
+    unset($_SESSION['blockName']);
+    exit;
+ 
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -130,7 +152,7 @@ if(isset($_POST['cancel'])){
         <strong><?= htmlspecialchars($blockName) ?> : <?= htmlspecialchars($classCode) ?></strong>
       </div>
 
-      <form if="studentForm" method="POST" autocomplete="off">
+      <form id="studentForm" method="POST" autocomplete="off">
         <div class="sf-grid">
 
           <div class="sf-field full">
@@ -165,12 +187,12 @@ if(isset($_POST['cancel'])){
 
           <div class="sf-field">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" minlength="8" required autocomplete="new-password">
+            <input type="password" id="password" name="password" minlength="3" required autocomplete="new-password">
           </div>
 
           <div class="sf-field">
             <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" required autocomplete="new-password">
+            <input type="password" id="confirmPassword" name="confirmPassword" minlength="3" required autocomplete="new-password">
           </div>
 
           <div class="sf-field full">
