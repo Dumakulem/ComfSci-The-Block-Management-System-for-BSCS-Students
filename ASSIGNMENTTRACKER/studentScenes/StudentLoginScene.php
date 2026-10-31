@@ -5,6 +5,7 @@ if(isset($_POST['loginStudentId']) && isset($_POST['loginStudentPassword'])){
     require_once __DIR__ . '/../database/student.php';
 
 if(loginStudent($pdo, $_POST['loginStudentId'], $_POST['loginStudentPassword'])){
+    session_regenerate_id(true);
     $_SESSION['currentStudent'] = (int) $_POST['loginStudentId'];
     header('Location: StudentAssignments.php');
     exit;

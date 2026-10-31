@@ -47,4 +47,10 @@ function loginStudent(PDO $pdo, $id, string $password){
     return true;
 }
 
+function getStudent(PDO $pdo, int $id){
+    $stmt = $pdo->prepare("SELECT * FROM students WHERE studentID = ? LIMIT 1");
+    $stmt->execute([$id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;   // one row, or null if not found
+}
+
 ?>
