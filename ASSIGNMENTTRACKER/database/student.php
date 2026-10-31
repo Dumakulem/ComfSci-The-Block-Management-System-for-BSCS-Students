@@ -27,4 +27,24 @@ function createStudent(PDO $pdo, int $id, int $classCode, string $lastName,
 
 }
 
+function loginStudent(PDO $pdo, $id, string $password){
+    // 1. Look for the name
+    $stmt = $pdo->prepare("SELECT * FROM students WHERE studentID = ? LIMIT 1");
+    $stmt->execute([$id]);
+    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // 2. Name doesn't exist
+    if (!$student) {
+        return false;
+    }
+
+    // 3. Name exists, so check the password against the stored hash
+    if (!password_verify($password, $student['studentPassword'])) {
+        return false;
+    }
+
+    // 4. Both correct
+    return true;
+}
+
 ?>
