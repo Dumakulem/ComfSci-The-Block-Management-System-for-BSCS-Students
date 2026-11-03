@@ -9,7 +9,7 @@ $classCode = $student['classCode'];
 
 require_once __DIR__ . '/../database/admin.php';
 
-$assignments = displayAssignments($pdo, $_SESSION['code']);
+$assignments = displayAssignments($pdo, $classCode);
 
 if(isset($_POST['toGroupAssignments'])){
     header('Location: StudentGroupAssignments.php');
