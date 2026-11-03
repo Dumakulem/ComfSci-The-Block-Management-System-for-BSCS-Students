@@ -17,10 +17,12 @@ if(isset($_POST['toGroupAssignments'])){
 }
 
 if(isset($_POST['enter'])){
-  //$_SESSION['assignment'] = (int)$_POST['currentAssignment'];
+  $_SESSION['assignment'] = (int)$_POST['currentAssignment'];
+  $_SESSION['asClassCode'] = $classCode;
+  $_SESSION['student'] = $student;
 
-    //header('Location: AdminViewAssignment.php');
-    //exit;
+    header('Location: StudentViewAssignment.php');
+    exit;
 }
 ?>
 

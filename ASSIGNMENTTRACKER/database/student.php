@@ -53,4 +53,15 @@ function getStudent(PDO $pdo, int $id){
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;   // one row, or null if not found
 }
 
+function getStudentAssignment(PDO $pdo, int $asId, $classCode): ?array {
+    $stmt = $pdo->prepare(
+        "SELECT as_id, classCode, prof, as_title, as_subject, as_file_name, as_file_type,
+                as_description, as_deadline, created_at
+         FROM assignments
+         WHERE as_id = ? AND classCode = ?"
+    );
+    $stmt->execute([$asId, $classCode]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
 ?>
