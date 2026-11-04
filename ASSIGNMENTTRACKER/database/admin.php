@@ -59,7 +59,7 @@ function displayClasses(PDO $pdo){
     }
 }
 
-function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, ?array $file, $des, $deadline) {
+function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, $students, ?array $file, $des, $deadline) {
     
     $fileData = null;
     $fileName = null;
@@ -91,6 +91,24 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, ?array 
     $stmt->bindValue(9, $deadline);
     $stmt->execute();
     
+    //to create assignments to students
+    foreach($students as $student){
+        $sqlStudent = "INSERT INTO studentassignments
+            (classCode, studentID, as_title, as_subject, as_file, as_file_name, as_file_type, as_description, as_deadline)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $st = $pdo->prepare($sqlStudent);
+
+    $st->bindValue(1, $classCode, PDO::PARAM_INT);
+    $st->bindValue(2, (int) $student['studentID']);
+    $st->bindValue(3, $title);
+    $st->bindValue(4, $subject);
+    $st->bindValue(5, $fileData, $fileData === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
+    $st->bindValue(6, $fileName);
+    $st->bindValue(7, $fileType);
+    $st->bindValue(8, $des);
+    $st->bindValue(9, $deadline);
+    $st->execute();
+    }
 }
 
 function displayAssignments(PDO $pdo, $classCode){
@@ -114,5 +132,11 @@ function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
     );
     $stmt->execute([$asId, $classCode]);
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+function getAllStudents(PDO $pdo, $classCode): array {
+    $stmt = $pdo->prepare("SELECT studentID FROM students WHERE classCode = ?");
+    $stmt->execute([$classCode]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
