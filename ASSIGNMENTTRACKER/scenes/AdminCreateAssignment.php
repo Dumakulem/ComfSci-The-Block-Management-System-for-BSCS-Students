@@ -50,7 +50,7 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
         </svg>
       </div>
       <!-- Admin name: replace "Admin Name" with  echo $adminName  -->
-      <p class="profile-name">Admin Name</p>
+      <p class="profile-name"><?= $name ?></p>
       <p class="profile-role">Administrator</p>
     </div>
 
@@ -104,7 +104,7 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
       <div class="user-chip">
         <!-- Initials and name: replace with  echo $adminName  -->
         <span class="user-avatar" aria-hidden="true">AN</span>
-        <span class="user-name">Admin Name</span>
+        <span class="user-name"><?= $name ?></span>
       </div>
     </header>
 

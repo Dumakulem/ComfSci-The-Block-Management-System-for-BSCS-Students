@@ -8,6 +8,11 @@ if(isset($_POST['toAssignments'])){
     exit;
 }
 
+if(isset($_POST['createAssignment'])){
+   header('Location: AdminCreateGroupAs.php');
+    exit;
+}
+
 ?>
 
 <!DOCTYPE html>

@@ -834,6 +834,13 @@ a:focus-visible,
   border-color: var(--orange-border);
 }
 
+/* Assign a leader dropdown: placeholder looks like a placeholder until a choice is made */
+.field select:required:invalid { color: #9d9da4; }
+
+/* Keep the dropdown list readable */
+.field select option { color: var(--ink); }
+.field select option[disabled] { color: #9d9da4; }
+
 @media (max-width: 520px) {
   .form-card { padding: 24px 18px; }
   .row-2 { grid-template-columns: 1fr; gap: 0; }
