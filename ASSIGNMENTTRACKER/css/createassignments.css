@@ -841,6 +841,72 @@ a:focus-visible,
 .field select option { color: var(--ink); }
 .field select option[disabled] { color: #9d9da4; }
 
+/* ---------- Multiple file picker ---------- */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.file-slot {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.file-slot input[type="file"] {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Once a file is chosen, that row becomes a compact line */
+.file-slot.is-filled input[type="file"] {
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.file-slot.is-filled input[type="file"]:hover {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+}
+
+/* Remove button: only visible on rows that have a file */
+.file-remove {
+  flex-shrink: 0;
+  width: 52px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.file-remove svg { width: 18px; height: 18px; }
+
+.file-remove:hover {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.file-remove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+.file-slot:not(.is-filled) .file-remove { display: none; }
+
 @media (max-width: 520px) {
   .form-card { padding: 24px 18px; }
   .row-2 { grid-template-columns: 1fr; gap: 0; }

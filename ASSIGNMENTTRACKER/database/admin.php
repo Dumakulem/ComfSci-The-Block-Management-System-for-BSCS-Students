@@ -59,56 +59,75 @@ function displayClasses(PDO $pdo){
     }
 }
 
-function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, $students, ?array $file, $des, $deadline) {
-    
-    $fileData = null;
-    $fileName = null;
-    $fileType = null;
+function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $students, ?array $files, $des, $deadline) {
 
-    // $_FILES is set even when nothing was chosen, so check the error code
-    if ($file !== null && $file['error'] === UPLOAD_ERR_OK) {
-        if ($file['size'] > 16000000) {
-            throw new Exception("File is too large (max about 16 MB).");
+    // 1. Turn $_FILES['files'] into a normal list of files
+    $uploaded = [];
+    if ($files !== null && is_array($files['name'])) {
+        foreach ($files['name'] as $i => $originalName) {
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;   // skips the empty picker
+
+            if ($files['size'][$i] > 16000000) {
+                throw new Exception("$originalName is too large (max about 16 MB).");
+            }
+            $tmp = $files['tmp_name'][$i];
+            $uploaded[] = [
+                'name' => basename($originalName),
+                'type' => mime_content_type($tmp),
+                'data' => file_get_contents($tmp),
+            ];
         }
-        $fileData = file_get_contents($file['tmp_name']);
-        $fileName = basename($file['name']);
-        $fileType = mime_content_type($file['tmp_name']);
     }
 
-    $sql = "INSERT INTO assignments
-            (classCode, prof, as_title, as_subject, as_file, as_file_name, as_file_type, as_description, as_deadline)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt = $pdo->prepare($sql);
+    // 2. Insert everything together, or nothing
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO assignments (classCode, prof, as_title, as_subject, as_description, as_deadline)
+             VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        $stmt->bindValue(1, $classCode, PDO::PARAM_INT);
+        $stmt->bindValue(2, $prof);
+        $stmt->bindValue(3, $title);
+        $stmt->bindValue(4, $subject);
+        $stmt->bindValue(5, $des);
+        $stmt->bindValue(6, $deadline);
+        $stmt->execute();
 
-    $stmt->bindValue(1, $classCode, PDO::PARAM_INT);
-    $stmt->bindValue(2, $prof);
-    $stmt->bindValue(3, $title);
-    $stmt->bindValue(4, $subject);
-    $stmt->bindValue(5, $fileData, $fileData === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
-    $stmt->bindValue(6, $fileName);
-    $stmt->bindValue(7, $fileType);
-    $stmt->bindValue(8, $des);
-    $stmt->bindValue(9, $deadline);
-    $stmt->execute();
-    
-    //to create assignments to students
-    foreach($students as $student){
-        $sqlStudent = "INSERT INTO studentassignments
-            (classCode, studentID, as_title, as_subject, as_file, as_file_name, as_file_type, as_description, as_deadline)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $st = $pdo->prepare($sqlStudent);
+        $st = $pdo->prepare(
+            "INSERT INTO studentassignments (classCode, studentID, as_title, as_subject, as_description, as_deadline)
+             VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        foreach ($students as $student) {
+            $st->bindValue(1, $classCode, PDO::PARAM_INT);
+            $st->bindValue(2, (int)$student['studentID'], PDO::PARAM_INT);
+            $st->bindValue(3, $title);
+            $st->bindValue(4, $subject);
+            $st->bindValue(5, $des);
+            $st->bindValue(6, $deadline);
+            $st->execute();
+        }
 
-    $st->bindValue(1, $classCode, PDO::PARAM_INT);
-    $st->bindValue(2, (int) $student['studentID']);
-    $st->bindValue(3, $title);
-    $st->bindValue(4, $subject);
-    $st->bindValue(5, $fileData, $fileData === null ? PDO::PARAM_NULL : PDO::PARAM_LOB);
-    $st->bindValue(6, $fileName);
-    $st->bindValue(7, $fileType);
-    $st->bindValue(8, $des);
-    $st->bindValue(9, $deadline);
-    $st->execute();
+        $fs = $pdo->prepare(
+            "INSERT INTO files (as_title, classCode, as_file, as_file_name, as_file_type)
+             VALUES (?, ?, ?, ?, ?)"
+        );
+        foreach ($uploaded as $f) {
+            $fs->bindValue(1, $title);
+            $fs->bindValue(2, $classCode, PDO::PARAM_INT);
+            $fs->bindValue(3, $f['data'], PDO::PARAM_LOB);   // the actual file bytes
+            $fs->bindValue(4, $f['name']);
+            $fs->bindValue(5, $f['type']);
+            $fs->execute();
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
     }
+    throw $e;
+}
 }
 
 function displayAssignments(PDO $pdo, $classCode){

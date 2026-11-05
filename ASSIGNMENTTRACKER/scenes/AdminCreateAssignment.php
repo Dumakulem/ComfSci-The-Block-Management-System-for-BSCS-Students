@@ -149,12 +149,24 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
                <input type="text" id="subject" name="subject" placeholder="e.g. Data Structures and Algorithms" maxlength="100" required>
           </div>
 
-          <!-- File (multiple files allowed, drag and drop works) -->
-          <div class="field">
-            <label for="files">File <span class="optional">(optional)</span></label>
-            <input type="file" id="files" name="files">
-            <p class="hint">Click to browse or drop files here. You can add more than one file.</p>
-          </div>
+          <!-- Files (choose a file, then another picker appears) -->
+<div class="field">
+  <label for="files">Files <span class="optional">(optional)</span></label>
+
+  <div class="file-list" id="fileList">
+    <div class="file-slot">
+      <input type="file" id="files" name="files[]">
+      <button type="button" class="file-remove" aria-label="Remove this file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <p class="hint">Choose a file and another picker appears so you can add more. Up to 10 files.</p>
+</div>
 
           <!-- Description -->
           <div class="field">
@@ -190,5 +202,49 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
   </main>
 
 </div>
+
+<script>
+  (function () {
+    var MAX_FILES = 10;
+    var list = document.getElementById('fileList');
+
+    // Copy of the empty row, used to create new rows
+    var template = list.firstElementChild.cloneNode(true);
+    template.querySelector('input').removeAttribute('id');
+
+    // Always keep one empty picker at the end (until the limit is reached)
+    function ensureEmptySlot() {
+      var last = list.lastElementChild;
+      var lastIsFilled = !last || last.classList.contains('is-filled');
+      if (lastIsFilled && list.children.length < MAX_FILES) {
+        list.appendChild(template.cloneNode(true));
+      }
+    }
+
+    // A file was chosen (or cleared) in one of the pickers
+    list.addEventListener('change', function (e) {
+      if (!e.target.matches('input[type="file"]')) return;
+      var slot = e.target.closest('.file-slot');
+
+      if (e.target.files.length > 0) {
+        slot.classList.add('is-filled');
+      } else {
+        slot.classList.remove('is-filled');
+        // Chrome clears a picker if its dialog is cancelled, so drop that row
+        if (slot !== list.lastElementChild) slot.remove();
+      }
+      ensureEmptySlot();
+    });
+
+    // Remove button
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest('.file-remove');
+      if (!btn) return;
+      btn.closest('.file-slot').remove();
+      ensureEmptySlot();
+    });
+  })();
+</script>
+
 </body>
 </html>
