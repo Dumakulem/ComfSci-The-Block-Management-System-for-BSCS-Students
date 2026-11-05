@@ -11,4 +11,11 @@ function mergeDateAndTime($date, $time){
     return $dt;
 }
 
+function formatFileSize($bytes): string {
+    $bytes = (int)$bytes;
+    if ($bytes >= 1048576) return round($bytes / 1048576, 1) . ' MB';
+    if ($bytes >= 1024)    return round($bytes / 1024) . ' KB';
+    return $bytes . ' B';
+}
+
 ?>

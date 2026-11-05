@@ -7,6 +7,7 @@ if (!isset($_SESSION['name'], $_SESSION['code'], $_SESSION['assignment'])) {
 }
 
 require_once __DIR__ . '/../database/admin.php';
+require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $name       = $_SESSION['name'];
 $classCode  = $_SESSION['code'];
@@ -203,12 +204,15 @@ if (!$assignment) {
                    Replace the sample text:  file name, file type (PDF), size
                    Close it after the </li> below with:  endforeach;
                    ====================================================== -->
-            <?php if($assignment['as_file_name'] != null): ?>
+            <?php $files = getAsFile($pdo, $assignment['as_title'], $classCode)?>
+            <?php foreach($files as $file): ?>
+
+              <?php if($file['as_file_name'] != null): ?>
               <li class="file">
-                <span class="file-type" aria-hidden="true">PDF</span>
+                <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?></span>
                 <span class="file-info">
-                  <span class="file-name"><?= $assignment['as_file_name'] ?></span>
-                  <span class="file-meta">Ex. PDF &middot; 1.2 MB</span>
+                  <span class="file-name"><?= $file['as_file_name'] ?></span>
+                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize(strlen($file['as_file'])) ?></span>
                 </span>
                 <span class="file-actions">
                   <a href="#" class="icon-btn" aria-label="View Linked List Guide.pdf" title="View">
@@ -227,6 +231,8 @@ if (!$assignment) {
                 </span>
               </li>
             <?php endif; ?>
+
+            <?php endforeach; ?>
               <!-- ATTACHMENTS FOREACH END  (put endforeach; here)
                    The two rows below are extra samples. Delete them when your foreach works. -->
               <!--<li class="file">

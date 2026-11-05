@@ -144,7 +144,7 @@ function displayAssignments(PDO $pdo, $classCode){
 
 function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
     $stmt = $pdo->prepare(
-        "SELECT as_id, classCode, prof, as_title, as_subject, as_file_name, as_file_type,
+        "SELECT as_id, classCode, prof, as_title, as_subject,
                 as_description, as_deadline, created_at
          FROM assignments
          WHERE as_id = ? AND classCode = ?"
@@ -156,6 +156,12 @@ function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
 function getAllStudents(PDO $pdo, $classCode): array {
     $stmt = $pdo->prepare("SELECT studentID FROM students WHERE classCode = ?");
     $stmt->execute([$classCode]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getAsFile(PDO $pdo, $as_title, $classCode): array{
+    $stmt = $pdo->prepare("SELECT as_file, as_file_name, as_file_type FROM files WHERE classCode = ? AND as_title = ?");
+    $stmt->execute([$classCode, $as_title]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
