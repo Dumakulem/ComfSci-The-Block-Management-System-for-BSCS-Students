@@ -251,11 +251,12 @@ if(isset($_POST['backToAssignments'])){
           <section class="section">
             <h3 class="section-title accent">Attachments</h3>
 
-            <?php  $files = getAsFile($pdo, $assigment['as_title'], $classcode)?>
+            <?php $files = getAsFile($pdo, $assigment['as_title'], $classcode); ?>
+            <?php $allHasFiles = false; ?>
 
             <?php foreach($files as $file): ?>
               <?php if($file['as_file_name'] != null):?>
-
+                <?php $allHasFiles = true; ?>
               <ul class="files">
               <!-- One row per attachment from the teacher. Repeat this whole item for each file. -->
               <li class="file">
@@ -287,6 +288,11 @@ if(isset($_POST['backToAssignments'])){
             <!-- If there are no attachments, remove the list above and show this instead:
             <p class="empty-text">No attachments.</p>
             -->
+            <?php if($allHasFiles === false): ?>
+
+              <p class="empty-text">No attachments.</p>
+
+            <?php endif; ?>
           </section>
 
         </div>
