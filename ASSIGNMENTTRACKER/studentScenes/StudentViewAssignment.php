@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once __DIR__ . '/../database/student.php';
+require_once __DIR__ . '/../database/admin.php';
+require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $student = $_SESSION['student'];
 $classcode = $_SESSION['asClassCode'];
@@ -249,18 +251,18 @@ if(isset($_POST['backToAssignments'])){
           <section class="section">
             <h3 class="section-title accent">Attachments</h3>
 
-            <?php if($assigment['as_file_name'] != null):?>
-                <?php $hasFiles = true; ?>
-            <?php endif; ?>
+            <?php  $files = getAsFile($pdo, $assigment['as_title'], $classcode)?>
 
-            <?php if($hasFiles === true): ?>
-            <ul class="files">
+            <?php foreach($files as $file): ?>
+              <?php if($file['as_file_name'] != null):?>
+
+              <ul class="files">
               <!-- One row per attachment from the teacher. Repeat this whole item for each file. -->
               <li class="file">
-                <span class="file-type" aria-hidden="true">PDF</span>
+                <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?></span>
                 <span class="file-info">
-                  <span class="file-name"><?= $assigment['as_file_name']; ?></span>
-                  <span class="file-meta">PDF &middot; 1.2 MB</span>
+                  <span class="file-name"><?= $file['as_file_name']; ?></span>
+                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize(strlen($file['as_file'])) ?></span>
                 </span>
                 <span class="file-actions">
                   <a href="#" class="icon-btn" aria-label="View Review Questions.pdf" title="View">
@@ -279,10 +281,9 @@ if(isset($_POST['backToAssignments'])){
                 </span>
               </li>
             </ul>
-            <?php endif;?>
-            <?php if($hasFiles === false): ?>
-                <p class="empty-text">No attachments.</p>
+
             <?php endif; ?>
+            <?php endforeach; ?>
             <!-- If there are no attachments, remove the list above and show this instead:
             <p class="empty-text">No attachments.</p>
             -->

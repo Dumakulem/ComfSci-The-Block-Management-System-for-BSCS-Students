@@ -55,7 +55,7 @@ function getStudent(PDO $pdo, int $id){
 
 function getStudentAssignment(PDO $pdo, string $astitle, $classCode): ?array {
     $stmt = $pdo->prepare(
-        "SELECT classCode, studentID, as_title, as_subject, as_file_name, as_file_type,
+        "SELECT classCode, studentID, as_title, as_subject,
                 as_description, as_deadline, created_at
          FROM studentassignments
          WHERE as_title = ? AND classCode = ?"
