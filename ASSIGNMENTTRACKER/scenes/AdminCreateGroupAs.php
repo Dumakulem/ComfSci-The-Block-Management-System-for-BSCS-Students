@@ -163,16 +163,41 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
             <p class="hint">Keep it to one sentence. Longer text is shortened with an ellipsis on the assignment card.</p>
           </div>
 
-          <!-- Assign a leader -->
-        <div class="field">
-        <label for="leader">Assign a leader <span class="req" aria-hidden="true">*</span></label>
-        <select id="leader" name="leader" required>
-            <option value="" selected disabled>Select a leader</option>
-            <option value="janine">Janine</option>
-            <option value="matt">Matt</option>
-            <option value="khent">Khent</option>
-        </select>
-        </div>
+ <!-- Assign a leader (search + dropdown) -->
+<div class="field">
+  <label for="leaderSearch">Assign a leader <span class="req" aria-hidden="true">*</span></label>
+
+  <div class="combo" id="leaderCombo">
+    <svg class="combo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="8"/>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+
+    <!-- What the user types (not submitted) -->
+    <input type="text" id="leaderSearch" class="combo-input" placeholder="Search or select a leader"
+           role="combobox" aria-expanded="false" aria-controls="leaderList" aria-autocomplete="list"
+           autocomplete="off" required>
+
+    <!-- The real value that gets submitted -->
+    <input type="hidden" name="leader" id="leaderValue">
+
+    <button type="button" class="combo-toggle" tabindex="-1" aria-label="Show all leaders">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    <ul class="combo-list" id="leaderList" role="listbox" hidden>
+      <!-- One <li> per leader. data-value is what $_POST['leader'] receives.
+           If you print these with a foreach, run the name through htmlspecialchars(). -->
+      <li class="combo-option" role="option" aria-selected="false" data-value="janine">Janine</li>
+      <li class="combo-option" role="option" aria-selected="false" data-value="matt">Matt</li>
+      <li class="combo-option" role="option" aria-selected="false" data-value="khent">Khent</li>
+
+      <li class="combo-empty" role="presentation" hidden>No matches found</li>
+    </ul>
+  </div>
+</div>
 
           <!-- Deadline (date picker + time) -->
           <div class="row-2">
@@ -201,5 +226,173 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
   </main>
 
 </div>
+
+<script>
+  (function () {
+    var combo   = document.getElementById('leaderCombo');
+    var input   = document.getElementById('leaderSearch');
+    var hidden  = document.getElementById('leaderValue');
+    var list    = document.getElementById('leaderList');
+    var toggle  = combo.querySelector('.combo-toggle');
+    var empty   = list.querySelector('.combo-empty');
+    var options = Array.prototype.slice.call(list.querySelectorAll('.combo-option'));
+
+    options.forEach(function (o, i) {
+      o.id = 'leaderOption' + i;
+      o.dataset.label = o.textContent.trim();
+    });
+
+    // Visible options, in the order they appear on screen
+    function visibleOptions() {
+      return Array.prototype.filter.call(list.querySelectorAll('.combo-option'), function (o) {
+        return !o.hidden;
+      });
+    }
+
+    function setActive(i) {
+      var vis = visibleOptions();
+      options.forEach(function (o) { o.classList.remove('is-active'); });
+      if (i > -1 && vis[i]) {
+        vis[i].classList.add('is-active');
+        input.setAttribute('aria-activedescendant', vis[i].id);
+        vis[i].scrollIntoView({ block: 'nearest' });
+      } else {
+        input.removeAttribute('aria-activedescendant');
+      }
+      setActive.index = i;
+    }
+    setActive.index = -1;
+
+    function openList() {
+      list.hidden = false;
+      combo.classList.add('is-open');
+      input.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeList() {
+      list.hidden = true;
+      combo.classList.remove('is-open');
+      input.setAttribute('aria-expanded', 'false');
+      setActive(-1);
+    }
+
+    // Shows the matching part of the name in orange
+    function paint(option, q) {
+      var label = option.dataset.label;
+      var pos = q ? label.toLowerCase().indexOf(q) : -1;
+      option.textContent = '';
+      if (pos < 0) { option.textContent = label; return; }
+      option.appendChild(document.createTextNode(label.slice(0, pos)));
+      var mark = document.createElement('mark');
+      mark.textContent = label.slice(pos, pos + q.length);
+      option.appendChild(mark);
+      option.appendChild(document.createTextNode(label.slice(pos + q.length)));
+    }
+
+    // Keep matches, put the closest ones first
+    function filter(q) {
+      var matches = [];
+      options.forEach(function (o) {
+        var pos = q ? o.dataset.label.toLowerCase().indexOf(q) : 0;
+        if (pos > -1) {
+          matches.push({ el: o, pos: pos });
+          o.hidden = false;
+        } else {
+          o.hidden = true;
+        }
+        paint(o, q);
+      });
+
+      // Earlier match position first (names that start with the text), then A-Z
+      matches.sort(function (a, b) {
+        return (a.pos - b.pos) || a.el.dataset.label.localeCompare(b.el.dataset.label);
+      });
+      matches.forEach(function (m) { list.insertBefore(m.el, empty); });
+
+      empty.hidden = matches.length > 0;
+      setActive(q && matches.length ? 0 : -1);
+    }
+
+    function choose(option) {
+      hidden.value = option.dataset.value;
+      input.value = option.dataset.label;
+      options.forEach(function (o) {
+        o.setAttribute('aria-selected', o === option ? 'true' : 'false');
+      });
+      input.setCustomValidity('');
+      closeList();
+    }
+
+    function currentQuery() {
+      return hidden.value ? '' : input.value.trim().toLowerCase();
+    }
+
+    // Typing
+    input.addEventListener('input', function () {
+      hidden.value = '';
+      options.forEach(function (o) { o.setAttribute('aria-selected', 'false'); });
+      input.setCustomValidity(input.value.trim() ? 'Please choose a leader from the list.' : '');
+      filter(input.value.trim().toLowerCase());
+      openList();
+    });
+
+    input.addEventListener('click', function () {
+      filter(currentQuery());
+      openList();
+    });
+
+    // Arrow button
+    toggle.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    toggle.addEventListener('click', function () {
+      if (list.hidden) {
+        input.focus();
+        filter(currentQuery());
+        openList();
+      } else {
+        closeList();
+      }
+    });
+
+    // Clicking an option (mousedown is blocked so the input keeps focus)
+    list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    list.addEventListener('click', function (e) {
+      var option = e.target.closest('.combo-option');
+      if (option) choose(option);
+    });
+
+    // Keyboard
+    input.addEventListener('keydown', function (e) {
+      var vis = visibleOptions();
+      var i = setActive.index;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (list.hidden) { filter(currentQuery()); openList(); }
+        else setActive(Math.min(i + 1, vis.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!list.hidden) setActive(Math.max(i - 1, 0));
+      } else if (e.key === 'Enter') {
+        if (!list.hidden && i > -1 && vis[i]) {
+          e.preventDefault();          // pick the option instead of submitting the form
+          choose(vis[i]);
+        }
+      } else if (e.key === 'Escape') {
+        closeList();
+      }
+    });
+
+    // Leaving the field: accept an exact match typed in full (e.g. "matt")
+    input.addEventListener('blur', function () {
+      var q = input.value.trim().toLowerCase();
+      if (!hidden.value && q) {
+        var exact = options.filter(function (o) { return o.dataset.label.toLowerCase() === q; })[0];
+        if (exact) choose(exact);
+      }
+      closeList();
+    });
+  })();
+</script>
+
 </body>
 </html>
