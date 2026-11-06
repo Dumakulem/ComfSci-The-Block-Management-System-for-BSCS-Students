@@ -3,12 +3,16 @@ session_start();
 $name = $_SESSION['name'];
 $classCode = $_SESSION['code'];
 
+ require_once __DIR__ . '/../database/admin.php';
+
+$students = getAllStudents($pdo, $classCode);
+
 if(isset($_POST['cancel'])){
     header("Location: AdminGroupAssignments.php");
     exit;
 }
 
-if(isset($_POST['createAssignment'])){
+/*if(isset($_POST['createAssignment'])){
 require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $title = $_POST['title'];
@@ -26,6 +30,12 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
 
     header("Location: AdminAssignments.php");
     exit;
+}*/
+
+if(isset($_POST['createAssignment'])){
+  echo $_POST['leader'];
+  //header("Location: AdminGroupAssignments.php");
+  //exit;
 }
 ?>
 
@@ -190,9 +200,12 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
     <ul class="combo-list" id="leaderList" role="listbox" hidden>
       <!-- One <li> per leader. data-value is what $_POST['leader'] receives.
            If you print these with a foreach, run the name through htmlspecialchars(). -->
-      <li class="combo-option" role="option" aria-selected="false" data-value="janine">Janine</li>
-      <li class="combo-option" role="option" aria-selected="false" data-value="matt">Matt</li>
-      <li class="combo-option" role="option" aria-selected="false" data-value="khent">Khent</li>
+
+      <?php foreach($students as $student): ?>
+
+        <li class="combo-option" role="option" aria-selected="false" data-value="janine"><?= $student["studentLastName"] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")"; ?></li>
+      
+      <?php endforeach; ?>
 
       <li class="combo-empty" role="presentation" hidden>No matches found</li>
     </ul>
@@ -217,7 +230,7 @@ createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo,
             <button type="submit" name="createAssignment" class="btn btn-primary">Create Assignment</button>
           </div>
 
-        </form>
+          </form>
 
         <form method="POST" id="cancelForm"></form>
       </section>

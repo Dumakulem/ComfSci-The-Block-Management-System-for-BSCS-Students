@@ -154,7 +154,7 @@ function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
 }
 
 function getAllStudents(PDO $pdo, $classCode): array {
-    $stmt = $pdo->prepare("SELECT studentID FROM students WHERE classCode = ?");
+    $stmt = $pdo->prepare("SELECT studentID, studentLastName, studentFirstName FROM students WHERE classCode = ?");
     $stmt->execute([$classCode]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
