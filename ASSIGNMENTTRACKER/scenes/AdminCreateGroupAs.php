@@ -3,16 +3,12 @@ session_start();
 $name = $_SESSION['name'];
 $classCode = $_SESSION['code'];
 
- require_once __DIR__ . '/../database/admin.php';
-
-$students = getAllStudents($pdo, $classCode);
-
 if(isset($_POST['cancel'])){
     header("Location: AdminGroupAssignments.php");
     exit;
 }
 
-/*if(isset($_POST['createAssignment'])){
+if(isset($_POST['createAssignment'])){
 require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $title = $_POST['title'];
@@ -23,19 +19,13 @@ $dt = mergeDateAndTime($_POST['date'], $_POST['time']);
 $forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
 
 require_once __DIR__ . '/../database/admin.php';
-createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo, $classCode), $files, $des, $forDatabase);
+createGroupAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo, $classCode), $files, $des, $forDatabase);
 
 //$forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
 //$forDisplay  = $dt->format('M j, Y, g:i A'); // "Nov 20, 2026, 11:59 PM"
 
     header("Location: AdminAssignments.php");
     exit;
-}*/
-
-if(isset($_POST['createAssignment'])){
-  echo $_POST['leader'];
-  //header("Location: AdminGroupAssignments.php");
-  //exit;
 }
 ?>
 
@@ -121,7 +111,7 @@ if(isset($_POST['createAssignment'])){
     <div class="form-wrap">
 
       <nav class="breadcrumb" aria-label="Breadcrumb">
-        <a href="AdminAssignments.php">Assignments</a>
+        <a href="AdminGroupAssignments.php">Group Assignments</a>
         <span aria-hidden="true">/</span>
         <span aria-current="page">New assignment</span>
       </nav>
@@ -139,7 +129,7 @@ if(isset($_POST['createAssignment'])){
           </span>
           <div>
             <h1>Create new group assignment</h1>
-            <p>Fill in the details below to post a group assignment.</p>
+            <p>Fill in the details below to post an GROUP assignment.</p>
           </div>
         </div>
 
@@ -159,12 +149,24 @@ if(isset($_POST['createAssignment'])){
                <input type="text" id="subject" name="subject" placeholder="e.g. Data Structures and Algorithms" maxlength="100" required>
           </div>
 
-          <!-- File (multiple files allowed, drag and drop works) -->
-          <div class="field">
-            <label for="files">File <span class="optional">(optional)</span></label>
-            <input type="file" id="files" name="files">
-            <p class="hint">Click to browse or drop files here. You can add more than one file.</p>
-          </div>
+          <!-- Files (choose a file, then another picker appears) -->
+<div class="field">
+  <label for="files">Files <span class="optional">(optional)</span></label>
+
+  <div class="file-list" id="fileList">
+    <div class="file-slot">
+      <input type="file" id="files" name="files[]">
+      <button type="button" class="file-remove" aria-label="Remove this file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <p class="hint">Choose a file and another picker appears so you can add more. Up to 10 files.</p>
+</div>
 
           <!-- Description -->
           <div class="field">
@@ -172,45 +174,6 @@ if(isset($_POST['createAssignment'])){
             <textarea id="description" name="description" placeholder="Write one short sentence about this assignment." maxlength="300" required></textarea>
             <p class="hint">Keep it to one sentence. Longer text is shortened with an ellipsis on the assignment card.</p>
           </div>
-
- <!-- Assign a leader (search + dropdown) -->
-<div class="field">
-  <label for="leaderSearch">Assign a leader <span class="req" aria-hidden="true">*</span></label>
-
-  <div class="combo" id="leaderCombo">
-    <svg class="combo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="11" cy="11" r="8"/>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-
-    <!-- What the user types (not submitted) -->
-    <input type="text" id="leaderSearch" class="combo-input" placeholder="Search or select a leader"
-           role="combobox" aria-expanded="false" aria-controls="leaderList" aria-autocomplete="list"
-           autocomplete="off" required>
-
-    <!-- The real value that gets submitted -->
-    <input type="hidden" name="leader" id="leaderValue">
-
-    <button type="button" class="combo-toggle" tabindex="-1" aria-label="Show all leaders">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
-    </button>
-
-    <ul class="combo-list" id="leaderList" role="listbox" hidden>
-      <!-- One <li> per leader. data-value is what $_POST['leader'] receives.
-           If you print these with a foreach, run the name through htmlspecialchars(). -->
-
-      <?php foreach($students as $student): ?>
-
-        <li class="combo-option" role="option" aria-selected="false" data-value="janine"><?= $student["studentLastName"] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")"; ?></li>
-      
-      <?php endforeach; ?>
-
-      <li class="combo-empty" role="presentation" hidden>No matches found</li>
-    </ul>
-  </div>
-</div>
 
           <!-- Deadline (date picker + time) -->
           <div class="row-2">
@@ -230,7 +193,7 @@ if(isset($_POST['createAssignment'])){
             <button type="submit" name="createAssignment" class="btn btn-primary">Create Assignment</button>
           </div>
 
-          </form>
+        </form>
 
         <form method="POST" id="cancelForm"></form>
       </section>
@@ -242,167 +205,43 @@ if(isset($_POST['createAssignment'])){
 
 <script>
   (function () {
-    var combo   = document.getElementById('leaderCombo');
-    var input   = document.getElementById('leaderSearch');
-    var hidden  = document.getElementById('leaderValue');
-    var list    = document.getElementById('leaderList');
-    var toggle  = combo.querySelector('.combo-toggle');
-    var empty   = list.querySelector('.combo-empty');
-    var options = Array.prototype.slice.call(list.querySelectorAll('.combo-option'));
+    var MAX_FILES = 10;
+    var list = document.getElementById('fileList');
 
-    options.forEach(function (o, i) {
-      o.id = 'leaderOption' + i;
-      o.dataset.label = o.textContent.trim();
-    });
+    // Copy of the empty row, used to create new rows
+    var template = list.firstElementChild.cloneNode(true);
+    template.querySelector('input').removeAttribute('id');
 
-    // Visible options, in the order they appear on screen
-    function visibleOptions() {
-      return Array.prototype.filter.call(list.querySelectorAll('.combo-option'), function (o) {
-        return !o.hidden;
-      });
-    }
-
-    function setActive(i) {
-      var vis = visibleOptions();
-      options.forEach(function (o) { o.classList.remove('is-active'); });
-      if (i > -1 && vis[i]) {
-        vis[i].classList.add('is-active');
-        input.setAttribute('aria-activedescendant', vis[i].id);
-        vis[i].scrollIntoView({ block: 'nearest' });
-      } else {
-        input.removeAttribute('aria-activedescendant');
+    // Always keep one empty picker at the end (until the limit is reached)
+    function ensureEmptySlot() {
+      var last = list.lastElementChild;
+      var lastIsFilled = !last || last.classList.contains('is-filled');
+      if (lastIsFilled && list.children.length < MAX_FILES) {
+        list.appendChild(template.cloneNode(true));
       }
-      setActive.index = i;
-    }
-    setActive.index = -1;
-
-    function openList() {
-      list.hidden = false;
-      combo.classList.add('is-open');
-      input.setAttribute('aria-expanded', 'true');
     }
 
-    function closeList() {
-      list.hidden = true;
-      combo.classList.remove('is-open');
-      input.setAttribute('aria-expanded', 'false');
-      setActive(-1);
-    }
+    // A file was chosen (or cleared) in one of the pickers
+    list.addEventListener('change', function (e) {
+      if (!e.target.matches('input[type="file"]')) return;
+      var slot = e.target.closest('.file-slot');
 
-    // Shows the matching part of the name in orange
-    function paint(option, q) {
-      var label = option.dataset.label;
-      var pos = q ? label.toLowerCase().indexOf(q) : -1;
-      option.textContent = '';
-      if (pos < 0) { option.textContent = label; return; }
-      option.appendChild(document.createTextNode(label.slice(0, pos)));
-      var mark = document.createElement('mark');
-      mark.textContent = label.slice(pos, pos + q.length);
-      option.appendChild(mark);
-      option.appendChild(document.createTextNode(label.slice(pos + q.length)));
-    }
-
-    // Keep matches, put the closest ones first
-    function filter(q) {
-      var matches = [];
-      options.forEach(function (o) {
-        var pos = q ? o.dataset.label.toLowerCase().indexOf(q) : 0;
-        if (pos > -1) {
-          matches.push({ el: o, pos: pos });
-          o.hidden = false;
-        } else {
-          o.hidden = true;
-        }
-        paint(o, q);
-      });
-
-      // Earlier match position first (names that start with the text), then A-Z
-      matches.sort(function (a, b) {
-        return (a.pos - b.pos) || a.el.dataset.label.localeCompare(b.el.dataset.label);
-      });
-      matches.forEach(function (m) { list.insertBefore(m.el, empty); });
-
-      empty.hidden = matches.length > 0;
-      setActive(q && matches.length ? 0 : -1);
-    }
-
-    function choose(option) {
-      hidden.value = option.dataset.value;
-      input.value = option.dataset.label;
-      options.forEach(function (o) {
-        o.setAttribute('aria-selected', o === option ? 'true' : 'false');
-      });
-      input.setCustomValidity('');
-      closeList();
-    }
-
-    function currentQuery() {
-      return hidden.value ? '' : input.value.trim().toLowerCase();
-    }
-
-    // Typing
-    input.addEventListener('input', function () {
-      hidden.value = '';
-      options.forEach(function (o) { o.setAttribute('aria-selected', 'false'); });
-      input.setCustomValidity(input.value.trim() ? 'Please choose a leader from the list.' : '');
-      filter(input.value.trim().toLowerCase());
-      openList();
-    });
-
-    input.addEventListener('click', function () {
-      filter(currentQuery());
-      openList();
-    });
-
-    // Arrow button
-    toggle.addEventListener('mousedown', function (e) { e.preventDefault(); });
-    toggle.addEventListener('click', function () {
-      if (list.hidden) {
-        input.focus();
-        filter(currentQuery());
-        openList();
+      if (e.target.files.length > 0) {
+        slot.classList.add('is-filled');
       } else {
-        closeList();
+        slot.classList.remove('is-filled');
+        // Chrome clears a picker if its dialog is cancelled, so drop that row
+        if (slot !== list.lastElementChild) slot.remove();
       }
+      ensureEmptySlot();
     });
 
-    // Clicking an option (mousedown is blocked so the input keeps focus)
-    list.addEventListener('mousedown', function (e) { e.preventDefault(); });
+    // Remove button
     list.addEventListener('click', function (e) {
-      var option = e.target.closest('.combo-option');
-      if (option) choose(option);
-    });
-
-    // Keyboard
-    input.addEventListener('keydown', function (e) {
-      var vis = visibleOptions();
-      var i = setActive.index;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (list.hidden) { filter(currentQuery()); openList(); }
-        else setActive(Math.min(i + 1, vis.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (!list.hidden) setActive(Math.max(i - 1, 0));
-      } else if (e.key === 'Enter') {
-        if (!list.hidden && i > -1 && vis[i]) {
-          e.preventDefault();          // pick the option instead of submitting the form
-          choose(vis[i]);
-        }
-      } else if (e.key === 'Escape') {
-        closeList();
-      }
-    });
-
-    // Leaving the field: accept an exact match typed in full (e.g. "matt")
-    input.addEventListener('blur', function () {
-      var q = input.value.trim().toLowerCase();
-      if (!hidden.value && q) {
-        var exact = options.filter(function (o) { return o.dataset.label.toLowerCase() === q; })[0];
-        if (exact) choose(exact);
-      }
-      closeList();
+      var btn = e.target.closest('.file-remove');
+      if (!btn) return;
+      btn.closest('.file-slot').remove();
+      ensureEmptySlot();
     });
   })();
 </script>

@@ -130,11 +130,81 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
 }
 }
 
+function createGroupAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $students, ?array $files, $des, $deadline) {
+
+    // 1. Turn $_FILES['files'] into a normal list of files
+    $uploaded = [];
+    if ($files !== null && is_array($files['name'])) {
+        foreach ($files['name'] as $i => $originalName) {
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;   // skips the empty picker
+
+            if ($files['size'][$i] > 16000000) {
+                throw new Exception("$originalName is too large (max about 16 MB).");
+            }
+            $tmp = $files['tmp_name'][$i];
+            $uploaded[] = [
+                'name' => basename($originalName),
+                'type' => mime_content_type($tmp),
+                'data' => file_get_contents($tmp),
+            ];
+        }
+    }
+
+    // 2. Insert everything together, or nothing
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO assignments (classCode, prof, as_title, as_subject, as_description, as_deadline, is_group_as)
+             VALUES (?, ?, ?, ?, ?, ?, ?)"
+        );
+        $stmt->bindValue(1, $classCode, PDO::PARAM_INT);
+        $stmt->bindValue(2, $prof);
+        $stmt->bindValue(3, $title);
+        $stmt->bindValue(4, $subject);
+        $stmt->bindValue(5, $des);
+        $stmt->bindValue(6, $deadline);
+        $stmt->bindValue(7, (int) 1);
+        $stmt->execute();
+
+        $fs = $pdo->prepare(
+            "INSERT INTO files (as_title, classCode, as_file, as_file_name, as_file_type)
+             VALUES (?, ?, ?, ?, ?)"
+        );
+        foreach ($uploaded as $f) {
+            $fs->bindValue(1, $title);
+            $fs->bindValue(2, $classCode, PDO::PARAM_INT);
+            $fs->bindValue(3, $f['data'], PDO::PARAM_LOB);   // the actual file bytes
+            $fs->bindValue(4, $f['name']);
+            $fs->bindValue(5, $f['type']);
+            $fs->execute();
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    throw $e;
+}
+}
+
 function displayAssignments(PDO $pdo, $classCode){
     $pdo->beginTransaction();
     try {
-        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ?");
-        $stmt->execute([$classCode]);
+        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
+        $stmt->execute([$classCode, (int) 0]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+function displayGroupAssignments(PDO $pdo, $classCode){
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
+        $stmt->execute([$classCode, (int) 1]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
     } catch (Exception $e) {
         $pdo->rollBack();
