@@ -1,0 +1,151 @@
+/* =====================================================================
+   Create group scene: extra styles only.
+   Load this AFTER createassignments.css. It reuses the leader
+   search + dropdown (.combo) styles that are already in that file.
+   ===================================================================== */
+
+/* ---------- Assignment summary (title, subject, class) ---------- */
+.info-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 20px;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  background: var(--surface-tint);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--orange);
+  border-radius: 12px;
+}
+
+.info-item { min-width: 0; }
+
+.info-item.wide { grid-column: 1 / -1; }
+
+.info-item dt {
+  margin: 0 0 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.info-item dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.info-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  background: var(--black);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* ---------- Members: search + dropdown that accepts many ---------- */
+/* The box looks like the other inputs. Chosen students appear inside it as chips,
+   and the text field sits after them. */
+.multi-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 46px;
+  padding: 6px 46px 6px 42px;
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  border-radius: var(--radius);
+  cursor: text;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.multi-box:hover { border-color: #bdb5ab; }
+
+.multi-box:focus-within {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.2);
+}
+
+/* The text field inside the box has no border of its own */
+.field .multi-input {
+  flex: 1 1 140px;
+  width: auto;
+  min-width: 80px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.field .multi-input:hover,
+.field .multi-input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  height: 32px;
+  padding: 0 4px 0 12px;
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  border-radius: 999px;
+  color: var(--orange-ink);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.chip-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.chip-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.chip-remove:hover {
+  background: var(--orange);
+  color: #fff;
+}
+
+.chip-remove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+@media (max-width: 520px) {
+  .info-panel { grid-template-columns: 1fr; }
+}

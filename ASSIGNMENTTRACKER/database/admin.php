@@ -130,6 +130,40 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
 }
 }
 
+function createMembersAssignment(PDO $pdo, $classCode, $groupName, $leader, ?array $members, $assignment) {
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("INSERT INTO groupas (as_id, group_name) VALUES (?, ?)");
+        $stmt->execute([(int)$assignment['as_id'], $groupName]);
+
+        $stmt = $pdo->prepare("INSERT INTO groupmembers (group_name, studentID, is_leader) VALUES (?, ?, ?)");
+        $stmt->execute([$groupName, (int) $leader, 1]);
+
+        foreach($members as $member){
+            $stmt = $pdo->prepare("INSERT INTO groupmembers (group_name, studentID, is_leader) VALUES (?, ?, ?)");
+            $stmt->execute([$groupName, (int) $member, 0]); 
+        }
+        $pdo->commit();
+    } catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollBack();
+    }
+    throw $e;
+}
+}
+
+function getAllGroups(PDO $pdo, $as_id){
+        $stmt = $pdo->prepare("SELECT * FROM groupas WHERE as_id = ?");
+        $stmt->execute([$as_id]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then retur
+}
+
+function getAllMembers(PDO $pdo, $groupName){
+        $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE group_name = ?");
+        $stmt->execute([$groupName]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+}
+
 function createGroupAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $students, ?array $files, $des, $deadline) {
 
     // 1. Turn $_FILES['files'] into a normal list of files
@@ -233,5 +267,12 @@ function getAsFile(PDO $pdo, $as_title, $classCode): array{
     $stmt = $pdo->prepare("SELECT as_file, as_file_name, as_file_type FROM files WHERE classCode = ? AND as_title = ?");
     $stmt->execute([$classCode, $as_title]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function getStudentName(PDO $pdo, $classCode,  $id){
+    $stmt = $pdo->prepare("SELECT studentLastName, studentFirstName, studentMiddleName FROM students WHERE classCode = ? AND studentID = ?");
+    $stmt->execute([$classCode, (int)$id]);
+    $name = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $name['studentLastName'] . ", " . $name['studentFirstName'] . " " . $name['studentMiddleName'];
 }
 ?>

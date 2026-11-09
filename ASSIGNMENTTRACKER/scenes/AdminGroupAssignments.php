@@ -17,6 +17,13 @@ if(isset($_POST['createAssignment'])){
     exit;
 }
 
+if(isset($_POST['currentGroupAssignment'])){
+  $_SESSION['groupAsID'] = (int)$_POST['currentGroupAssignment'];
+
+  header('Location: AdminCreateGroupMembers.php');
+  exit;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -141,6 +148,7 @@ if(isset($_POST['createAssignment'])){
     <section class="grid panel panel-group" aria-label="Group Assignments">
 
     <?php foreach($assignments as $assignment): ?>
+      <?php if($assignment['prof'] == $name): ?>
       <!-- OUTER FOREACH START  (one card per class) -->
       <article class="card">
         <header class="card-head">
@@ -177,15 +185,20 @@ if(isset($_POST['createAssignment'])){
             </svg>
           </a>
           <!-- INNER FOREACH END -->
-           <?php endforeach; ?>
 
         </div>
 
         <footer class="card-foot">
           <span class="count"><?= $assignment['prof'] ?></span>
-          <a href="#" class="btn-enter" aria-label="Enter 10006 - CS401A">Enter</a>
+          <form method="POST">
+            <button type="submit" name="enter" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</button>
+            <input type="hidden" name="currentGroupAssignment" value="<?= (int)$assignment['as_id']; ?>">
+          </form>
         </footer>
       </article>
+
+      <?php endif; ?>
+      <?php endforeach; ?>
       <!-- OUTER FOREACH END -->
 
 
