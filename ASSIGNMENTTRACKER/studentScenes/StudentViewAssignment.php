@@ -6,8 +6,39 @@ require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $student = $_SESSION['student'];
 $classcode = $_SESSION['asClassCode'];
+(int) $currentStudentID = $_SESSION['currentStudent'];
 
-$assigment = getStudentAssignment($pdo, $_SESSION['assignment'], $classcode);
+$assigment = getStudentAssignment($pdo, $_SESSION['assignment'], $classcode, (int)$currentStudentID);
+
+// Turns $_FILES['files'] (array-of-arrays-by-field) into a clean list of files
+function normalizeFiles(?array $f): array {
+    $out = [];
+    if (!$f || !isset($f['name']) || !is_array($f['name'])) return $out;
+
+    foreach ($f['name'] as $i => $name) {
+        if ($f['error'][$i] !== UPLOAD_ERR_OK) continue;   // skips empty pickers and failed uploads
+        $out[] = [
+            'name'     => basename($name),
+            'tmp_name' => $f['tmp_name'][$i],
+            'size'     => $f['size'][$i],
+            'type'     => $f['type'][$i],
+        ];
+    }
+    return $out;
+}
+
+if (isset($_POST['addFile'])) {
+    $newFiles = array_slice(normalizeFiles($_FILES['files'] ?? null), 0, 10);
+
+    if (!empty($newFiles)) {
+        addStudentFiles($pdo, (int) $currentStudentID, $assigment['as_title'], $classcode, $newFiles, (int)$assigment['as_id']);
+    }
+
+    header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+    exit;
+}
+
+$myFiles = getStudentFiles($pdo, (int) $currentStudentID, $assigment['as_title'], $classcode);
 
 $hasFiles = false;
 
@@ -140,67 +171,90 @@ if(isset($_POST['backToAssignments'])){
            ########################################################## -->
       <section class="box" aria-label="Your work">
 
-        <header class="work-head">
-          <h2>Your Work</h2>
+<header class="work-head">
+  <h2>Your Work</h2>
 
-          <!-- STATUS BADGE: Pending is shown by default.
-               To show a different status, replace the badge below with one of these:
+  <?php if ($assigment['as_status'] == "Overdue"): ?>
+    <span class="status status-overdue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Overdue
+    </span>
+  <?php elseif ($assigment['as_status'] == "Late"): ?>
+    <span class="status status-overdue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Late
+    </span>
+  <?php elseif ($assigment['as_status'] == "Completed"): ?>
+    <span class="status status-completed">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      Completed
+    </span>
+  <?php else: ?>
+    <span class="status status-pending">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Pending
+    </span>
+  <?php endif; ?>
+</header>
 
-               Overdue:
-               <span class="status status-overdue">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                 Overdue
-               </span>
+        <form method="POST" enctype="multipart/form-data" class="upload-form" autocomplete="off">
 
-               Completed:
-               <span class="status status-completed">
-                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                 Completed
-               </span>
-          -->
-          <span class="status status-pending">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Pending
-          </span>
-        </header>
+  <div class="work-body">
+    <section class="section">
+      <h3 class="section-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+        Files Uploaded
+      </h3>
 
-        <div class="work-body">
-          <section class="section">
-            <h3 class="section-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
-              </svg>
-              Files Uploaded
-            </h3>
+      <?php if (empty($myFiles)): ?>
+        <p class="empty-text">No files attached yet.</p>
+      <?php else: ?>
+        <ul class="files">
+          <?php foreach ($myFiles as $mf): ?>
+            <li class="file">
+              <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?></span>
+              <span class="file-info">
+                <span class="file-name"><?= htmlspecialchars($mf['file_name']); ?></span>
+                <span class="file-meta"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($mf['file_size']); ?></span>
+              </span>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+    </section>
 
-            <!-- Shown when the student has not added any file yet -->
-            <p class="empty-text">No files attached yet.</p>
+    <section class="section">
+      <h3 class="section-title accent">Add files</h3>
 
-            <!-- When files are added, show them here instead of the text above. One row per file:
-            <ul class="files">
-              <li class="file">
-                <span class="file-type" aria-hidden="true">PDF</span>
-                <span class="file-info">
-                  <span class="file-name">Lastname_Firstname_Block.pdf</span>
-                  <span class="file-meta">PDF &middot; 640 KB</span>
-                </span>
-              </li>
-            </ul>
-            -->
-          </section>
+      <div class="file-list" id="fileList">
+        <div class="file-slot">
+          <input type="file" id="files" name="files[]">
+          <button type="button" class="file-remove" aria-label="Remove this file">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
         </div>
+      </div>
 
-        <footer class="work-foot">
-          <form method="POST" class="add-form">
-            <button type="submit" name="addFile" class="btn-add">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              Add a file
-            </button>
-          </form>
-        </footer>
+      <p class="hint">Choose a file and another picker appears. Up to 10 files.</p>
+    </section>
+  </div>
+
+  <footer class="work-foot">
+    <button type="submit" name="addFile" class="btn-add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add files
+    </button>
+  </footer>
+
+</form>
       </section>
 
 
@@ -305,4 +359,42 @@ if(isset($_POST['backToAssignments'])){
 
 </div>
 </body>
+
+<script>
+  (function () {
+    var MAX_FILES = 10;
+    var list = document.getElementById('fileList');
+
+    var template = list.firstElementChild.cloneNode(true);
+    template.querySelector('input').removeAttribute('id');
+
+    function ensureEmptySlot() {
+      var last = list.lastElementChild;
+      var lastIsFilled = !last || last.classList.contains('is-filled');
+      if (lastIsFilled && list.children.length < MAX_FILES) {
+        list.appendChild(template.cloneNode(true));
+      }
+    }
+
+    list.addEventListener('change', function (e) {
+      if (!e.target.matches('input[type="file"]')) return;
+      var slot = e.target.closest('.file-slot');
+
+      if (e.target.files.length > 0) {
+        slot.classList.add('is-filled');
+      } else {
+        slot.classList.remove('is-filled');
+        if (slot !== list.lastElementChild) slot.remove();
+      }
+      ensureEmptySlot();
+    });
+
+    list.addEventListener('click', function (e) {
+      var btn = e.target.closest('.file-remove');
+      if (!btn) return;
+      btn.closest('.file-slot').remove();
+      ensureEmptySlot();
+    });
+  })();
+</script>
 </html>

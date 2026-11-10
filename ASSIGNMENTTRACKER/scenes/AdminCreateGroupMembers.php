@@ -5,6 +5,8 @@ $classCode = $_SESSION['code'];
 
 require_once __DIR__ . '/../database/admin.php';
 
+//next = assignment assigning in group members
+
 $assignment = getAssignment($pdo, (int)$_SESSION['groupAsID'], $classCode);
 $groups = getAllGroups($pdo, (int) $assignment['as_id']);
 

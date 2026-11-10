@@ -55,7 +55,7 @@ function getStudent(PDO $pdo, int $id){
 
 function getStudentAssignment(PDO $pdo, string $astitle, $classCode): ?array {
     $stmt = $pdo->prepare(
-        "SELECT classCode, studentID, as_title, as_subject,
+        "SELECT as_id, classCode, studentID, as_title, as_subject, as_status,
                 as_description, as_deadline, created_at
          FROM studentassignments
          WHERE as_title = ? AND classCode = ?"
@@ -64,4 +64,67 @@ function getStudentAssignment(PDO $pdo, string $astitle, $classCode): ?array {
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 
+function getStudentFiles(PDO $pdo, $studentId, $asTitle, $classCode): array {
+    $stmt = $pdo->prepare(
+        "SELECT id, file_name, OCTET_LENGTH(file_data) AS file_size
+         FROM student_as_files
+         WHERE studentID = :sid AND as_title = :title AND classCode = :code
+         ORDER BY uploaded_at"
+    );
+    $stmt->execute([':sid' => $studentId, ':title' => $asTitle, ':code' => $classCode]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function assignmentStatusChecker(PDO $pdo, $classCode, $studentId, $as_id): ?string {
+    $stmt = $pdo->prepare(
+        "SELECT as_status FROM studentassignments
+         WHERE as_id = ? AND classCode = ? AND studentID = ?"
+    );
+    $stmt->execute([(int)$as_id, (int)$classCode, (int)$studentId]);
+    $status = $stmt->fetchColumn();
+    return $status === false ? null : $status;
+}
+
+function assignmentChangeStatus(PDO $pdo, $classCode, $studentId, $as_id, $status): void {
+    $stmt = $pdo->prepare(
+        "UPDATE studentassignments SET as_status = ?
+         WHERE as_id = ? AND classCode = ? AND studentID = ?"
+    );
+    $stmt->execute([$status, (int)$as_id, (int)$classCode, (int)$studentId]);
+}
+
+function addStudentFiles(PDO $pdo, $studentId, $asTitle, $classCode, ?array $files, $as_id): void {
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO student_as_files (studentID, as_title, classCode, file_name, file_data)
+             VALUES (:sid, :title, :code, :name, :data)"
+        );
+        foreach ($files ?? [] as $f) {
+            if (isset($f['error']) && $f['error'] !== UPLOAD_ERR_OK) continue;   // skip empty pickers
+            $stmt->execute([
+                ':sid'   => $studentId,
+                ':title' => $asTitle,
+                ':code'  => $classCode,
+                ':name'  => $f['name'],
+                ':data'  => file_get_contents($f['tmp_name']),
+            ]);
+        }
+
+        // change the status only after the files were saved
+        $status = assignmentStatusChecker($pdo, $classCode, $studentId, $as_id);
+        if ($status === 'Pending') {
+            assignmentChangeStatus($pdo, $classCode, $studentId, $as_id, 'Completed');
+        } elseif ($status === 'Overdue') {
+            assignmentChangeStatus($pdo, $classCode, $studentId, $as_id, 'Late');
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+}
 ?>
