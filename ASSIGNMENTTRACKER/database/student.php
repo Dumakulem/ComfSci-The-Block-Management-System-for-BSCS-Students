@@ -2,6 +2,9 @@
 
 require_once __DIR__ . '/dbConnection.php';
 
+//overdue setter
+
+
 function createStudent(PDO $pdo, int $id, int $classCode, string $lastName,
                        string $firstName, string $middleName, string $extName,
                        string $email, string $password, string $rep){
@@ -53,14 +56,14 @@ function getStudent(PDO $pdo, int $id){
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;   // one row, or null if not found
 }
 
-function getStudentAssignment(PDO $pdo, string $astitle, $classCode): ?array {
+function getStudentAssignment(PDO $pdo, string $astitle, $classCode, $studentId): ?array {
     $stmt = $pdo->prepare(
         "SELECT as_id, classCode, studentID, as_title, as_subject, as_status,
                 as_description, as_deadline, created_at
          FROM studentassignments
-         WHERE as_title = ? AND classCode = ?"
+         WHERE as_title = ? AND classCode = ? AND studentID = ?"
     );
-    $stmt->execute([$astitle, $classCode]);
+    $stmt->execute([$astitle, $classCode, (int)$studentId]);
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 
@@ -115,7 +118,7 @@ function addStudentFiles(PDO $pdo, $studentId, $asTitle, $classCode, ?array $fil
         $status = assignmentStatusChecker($pdo, $classCode, $studentId, $as_id);
         if ($status === 'Pending') {
             assignmentChangeStatus($pdo, $classCode, $studentId, $as_id, 'Completed');
-        } elseif ($status === 'Overdue') {
+        } else if ($status === 'Overdue') {
             assignmentChangeStatus($pdo, $classCode, $studentId, $as_id, 'Late');
         }
 
