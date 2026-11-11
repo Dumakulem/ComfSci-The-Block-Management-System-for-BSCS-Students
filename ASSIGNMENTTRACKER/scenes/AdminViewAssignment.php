@@ -28,6 +28,7 @@ foreach ($students as $s) {
         default:          $pending++; break;   // 'Pending' and 'Overdue': not submitted yet
     }
 }
+$total = $onTime + $late;
 ?>
 
 <!DOCTYPE html>
@@ -307,15 +308,15 @@ foreach ($students as $s) {
           <div class="sub-title-row">
             <h2>Submissions</h2>
             <!-- submitted / total students -->
-            <span class="count-pill"><?= $onTime + $late; ?> / <?= count($students); ?></span>
+            <span class="count-pill"><?= $total; ?> / <?= count($students); ?></span>
           </div>
 
           <!-- Progress bar: set the widths in % (on time / total and late / total) -->
           <div class="bar" role="img" aria-label="10 on time, 
                                                   4 late, 
                                                   21 pending">
-            <span class="bar-ontime" style="width: 28.6%"></span>
-            <span class="bar-late" style="width: 11.4%"></span>
+            <span class="bar-ontime" style="width: <?= ($onTime / count($students)) * 100 ?>%"></span>
+            <span class="bar-late" style="width: <?= ($late / count($students)) * 100 ?>%"></span>
           </div>
 
           <ul class="legend">
