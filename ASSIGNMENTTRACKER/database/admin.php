@@ -95,16 +95,26 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
         $stmt->execute();
 
         $st = $pdo->prepare(
-            "INSERT INTO studentassignments (classCode, studentID, as_title, as_subject, as_description, as_deadline)
-             VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO studentassignments (as_id, classCode, studentID, as_title, as_subject, as_description, as_deadline)
+             VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
+
+        $getAs = $pdo->prepare(
+        "SELECT as_id
+         FROM assignments
+         WHERE as_title = ? AND classCode = ? AND prof = ?"
+        );
+    $getAs->execute([$title, $classCode, $prof]);
+    $as_id = $getAs->fetch(PDO::FETCH_ASSOC) ?: null;
+
         foreach ($students as $student) {
-            $st->bindValue(1, $classCode, PDO::PARAM_INT);
-            $st->bindValue(2, (int)$student['studentID'], PDO::PARAM_INT);
-            $st->bindValue(3, $title);
-            $st->bindValue(4, $subject);
-            $st->bindValue(5, $des);
-            $st->bindValue(6, $deadline);
+            $st->bindValue(1, $as_id['as_id'], PDO::PARAM_INT);
+            $st->bindValue(2, $classCode, PDO::PARAM_INT);
+            $st->bindValue(3, (int)$student['studentID'], PDO::PARAM_INT);
+            $st->bindValue(4, $title);
+            $st->bindValue(5, $subject);
+            $st->bindValue(6, $des);
+            $st->bindValue(7, $deadline);
             $st->execute();
         }
 
@@ -274,5 +284,13 @@ function getStudentName(PDO $pdo, $classCode,  $id){
     $stmt->execute([$classCode, (int)$id]);
     $name = $stmt->fetch(PDO::FETCH_ASSOC);
     return $name['studentLastName'] . ", " . $name['studentFirstName'] . " " . $name['studentMiddleName'];
+}
+
+function getAllStudentAssignments(PDO $pdo, $as_id, $classCode){
+     $stmt = $pdo->prepare("SELECT studentID, as_status, edited_at 
+                            FROM studentassignments 
+                            WHERE classCode = ? AND as_id = ?");
+    $stmt->execute([$classCode, $as_id]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>

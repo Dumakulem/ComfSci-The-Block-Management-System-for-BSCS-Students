@@ -13,9 +13,20 @@ $name       = $_SESSION['name'];
 $classCode  = $_SESSION['code'];
 $assignment = getAssignment($pdo, (int)$_SESSION['assignment'], $classCode);
 
+$students = getAllStudentAssignments($pdo, (int) $assignment['as_id'], $classCode);
+
 if (!$assignment) {
     header('Location: AdminAssignments.php');
     exit;
+}
+
+$onTime = $late = $pending = 0;
+foreach ($students as $s) {
+    switch ($s['as_status']) {
+        case 'Completed': $onTime++;  break;
+        case 'Late':      $late++;    break;
+        default:          $pending++; break;   // 'Pending' and 'Overdue': not submitted yet
+    }
 }
 ?>
 
@@ -296,19 +307,21 @@ if (!$assignment) {
           <div class="sub-title-row">
             <h2>Submissions</h2>
             <!-- submitted / total students -->
-            <span class="count-pill">14 / 35</span>
+            <span class="count-pill"><?= $onTime + $late; ?> / <?= count($students); ?></span>
           </div>
 
           <!-- Progress bar: set the widths in % (on time / total and late / total) -->
-          <div class="bar" role="img" aria-label="10 on time, 4 late, 21 pending">
+          <div class="bar" role="img" aria-label="10 on time, 
+                                                  4 late, 
+                                                  21 pending">
             <span class="bar-ontime" style="width: 28.6%"></span>
             <span class="bar-late" style="width: 11.4%"></span>
           </div>
 
           <ul class="legend">
-            <li><span class="dot dot-ontime"></span>10 On time</li>
-            <li><span class="dot dot-late"></span>4 Late</li>
-            <li><span class="dot dot-pending"></span>21 Pending</li>
+            <li><span class="dot dot-ontime"></span><?= $onTime ?> On time</li>
+            <li><span class="dot dot-late"></span><?= $late ?> Late</li>
+            <li><span class="dot dot-pending"></span><?= $pending ?> Pending</li>
           </ul>
         </div>
 
@@ -316,173 +329,39 @@ if (!$assignment) {
         <div class="students-scroll" tabindex="0" role="region" aria-label="Students who submitted">
           <ul class="students">
 
-            <!-- ======================================================
-                 STUDENTS FOREACH START  (one row per student)
-                 Put your foreach line right here, for example:
-                     foreach ($submissions as $student):
-                 Replace the sample text:
-                     initials, student name, submitted date/time
-                 Status badge: if the submission was on time, use the
-                 "status-ontime" version below; if it was late, use the
-                 "status-late" version (see the second sample row).
-                 Close it after the </li> below with:  endforeach;
-                 ====================================================== -->
+          <?php foreach($students as $student): ?>
+
+            <?php if($student['as_status'] == "Completed"): ?>
             <li class="student">
-              <span class="student-avatar" aria-hidden="true">JD</span>
+              <span class="student-avatar" aria-hidden="true">U</span>
               <span class="student-info">
-                <span class="student-name">Juan Dela Cruz</span>
-                <span class="student-time">Submitted Oct 27, 2026, 9:41 PM</span>
+                <span class="student-name"><?= getStudentName($pdo, $classCode, $student['studentID']) ?></span>
+                <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
               </span>
               <span class="status status-ontime">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
                 Completed On Time
               </span>
             </li>
-            <!-- STUDENTS FOREACH END  (put endforeach; here)
-                 Everything below is sample data. Delete it when your foreach works. -->
+          
+            <?php endif; ?>
+            
+            <?php if($student['as_status'] == "Late"): ?>
             <li class="student">
-              <span class="student-avatar" aria-hidden="true">MS</span>
+              <span class="student-avatar" aria-hidden="true">U</span>
               <span class="student-info">
-                <span class="student-name">Maria Clara Santos</span>
-                <span class="student-time">Submitted Oct 27, 2026, 8:15 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">JR</span>
-              <span class="student-info">
-                <span class="student-name">Jose Miguel Reyes</span>
-                <span class="student-time">Submitted Oct 29, 2026, 12:20 AM</span>
+                <span class="student-name"><?= $student['studentID'] ?></span>
+                <span class="student-time"><?= $student['edited_at'] ?></span>
               </span>
               <span class="status status-late">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                 Late Submission
               </span>
             </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">AV</span>
-              <span class="student-info">
-                <span class="student-name">Ana Beatriz Villanueva</span>
-                <span class="student-time">Submitted Oct 26, 2026, 4:05 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">CM</span>
-              <span class="student-info">
-                <span class="student-name">Carlo Mendoza</span>
-                <span class="student-time">Submitted Oct 28, 2026, 11:42 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">LF</span>
-              <span class="student-info">
-                <span class="student-name">Liza Fernandez</span>
-                <span class="student-time">Submitted Oct 29, 2026, 8:10 AM</span>
-              </span>
-              <span class="status status-late">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Late Submission
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">PG</span>
-              <span class="student-info">
-                <span class="student-name">Paolo Gonzales</span>
-                <span class="student-time">Submitted Oct 27, 2026, 1:30 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">BR</span>
-              <span class="student-info">
-                <span class="student-name">Bianca Ramos</span>
-                <span class="student-time">Submitted Oct 28, 2026, 10:05 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">RN</span>
-              <span class="student-info">
-                <span class="student-name">Rafael Navarro</span>
-                <span class="student-time">Submitted Oct 28, 2026, 11:58 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">KA</span>
-              <span class="student-info">
-                <span class="student-name">Kristine Aquino</span>
-                <span class="student-time">Submitted Oct 29, 2026, 2:45 PM</span>
-              </span>
-              <span class="status status-late">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Late Submission
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">MT</span>
-              <span class="student-info">
-                <span class="student-name">Miguel Torres</span>
-                <span class="student-time">Submitted Oct 25, 2026, 6:22 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">AB</span>
-              <span class="student-info">
-                <span class="student-name">Angelica Bautista</span>
-                <span class="student-time">Submitted Oct 27, 2026, 7:50 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">DC</span>
-              <span class="student-info">
-                <span class="student-name">Daniel Castillo</span>
-                <span class="student-time">Submitted Oct 28, 2026, 9:12 PM</span>
-              </span>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
-              </span>
-            </li>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">SM</span>
-              <span class="student-info">
-                <span class="student-name">Sofia Mercado</span>
-                <span class="student-time">Submitted Oct 30, 2026, 9:00 AM</span>
-              </span>
-              <span class="status status-late">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Late Submission
-              </span>
-            </li>
+    
+            <?php endif; ?>
+
+            <?php endforeach; ?>
 
           </ul>
         </div>
