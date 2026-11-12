@@ -8,7 +8,7 @@ $student = $_SESSION['student'];
 $classcode = $_SESSION['asClassCode'];
 (int) $currentStudentID = $_SESSION['currentStudent'];
 
-$assigment = getStudentAssignment($pdo, $_SESSION['assignment'], $classcode, (int)$currentStudentID);
+$assigment = getStudentAssignment($pdo, (int) $_SESSION['assignment'], $classcode, (int)$currentStudentID);
 
 // Turns $_FILES['files'] (array-of-arrays-by-field) into a clean list of files
 function normalizeFiles(?array $f): array {

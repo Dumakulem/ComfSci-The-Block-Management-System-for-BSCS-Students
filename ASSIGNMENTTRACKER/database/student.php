@@ -56,14 +56,14 @@ function getStudent(PDO $pdo, int $id){
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;   // one row, or null if not found
 }
 
-function getStudentAssignment(PDO $pdo, string $astitle, $classCode, $studentId): ?array {
+function getStudentAssignment(PDO $pdo, $as_id, $classCode, $studentId): ?array {
     $stmt = $pdo->prepare(
         "SELECT as_id, classCode, studentID, as_title, as_subject, as_status,
                 as_description, as_deadline, created_at
          FROM studentassignments
-         WHERE as_title = ? AND classCode = ? AND studentID = ?"
+         WHERE as_id = ? AND classCode = ? AND studentID = ?"
     );
-    $stmt->execute([$astitle, $classCode, (int)$studentId]);
+    $stmt->execute([(int) $as_id, $classCode, (int)$studentId]);
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }
 

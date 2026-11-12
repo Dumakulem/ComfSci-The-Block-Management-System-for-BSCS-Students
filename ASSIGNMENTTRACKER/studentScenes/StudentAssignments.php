@@ -17,7 +17,7 @@ if(isset($_POST['toGroupAssignments'])){
 }
 
 if(isset($_POST['enter'])){
-  $_SESSION['assignment'] = $_POST['currentAssignment'];
+  $_SESSION['assignment'] = (int) $_POST['currentAssignment'];
   $_SESSION['asClassCode'] = $classCode;
   $_SESSION['student'] = $student;
 
@@ -227,7 +227,7 @@ if(isset($_POST['enter'])){
           <!--<a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>-->
           <form method="POST">
             <button type="submit" name="enter" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</button>
-            <input type="hidden" name="currentAssignment" value="<?= $as['as_title'] ?>">
+            <input type="hidden" name="currentAssignment" value="<?= $as['as_id'] ?>">
           </form>
         </footer>
       </article>
