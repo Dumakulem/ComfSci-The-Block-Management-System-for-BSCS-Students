@@ -29,6 +29,12 @@ foreach ($students as $s) {
     }
 }
 $total = $onTime + $late;
+if(isset($_POST['deleteAssignment'])){
+  deleteAs($pdo, $assignment['as_id'], $classCode);
+
+  header('Location: AdminAssignments.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>

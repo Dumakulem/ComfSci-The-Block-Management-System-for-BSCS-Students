@@ -309,4 +309,16 @@ function asCreateForNewAddedStudent(PDO $pdo, int $studentId, $classCode): int {
     $stmt->execute([$studentId, $classCode, $studentId]);
     return $stmt->rowCount();
 }
+
+function deleteAs(PDO $pdo, $as_id, $classCode){
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare("DELETE FROM assignments WHERE as_id = ? AND classCode = ?");
+        $stmt->execute([(int)$as_id, (int)$classCode]);
+        $pdo->commit();
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        throw $e;
+    }
+}
 ?>
