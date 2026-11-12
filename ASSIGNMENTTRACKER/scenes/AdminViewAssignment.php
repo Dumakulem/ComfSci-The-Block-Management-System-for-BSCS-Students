@@ -351,8 +351,8 @@ $total = $onTime + $late;
             <li class="student">
               <span class="student-avatar" aria-hidden="true">U</span>
               <span class="student-info">
-                <span class="student-name"><?= $student['studentID'] ?></span>
-                <span class="student-time"><?= $student['edited_at'] ?></span>
+                <span class="student-name"><?= getStudentName($pdo, $classCode, $student['studentID']) ?></span>
+                <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
               </span>
               <span class="status status-late">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>

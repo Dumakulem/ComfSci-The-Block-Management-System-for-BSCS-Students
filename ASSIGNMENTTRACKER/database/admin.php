@@ -287,10 +287,26 @@ function getStudentName(PDO $pdo, $classCode,  $id){
 }
 
 function getAllStudentAssignments(PDO $pdo, $as_id, $classCode){
-     $stmt = $pdo->prepare("SELECT studentID, as_status, edited_at 
+    $stmt = $pdo->prepare("SELECT studentID, as_status, edited_at 
                             FROM studentassignments 
                             WHERE classCode = ? AND as_id = ?");
     $stmt->execute([$classCode, $as_id]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function asCreateForNewAddedStudent(PDO $pdo, int $studentId, $classCode): int {
+    $stmt = $pdo->prepare(
+        "INSERT INTO studentassignments
+            (as_id, classCode, studentID, as_title, as_subject, as_description, as_deadline, is_group_as)
+         SELECT a.as_id, a.classCode, ?, a.as_title, a.as_subject, a.as_description, a.as_deadline, a.is_group_as
+         FROM assignments a
+         WHERE a.classCode = ?
+           AND NOT EXISTS (
+               SELECT 1 FROM studentassignments sa
+               WHERE sa.studentID = ? AND sa.as_id = a.as_id
+           )"
+    );
+    $stmt->execute([$studentId, $classCode, $studentId]);
+    return $stmt->rowCount();
 }
 ?>

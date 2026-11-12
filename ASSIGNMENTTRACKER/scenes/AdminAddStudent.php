@@ -22,7 +22,11 @@ if(isset($_POST['createStudent'])){
   $isRep = $_POST['isRep'];
 
   require_once __DIR__ . '/../database/student.php';
+  require_once __DIR__ . '/../database/admin.php';
+
   createStudent($pdo, $id, $classCode, $lastName, $firstName, $middleName, $extName, $email, $password, $isRep);
+
+  $created = asCreateForNewAddedStudent($pdo, getStudent($pdo, (int) $id)['studentID'], $classCode);
 
   header('Location: AdminClassCodes.php');
     unset($_SESSION['classCode']);
