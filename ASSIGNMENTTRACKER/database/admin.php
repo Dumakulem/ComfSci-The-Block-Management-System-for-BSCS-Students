@@ -49,14 +49,8 @@ function createClass(PDO $pdo, string $adminName, int $classCode, string $blockN
 }
 
 function displayClasses(PDO $pdo){
-    $pdo->beginTransaction();
-    try {
         $stmt = $pdo->query("SELECT * FROM blocks");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
-    }
 }
 
 function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $students, ?array $files, $des, $deadline) {
@@ -233,27 +227,15 @@ function createGroupAssignment(PDO $pdo, $classCode, $prof, $title, $subject, ar
 }
 
 function displayAssignments(PDO $pdo, $classCode){
-    $pdo->beginTransaction();
-    try {
         $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
         $stmt->execute([$classCode, (int) 0]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
-    }
 }
 
 function displayGroupAssignments(PDO $pdo, $classCode){
-    $pdo->beginTransaction();
-    try {
         $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
         $stmt->execute([$classCode, (int) 1]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
-    } catch (Exception $e) {
-        $pdo->rollBack();
-        throw $e;
-    }
 }
 
 function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
