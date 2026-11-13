@@ -273,8 +273,12 @@ function getAllStudents(PDO $pdo, $classCode): array {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getAsFile(PDO $pdo, $as_title, $classCode): array{
-    $stmt = $pdo->prepare("SELECT as_file, as_file_name, as_file_type FROM files WHERE classCode = ? AND as_title = ?");
+function getAsFile(PDO $pdo, $as_title, $classCode): array {
+    $stmt = $pdo->prepare(
+        "SELECT sa_id, as_file_name, as_file_type, LENGTH(as_file) AS as_file_size
+         FROM files
+         WHERE classCode = ? AND as_title = ?"
+    );
     $stmt->execute([$classCode, $as_title]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -320,5 +324,40 @@ function deleteAs(PDO $pdo, $as_id, $classCode){
         $pdo->rollBack();
         throw $e;
     }
+}
+
+function downloadFile(PDO $pdo, $fileId, $classCode, bool $inline = false): void {
+    // classCode in the WHERE clause stops people opening files from other classes
+    $stmt = $pdo->prepare(
+        "SELECT as_file, as_file_name, as_file_type
+         FROM files
+         WHERE sa_id = ? AND classCode = ?"
+    );
+    $stmt->execute([$fileId, $classCode]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row || $row['as_file'] === null) {
+        http_response_code(404);
+        exit('File not found.');
+    }
+
+    $fileName = str_replace(['"', "\r", "\n", '/', '\\'], '', $row['as_file_name'] ?: 'download');
+    $type     = $row['as_file_type'] ?: 'application/octet-stream';
+
+    // only PDFs and images are safe to open in the browser; everything else downloads
+    $canPreview  = $type === 'application/pdf' || str_starts_with($type, 'image/');
+    $disposition = ($inline && $canPreview) ? 'inline' : 'attachment';
+
+    while (ob_get_level()) {
+        ob_end_clean();   // nothing may be sent before the file
+    }
+
+    header('Content-Type: ' . $type);
+    header('Content-Disposition: ' . $disposition . '; filename="' . $fileName . '"; filename*=UTF-8\'\'' . rawurlencode($fileName));
+    header('Content-Length: ' . strlen($row['as_file']));
+    header('X-Content-Type-Options: nosniff');
+
+    echo $row['as_file'];
+    exit;
 }
 ?>

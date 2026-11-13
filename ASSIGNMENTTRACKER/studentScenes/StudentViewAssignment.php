@@ -50,6 +50,13 @@ if(isset($_POST['backToAssignments'])){
     header('Location: StudentAssignments.php');
     exit;
 }
+
+if(isset($_POST['downloadFile'])){
+downloadFile($pdo, (int) $_POST['downloadFile'], $classcode);
+
+header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -317,7 +324,7 @@ if(isset($_POST['backToAssignments'])){
                 <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?></span>
                 <span class="file-info">
                   <span class="file-name"><?= $file['as_file_name']; ?></span>
-                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize(strlen($file['as_file'])) ?></span>
+                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($file['as_file_size']) ?></span>
                 </span>
                 <span class="file-actions">
                   <a href="#" class="icon-btn" aria-label="View Review Questions.pdf" title="View">
@@ -326,15 +333,15 @@ if(isset($_POST['backToAssignments'])){
                       <circle cx="12" cy="12" r="3"/>
                     </svg>
                   </a>
-<form method="POST" class="download-form">
-  <button type="submit" name="downloadFile" value="FILE_ID_HERE" class="icon-btn" aria-label="Download Review Questions.pdf" title="Download">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-  </button>
-</form>
+         <form method="POST" class="download-form">
+             <button type="submit" name="downloadFile" value="<?= $file['sa_id'] ?>" class="icon-btn" aria-label="Download Review Questions.pdf" title="Download">
+             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+             <polyline points="7 10 12 15 17 10"/>
+             <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+       </form>
                 </span>
               </li>
             </ul>
