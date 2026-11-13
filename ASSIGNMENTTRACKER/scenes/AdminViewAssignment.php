@@ -230,7 +230,7 @@ if(isset($_POST['deleteAssignment'])){
                 <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?></span>
                 <span class="file-info">
                   <span class="file-name"><?= $file['as_file_name'] ?></span>
-                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize(strlen($file['as_file'])) ?></span>
+                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($file['as_file_size']); ?></span>
                 </span>
                 <span class="file-actions">
                   <a href="#" class="icon-btn" aria-label="View Linked List Guide.pdf" title="View">

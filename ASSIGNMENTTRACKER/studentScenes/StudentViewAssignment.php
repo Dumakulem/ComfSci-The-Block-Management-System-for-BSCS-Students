@@ -57,6 +57,13 @@ downloadFile($pdo, (int) $_POST['downloadFile'], $classcode);
 header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;
 }
+
+if(isset($_POST['deleteFile'])){
+
+
+header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -221,12 +228,22 @@ exit;
         <ul class="files">
           <?php foreach ($myFiles as $mf): ?>
             <li class="file">
-              <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?></span>
-              <span class="file-info">
-                <span class="file-name"><?= htmlspecialchars($mf['file_name']); ?></span>
-                <span class="file-meta"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($mf['file_size']); ?></span>
-              </span>
-            </li>
+  <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?></span>
+  <span class="file-info">
+    <span class="file-name"><?= htmlspecialchars($mf['file_name']); ?></span>
+    <span class="file-meta"><?= strtoupper(pathinfo($mf['file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($mf['file_size']); ?></span>
+  </span>
+
+  <!-- Delete (minus) button. Replace FILE_ID_HERE with this file's ID -->
+  <span class="file-actions">
+    <button type="submit" form="deleteForm" name="deleteFile" value="<?= $mf['id'] ?>" class="file-delete"
+            aria-label="Delete <?= htmlspecialchars($mf['file_name']); ?>" title="Delete">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
+  </span>
+</li>
           <?php endforeach; ?>
         </ul>
       <?php endif; ?>
@@ -262,6 +279,8 @@ exit;
   </footer>
 
 </form>
+
+<form method="POST" id="deleteForm"></form>
       </section>
 
 

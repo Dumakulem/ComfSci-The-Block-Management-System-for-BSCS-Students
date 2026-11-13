@@ -672,6 +672,38 @@ button.icon-btn {
   font-size: 0.8125rem;
 }
 
+/* ---------- Delete (minus) button on an uploaded file ---------- */
+.file-delete {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  color: var(--muted);
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.file-delete svg { width: 16px; height: 16px; }
+
+.file-delete:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.file-delete:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.25);
+}
+
 /* ================= Tablet / phone ================= */
 @media (max-width: 1000px) {
   .view-grid { grid-template-columns: minmax(0, 1fr); }

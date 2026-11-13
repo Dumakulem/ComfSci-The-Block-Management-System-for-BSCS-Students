@@ -174,7 +174,7 @@ if(isset($_POST['currentGroupAssignment'])){
                 <!-- Optional label. Remove this line if you don't need it. -->
                 <span class="tag">Groups of 0</span>
               </span>
-              <span class="task-desc" title="Present a working prototype of your capstone project to the panel.">Present a working prototype of your capstone project to the panel.</span>
+              <span class="task-desc" title="Present a working prototype of your capstone project to the panel."><?= $assignment['as_description'] ?></span>
               <span class="task-meta">
                 <span>Posted: <?= (new DateTime($assignment['created_at']))->format('M j, Y, g:i A') ?></span>
                 <span class="due">Due: <?= (new DateTime($assignment['as_deadline']))->format('M j, Y, g:i A') ?></span>
