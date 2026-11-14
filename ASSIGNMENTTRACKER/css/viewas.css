@@ -744,6 +744,41 @@ a:focus-visible,
 
 .modal-actions .btn { min-width: 110px; }
 
+/* Student name as a real button: looks the same as the old text */
+.student-form {
+  margin: 0;
+  min-width: 0;
+}
+
+button.student-name {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-family: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: color 0.15s;
+}
+
+button.student-name:hover {
+  color: var(--orange-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+button.student-name:focus-visible {
+  outline: none;
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
 /* ================= Tablet / phone ================= */
 @media (max-width: 1100px) {
   .view-grid { grid-template-columns: minmax(0, 1fr); }
