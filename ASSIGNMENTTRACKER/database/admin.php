@@ -342,4 +342,45 @@ function downloadFile(PDO $pdo, $fileId, $classCode, bool $inline = false): void
     echo $row['as_file'];
     exit;
 }
+
+function downloadStudentFile(PDO $pdo, int $fileId, $classCode, ?int $studentId = null, bool $inline = false): void {
+    $sql = "SELECT file_name, file_data FROM student_as_files WHERE id = ? AND classCode = ?";
+    $params = [$fileId, $classCode];
+
+    // a student may only download their own files; an admin passes null to skip this check
+    if ($studentId !== null) {
+        $sql .= " AND studentID = ?";
+        $params[] = $studentId;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$row || $row['file_data'] === null) {
+        http_response_code(404);
+        exit('File not found.');
+    }
+
+    $fileName = str_replace(['"', "\r", "\n", '/', '\\'], '', $row['file_name'] ?: 'download');
+
+    // there is no type column, so detect it from the file's contents
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $type  = $finfo->buffer($row['file_data']) ?: 'application/octet-stream';
+
+    $canPreview  = $type === 'application/pdf' || str_starts_with($type, 'image/');
+    $disposition = ($inline && $canPreview) ? 'inline' : 'attachment';
+
+    while (ob_get_level()) {
+        ob_end_clean();
+    }
+
+    header('Content-Type: ' . $type);
+    header('Content-Disposition: ' . $disposition . '; filename="' . $fileName . '"; filename*=UTF-8\'\'' . rawurlencode($fileName));
+    header('Content-Length: ' . strlen($row['file_data']));
+    header('X-Content-Type-Options: nosniff');
+
+    echo $row['file_data'];
+    exit;
+}
 ?>

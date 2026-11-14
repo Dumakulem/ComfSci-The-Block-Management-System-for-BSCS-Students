@@ -2,6 +2,7 @@
 session_start();
 require_once __DIR__ . '/../database/admin.php';
 require_once __DIR__ . '/../database/student.php';
+require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $name       = $_SESSION['name'];
 $classCode  = $_SESSION['code'];
@@ -10,10 +11,18 @@ $student = getStudent($pdo, (int)$_SESSION['s']);
 
 $assignment = getStudentAssignment($pdo, (int)$_SESSION['assignment'], $classCode, $student['studentID']);
 
+$myFiles = getStudentFiles($pdo, (int) $student['studentID'], $assignment['as_title'], $classCode);
 
 if(isset($_POST['backToAssignment'])){
 
 header('Location: AdminViewAssignment.php');
+exit;
+}
+
+if(isset($_POST['downloadFile'])){
+downloadStudentFile($pdo, (int) $_POST['downloadFile'], $classCode);
+
+header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;
 }
 ?>
@@ -197,11 +206,12 @@ exit;
                  Close it after the </li> below.
                  The second row is only a sample. Delete it when your foreach works.
                  ====================================================== -->
+            <?php foreach($myFiles as $file): ?>
             <li class="file">
-              <span class="file-type" aria-hidden="true">PDF</span>
+              <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['file_name'], PATHINFO_EXTENSION)); ?></span>
               <span class="file-info">
-                <span class="file-name">Linked List.pdf</span>
-                <span class="file-meta">PDF &middot; 1.2 MB</span>
+                <span class="file-name"><?= $file['file_name'] ?></span>
+                <span class="file-meta"><?= strtoupper(pathinfo($file['file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($file['file_size']) ?></span>
               </span>
               <span class="file-actions">
                 <a href="#" class="icon-btn" aria-label="View Linked List.pdf" title="View">
@@ -211,7 +221,7 @@ exit;
                   </svg>
                 </a>
                 <form method="POST" class="download-form">
-                  <button type="submit" name="downloadFile" value="FILE_ID_HERE" class="icon-btn" aria-label="Download Linked List.pdf" title="Download">
+                  <button type="submit" name="downloadFile" value="<?= $file['id'] ?>" class="icon-btn" aria-label="Download Linked List.pdf" title="Download">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                       <polyline points="7 10 12 15 17 10"/>
@@ -221,31 +231,8 @@ exit;
                 </form>
               </span>
             </li>
+            <?php endforeach; ?>
             <!-- FILES FOREACH END -->
-            <li class="file">
-              <span class="file-type" aria-hidden="true">DOC</span>
-              <span class="file-info">
-                <span class="file-name">Reflection Notes.docx</span>
-                <span class="file-meta">DOC &middot; 86 KB</span>
-              </span>
-              <span class="file-actions">
-                <a href="#" class="icon-btn" aria-label="View Reflection Notes.docx" title="View">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </a>
-                <form method="POST" class="download-form">
-                  <button type="submit" name="downloadFile" value="FILE_ID_HERE" class="icon-btn" aria-label="Download Reflection Notes.docx" title="Download">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </button>
-                </form>
-              </span>
-            </li>
 
           </ul>
 
