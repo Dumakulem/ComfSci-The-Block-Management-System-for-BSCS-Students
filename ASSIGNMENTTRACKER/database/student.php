@@ -130,4 +130,41 @@ function addStudentFiles(PDO $pdo, $studentId, $asTitle, $classCode, ?array $fil
         throw $e;
     }
 }
+
+function deleteFile(PDO $pdo, $fileId, $classCode, $studentID, $as, $as_id){
+    $pdo->beginTransaction();
+    try{
+
+    $stmtt= $pdo->prepare("DELETE FROM student_as_files WHERE id = ? AND classCode = ? AND studentID = ?");
+    $stmtt->execute([(int) $fileId, (int) $classCode, (int) $studentID]);
+
+    $pdo->commit();
+
+    if (isStudentPassedEmpty($pdo, $classCode, $studentID, $as) == false){
+        assignmentChangeStatus($pdo, $classCode, $studentID, $as_id, "Pending");
+    };
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+function isStudentPassedEmpty(PDO $pdo, $classCode, $studentID, $as){
+    $pdo->beginTransaction();
+    try{
+
+    $stmt= $pdo->prepare("SELECT 1 FROM student_as_files WHERE classCode = ? AND studentID = ? AND as_title = ? LIMIT 1");
+    $stmt->execute([(int) $classCode, (int) $studentID, (string) $as]);
+    
+    $result = $stmt->fetchColumn();
+
+    $pdo->commit();
+
+    return $result;
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
 ?>

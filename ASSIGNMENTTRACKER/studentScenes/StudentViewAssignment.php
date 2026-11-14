@@ -59,7 +59,9 @@ exit;
 }
 
 if(isset($_POST['deleteFile'])){
-
+deleteFile($pdo, (int) $_POST['deleteFile'], $classcode, 
+                 (int)$currentStudentID, $assigment['as_title'], 
+                 (int)$assigment['as_id']) == false;
 
 header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;

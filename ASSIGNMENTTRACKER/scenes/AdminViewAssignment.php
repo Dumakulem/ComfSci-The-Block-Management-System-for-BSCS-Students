@@ -396,7 +396,7 @@ if(isset($_POST['deleteAssignment'])){
     </div>
 
     <h2 id="delete-title">Delete this assignment?</h2>
-    <p>&ldquo;Linked List Implementation&rdquo; and all student submissions will be permanently removed. This can&rsquo;t be undone.</p>
+    <p>&ldquo;<?= $assignment['as_title'] ?>&rdquo; and all student submissions will be permanently removed. This can&rsquo;t be undone.</p>
 
     <form method="POST" class="modal-actions">
       <a href="#!" class="btn btn-outline">Cancel</a>
