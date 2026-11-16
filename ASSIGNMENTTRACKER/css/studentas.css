@@ -704,6 +704,148 @@ button.icon-btn {
   box-shadow: 0 0 0 3px rgba(217, 45, 32, 0.25);
 }
 
+/* ================= Feedback box (below the details card) ================= */
+/* Left column: "Your Work". Right column: the details card, then the feedback rectangle. */
+.view-grid {
+  grid-template-areas:
+    "work details"
+    "work feedback";
+  grid-template-rows: auto 1fr;
+}
+
+.view-grid > section.box[aria-label="Your work"] { grid-area: work; }
+.view-grid > article.box                         { grid-area: details; }
+.view-grid > .feedback-box                       { grid-area: feedback; }
+
+@media (max-width: 1000px) {
+  .view-grid {
+    grid-template-areas:
+      "work"
+      "details"
+      "feedback";
+    grid-template-rows: auto;
+  }
+}
+
+/* Not graded yet */
+.score-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 14px 16px;
+  background: var(--surface-tint);
+  border: 1px dashed #d3cbc2;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.score-empty svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--orange);
+}
+
+/* Graded: score with a bar */
+.score-line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+.score-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.score-max {
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.score-bar {
+  height: 8px;
+  overflow: hidden;
+  background: #ece8e3;
+  border-radius: 999px;
+}
+
+.score-bar span {
+  display: block;
+  height: 100%;
+  background: var(--orange);
+  border-radius: 999px;
+}
+
+/* Graded: who wrote the comment */
+.feedback-from {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+}
+
+.prof-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  border-radius: 50%;
+  color: var(--orange-ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+
+.prof-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* Landscape rectangle: score on the left, comment on the right */
+.feedback-box .work-body {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+  align-items: start;
+  padding: 20px 22px;
+}
+
+.feedback-box .section:first-child { padding-right: 24px; }
+
+.feedback-box .section + .section {
+  margin-top: 0;
+  padding-top: 0;
+  padding-left: 24px;
+  border-top: 0;
+  border-left: 1px solid var(--border);
+}
+
+/* On small screens the two parts stack again */
+@media (max-width: 700px) {
+  .feedback-box .work-body {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 18px;
+  }
+
+  .feedback-box .section:first-child { padding-right: 0; }
+
+  .feedback-box .section + .section {
+    margin-top: 20px;
+    padding-top: 20px;
+    padding-left: 0;
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
+}
+
 /* ================= Tablet / phone ================= */
 @media (max-width: 1000px) {
   .view-grid { grid-template-columns: minmax(0, 1fr); }

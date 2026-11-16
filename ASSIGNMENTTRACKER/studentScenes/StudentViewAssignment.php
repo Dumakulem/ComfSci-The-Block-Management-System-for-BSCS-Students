@@ -382,6 +382,69 @@ exit;
         </div>
       </article>
 
+            <!-- ##########################################################
+           FEEDBACK: professor's score and comment (below "Your Work")
+           ########################################################## -->
+      <section class="box feedback-box" aria-label="Professor feedback">
+
+        <header class="work-head">
+          <h2>Feedback</h2>
+        </header>
+
+        <div class="work-body">
+
+          <!-- ---------- SCORE ---------- -->
+          <section class="section">
+            <h3 class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="7"/>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+              </svg>
+              Score
+            </h3>
+
+            <!-- NOT GRADED YET (shown by default).
+                 When the professor has graded it, replace the paragraph below with this:
+
+                 <div class="score">
+                   <p class="score-line"><span class="score-value">90</span><span class="score-max">/ 100</span></p>
+                   <div class="score-bar" role="img" aria-label="90 out of 100"><span style="width: 90%"></span></div>
+                 </div>
+
+                 (score, the highest score, and the bar width in % = score divided by highest score) -->
+            <p class="score-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              Has not been graded yet.
+            </p>
+          </section>
+
+          <!-- ---------- COMMENT ---------- -->
+          <section class="section">
+            <h3 class="section-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              Comment
+            </h3>
+
+            <!-- NO COMMENT (shown by default).
+                 When the professor left a comment, replace the paragraph below with this:
+
+                 <div class="feedback-from">
+                   <span class="prof-avatar" aria-hidden="true">PN</span>
+                   <span class="prof-name">Prof. Name</span>
+                 </div>
+                 <p class="description">The comment goes here. It can be any length and line breaks are kept.</p>
+            -->
+            <p class="empty-text">No comments.</p>
+          </section>
+
+        </div>
+      </section>
+
     </div>
   </main>
 
