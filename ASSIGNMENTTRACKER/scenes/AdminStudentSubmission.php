@@ -7,11 +7,24 @@ require_once __DIR__ . '/../controllers/AdminCon.php';
 $name       = $_SESSION['name'];
 $classCode  = $_SESSION['code'];
 
+$adminID = (int)getAdmin($pdo, $name)['adminID'];
+
 $student = getStudent($pdo, (int)$_SESSION['s']);
 
 $assignment = getStudentAssignment($pdo, (int)$_SESSION['assignment'], $classCode, $student['studentID']);
 
 $myFiles = getStudentFiles($pdo, (int) $student['studentID'], $assignment['as_title'], $classCode);
+
+(int) $score = null;
+$comment = null;
+(int) $scoreOver = 100;
+
+if(isAdminHasFeedback($pdo, $assignment['sa_id']) == true){
+  $f = getFeedback($pdo, $assignment['sa_id']);
+  $score = $f['score'];
+  $comment = $f['feedback'];
+  $scoreOver = $f['score_over'];
+}
 
 if(isset($_POST['backToAssignment'])){
 
@@ -24,6 +37,17 @@ downloadStudentFile($pdo, (int) $_POST['downloadFile'], $classCode);
 
 header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;
+}
+
+if(isset($_POST['sendFeedback'])){
+  $c = $_POST['comment'];
+  $s = (int)$_POST['score'];
+  $ms = (int)$_POST['maxScore'];
+
+  createFeedback($pdo, $assignment['sa_id'], $adminID, $c, $s, $ms);
+
+  header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+  exit;
 }
 ?>
 
@@ -261,8 +285,8 @@ exit;
             <label for="score">Score <span class="req" aria-hidden="true">*</span></label>
             <div class="score-input">
               <!-- Change max here and the "/ 100" label to the highest possible score -->
-              <input type="number" id="score" name="score" min="0" max="100" step="any" placeholder="e.g. 90" required>
-              <span class="score-max">/ <input type="number" id="maxScore" name="maxScore" value="100" min="1" step="any" aria-label="Highest possible score" required></span>
+              <input type="number" value="<?= $score ?>" id="score" name="score" min="0" max="100" step="any" placeholder="e.g. 90" required>
+              <span class="score-max">/ <input type="number" id="maxScore" name="maxScore" value="<?= $scoreOver ?>" min="1" step="any" aria-label="Highest possible score" required></span>
 
             </div>
           </div>
@@ -270,7 +294,7 @@ exit;
           <!-- Comment -->
           <div class="field">
             <label for="comment">Comment <span class="optional">(optional)</span></label>
-            <textarea id="comment" name="comment" placeholder="Write a comment for the student." maxlength="500"></textarea>
+            <textarea id="comment" name="comment" placeholder="Write a comment for the student." maxlength="500"><?= $comment ?></textarea>
             <p class="hint">Up to 500 characters.</p>
           </div>
 

@@ -35,6 +35,18 @@ function loginAdmin(PDO $pdo, string $name, string $password){
     return true;
 }
 
+function getAdmin(PDO $pdo, $adminName){
+    $stmt = $pdo->prepare("SELECT * FROM admins WHERE adminName = ?");
+    $stmt->execute([$adminName]);
+    return $stmt->fetch();
+}
+
+function getAdminInfo(PDO $pdo, $adminID){
+    $stmt = $pdo->prepare("SELECT * FROM admins WHERE adminID = ? LIMIT 1");
+    $stmt->execute([$adminID]);
+    return $stmt->fetch();
+}
+
 function createClass(PDO $pdo, string $adminName, int $classCode, string $blockName){
     $pdo->beginTransaction();
     try {
@@ -382,5 +394,38 @@ function downloadStudentFile(PDO $pdo, int $fileId, $classCode, ?int $studentId 
 
     echo $row['file_data'];
     exit;
+}
+
+function isAdminHasFeedback(PDO $pdo, int $sa_id){
+        $st = $pdo->prepare("SELECT 1 FROM feedback WHERE sa_id = ? LIMIT 1");
+        $st->execute([$sa_id]);
+        $result = $st->fetchColumn();
+        return $result;
+}
+
+function createFeedback(PDO $pdo, int $sa_id, int $adminID, $feedback, int $score, int $scoreOver){
+    $pdo->beginTransaction();
+    try{
+        $stmt = null;
+
+        if(isAdminHasFeedback($pdo, $sa_id) == true){
+            $stmt = $pdo->prepare("UPDATE feedback SET feedback = ?, score = ?, score_over = ? WHERE sa_id = ?");
+            $stmt->execute([$feedback, $score, $scoreOver, $sa_id]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO feedback (sa_id, adminID, feedback, score, score_over) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$sa_id, $adminID, $feedback, $score, $scoreOver]);
+        }
+
+        $pdo->commit();
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+function getFeedback(PDO $pdo, int $sa_id){
+    $st = $pdo->prepare("SELECT * FROM feedback WHERE sa_id = ? LIMIT 1");
+    $st->execute([$sa_id]);
+    return $st->fetch();
 }
 ?>
