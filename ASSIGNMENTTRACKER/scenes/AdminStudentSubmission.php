@@ -262,7 +262,8 @@ exit;
             <div class="score-input">
               <!-- Change max here and the "/ 100" label to the highest possible score -->
               <input type="number" id="score" name="score" min="0" max="100" step="any" placeholder="e.g. 90" required>
-              <span class="score-max" aria-hidden="true">/ 100</span>
+              <span class="score-max">/ <input type="number" id="maxScore" name="maxScore" value="100" min="1" step="any" aria-label="Highest possible score" required></span>
+
             </div>
           </div>
 
@@ -288,5 +289,22 @@ exit;
   </main>
 
 </div>
+
+<script>
+  (function () {
+    var score    = document.getElementById('score');
+    var maxInput = document.getElementById('maxScore');
+
+    // Keep the score box's limit equal to the number the admin typed after the "/"
+    function sync() {
+      var m = parseFloat(maxInput.value);
+      if (m > 0) { score.max = m; } else { score.removeAttribute('max'); }
+    }
+
+    maxInput.addEventListener('input', sync);
+    sync();
+  })();
+</script>
+
 </body>
 </html>

@@ -650,6 +650,39 @@ a:focus-visible,
   border-color: var(--orange-hover);
 }
 
+/* Editable highest score ("/ 100") */
+.score-max {
+  right: 7px;
+  gap: 8px;
+  pointer-events: auto;   /* the number inside must receive clicks */
+}
+
+.score-input > input { padding-right: 104px; }   /* room for the "/ 100" box */
+
+.score-input .score-max input {
+  width: 60px;
+  height: 32px;
+  padding: 0 8px;
+  background: var(--surface-tint);
+  border: 1px solid #d9d3cc;
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  line-height: 1;
+  text-align: center;
+}
+
+.score-input .score-max input:hover { border-color: #bdb5ab; }
+
+.score-input .score-max input:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.2);
+}
+
 /* ================= Tablet / phone ================= */
 @media (max-width: 1100px) {
   .view-grid { grid-template-columns: minmax(0, 1fr); }
