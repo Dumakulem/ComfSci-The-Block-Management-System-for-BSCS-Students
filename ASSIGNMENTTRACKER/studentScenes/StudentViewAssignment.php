@@ -414,10 +414,14 @@ exit;
       </h3>
 
       <?php if ($hasFeedback): ?>
-        <?php $percentage = ($feedback['score'] / 100) * $feedback['score_over']; ?>
+        <?php
+          $scoreMax   = (float) $feedback['score_over'];
+          $percentage = $scoreMax > 0 ? ($feedback['score'] / $scoreMax) * 100 : 0;
+          $percentage = round(max(0, min(100, $percentage)), 1);   // keep the bar between 0% and 100%
+        ?>
         <div class="score">
           <p class="score-line"><span class="score-value"><?= $feedback['score'] ?></span><span class="score-max">/ <?= $feedback['score_over'] ?></span></p>
-          <div class="score-bar" role="img" aria-label="90 out of 100"><span style="width: <?= $percentage ?>%"></span></div>
+          <div class="score-bar" role="img" aria-label="<?= $feedback['score'] ?> out of <?= $feedback['score_over'] ?>"><span style="width: <?= $percentage ?>%"></span></div>
         </div>
       <?php else: ?>
         <p class="score-empty">
