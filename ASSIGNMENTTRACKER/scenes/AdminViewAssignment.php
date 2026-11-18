@@ -15,6 +15,8 @@ $assignment = getAssignment($pdo, (int)$_SESSION['assignment'], $classCode);
 
 $students = getAllStudentAssignments($pdo, (int) $assignment['as_id'], $classCode);
 
+$stat = "err";
+
 if (!$assignment) {
     header('Location: AdminAssignments.php');
     exit;
@@ -356,9 +358,14 @@ if(isset($_POST['viewStudent'])){
                 </form>
                 <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
               </span>
+              <?php if(isAdminHasFeedback($pdo, $student['sa_id']) != false): ?>
+                <?php $stat =  "Graded"?>
+                <?php else: ?>
+                    <?php $stat =  "Completed On Time"?>
+              <?php endif; ?>
               <span class="status status-ontime">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                Completed On Time
+                <?= $stat ?>
               </span>
             </li>
           
@@ -375,9 +382,14 @@ if(isset($_POST['viewStudent'])){
                 </form>
                 <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
               </span>
+              <?php if(isAdminHasFeedback($pdo, $student['sa_id']) != false): ?>
+                <?php $stat =  "Graded"?>
+                <?php else: ?>
+                    <?php $stat = "Late Submission"?>
+              <?php endif; ?>
               <span class="status status-late">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Late Submission
+                <?= $stat ?>
               </span>
             </li>
     

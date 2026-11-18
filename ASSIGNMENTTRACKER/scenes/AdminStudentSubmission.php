@@ -19,8 +19,14 @@ $myFiles = getStudentFiles($pdo, (int) $student['studentID'], $assignment['as_ti
 $comment = null;
 (int) $scoreOver = 100;
 
+$hasFeedback = false;  
+
+$feedbackID = null;// <-- added
+
 if(isAdminHasFeedback($pdo, $assignment['sa_id']) == true){
+  $hasFeedback = true;                                  // <-- added
   $f = getFeedback($pdo, $assignment['sa_id']);
+  $feedbackID = (int)$f['feedback_id'];
   $score = $f['score'];
   $comment = $f['feedback'];
   $scoreOver = $f['score_over'];
@@ -46,7 +52,13 @@ if(isset($_POST['sendFeedback'])){
 
   createFeedback($pdo, $assignment['sa_id'], $adminID, $c, $s, $ms);
 
-  header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // '#!' replaces any leftover #delete-feedback-modal
+  exit;
+}
+if(isset($_POST['deleteFeedback'])){
+  deleteFeedback($pdo, $feedbackID);
+
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // this is where the stale hash used to survive
   exit;
 }
 ?>
@@ -276,6 +288,26 @@ if(isset($_POST['sendFeedback'])){
           <h2>Feedback</h2>
           <!-- Student name -->
           <p>The score and comment are sent to <strong><?= getStudentName($pdo, $classCode, $student['studentID']) ?></strong>.</p>
+                  <?php if($hasFeedback): ?>
+        <div class="feedback-bar">
+          <span class="feedback-bar-text">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+            Feedback sent
+          </span>
+
+          <!-- This only opens the confirmation box below (CSS only) -->
+          <a href="#delete-feedback-modal" class="btn btn-danger-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"/>
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/>
+              <path d="M14 11v6"/>
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            </svg>
+            Delete
+          </a>
+        </div>
+        <?php endif; ?>
         </header>
 
         <form method="POST" class="feedback-form" autocomplete="off">
@@ -313,6 +345,36 @@ if(isset($_POST['sendFeedback'])){
   </main>
 
 </div>
+
+</div>
+
+<?php if($hasFeedback): ?>
+<!-- ================= Delete feedback confirmation (opens with the Delete button, CSS only) ================= -->
+<div class="modal" id="delete-feedback-modal" role="dialog" aria-modal="true" aria-labelledby="delete-feedback-title">
+  <a href="#!" class="modal-backdrop" aria-label="Close dialog"></a>
+
+  <div class="modal-box">
+    <div class="modal-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6"/>
+        <path d="M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </div>
+
+    <h2 id="delete-feedback-title">Delete this feedback?</h2>
+    <p>The score and comment for this submission will be permanently removed. This can&rsquo;t be undone.</p>
+
+    <!-- deleteFeedback form (template). PHP receives $_POST['deleteFeedback'] -->
+    <form method="POST" class="modal-actions">
+      <a href="#!" class="btn btn-outline">Cancel</a>
+      <button type="submit" name="deleteFeedback" class="btn btn-danger">Delete</button>
+    </form>
+  </div>
+</div>
+<?php endif; ?>
 
 <script>
   (function () {

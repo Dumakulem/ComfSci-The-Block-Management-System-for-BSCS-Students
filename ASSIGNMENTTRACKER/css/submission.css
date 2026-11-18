@@ -683,6 +683,161 @@ a:focus-visible,
   box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.2);
 }
 
+/* ================= Delete feedback (button bar + confirmation modal) ================= */
+:root {
+  --danger: #d92d20;
+  --danger-hover: #b42318;
+  --danger-soft: #fef3f2;
+  --danger-border: #fecdca;
+}
+
+/* Bar inside the feedback box */
+.feedback-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 22px;
+  background: var(--surface-tint);
+  border-bottom: 1px solid var(--border);
+}
+
+.feedback-bar-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.feedback-bar-text svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--orange);
+}
+
+/* Compact buttons here (your .btn is full width and tall by default) */
+.feedback-bar .btn,
+.modal-actions .btn {
+  width: auto;
+  text-decoration: none;
+}
+
+.feedback-bar .btn {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.875rem;
+}
+
+.btn-outline {
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  color: var(--ink);
+}
+
+.btn-outline:hover {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.btn-danger-outline {
+  background: var(--surface);
+  border: 1px solid var(--danger-border);
+  color: var(--danger);
+}
+
+.btn-danger-outline:hover {
+  background: var(--danger-soft);
+  border-color: #fda29b;
+}
+
+.btn-danger {
+  background: var(--danger);
+  border: 1px solid var(--danger);
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: var(--danger-hover);
+  border-color: var(--danger-hover);
+}
+
+/* Confirmation modal (CSS only) */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal:target { display: flex; }
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 14, 16, 0.6);
+}
+
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(14, 14, 16, 0.3);
+}
+
+.modal-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  background: var(--danger-soft);
+  border: 1px solid var(--danger-border);
+  border-radius: 50%;
+  color: var(--danger);
+}
+
+.modal-icon svg { width: 22px; height: 22px; }
+
+.modal-box h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.modal-box p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 24px 0 0;
+}
+
+.modal-actions .btn {
+  height: 40px;
+  min-width: 110px;
+}
+
+@media (max-width: 520px) {
+  .feedback-bar { padding: 12px 18px; }
+  .modal-box { padding: 22px; }
+}
 /* ================= Tablet / phone ================= */
 @media (max-width: 1100px) {
   .view-grid { grid-template-columns: minmax(0, 1fr); }

@@ -285,7 +285,7 @@ function getStudentName(PDO $pdo, $classCode,  $id){
 }
 
 function getAllStudentAssignments(PDO $pdo, $as_id, $classCode){
-    $stmt = $pdo->prepare("SELECT studentID, as_status, edited_at 
+    $stmt = $pdo->prepare("SELECT * 
                             FROM studentassignments 
                             WHERE classCode = ? AND as_id = ?");
     $stmt->execute([$classCode, $as_id]);
@@ -427,5 +427,19 @@ function getFeedback(PDO $pdo, int $sa_id){
     $st = $pdo->prepare("SELECT * FROM feedback WHERE sa_id = ? LIMIT 1");
     $st->execute([$sa_id]);
     return $st->fetch();
+}
+
+function deleteFeedback(PDO $pdo, int $id){
+    $pdo->beginTransaction();
+    try{
+
+    $st = $pdo->prepare("DELETE FROM feedback WHERE feedback_id = ?");
+    $st->execute([$id]);
+
+    $pdo->commit();
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
 }
 ?>
