@@ -266,8 +266,7 @@ function displayGroupAssignments(PDO $pdo, $classCode){
 
 function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
     $stmt = $pdo->prepare(
-        "SELECT as_id, classCode, prof, as_title, as_subject,
-                as_description, as_deadline, created_at
+        "SELECT *
          FROM assignments
          WHERE as_id = ? AND classCode = ?"
     );

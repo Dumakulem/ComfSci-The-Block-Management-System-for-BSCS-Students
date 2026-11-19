@@ -143,6 +143,7 @@ if(isset($_POST['createGroup'])){
 
     <?php foreach($groups as $group): ?>
       <?php $students = getAllMembers($pdo, $group['groupID']); ?>
+      <?php $as = getAssignment($pdo, $group['as_id'], $classCode) ?>
         <article class="card group-card">
         <details open>
           <summary class="group-head">
@@ -158,14 +159,14 @@ if(isset($_POST['createGroup'])){
             <span class="group-text">
               <span class="group-name-row">
                 <span class="group-name"><?= $group['group_name'] ?></span>
-                <span class="count-pill">4 members</span>
+                <span class="count-pill"><?= count($students) ?> members</span>
               </span>
               <span class="group-assignment">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span>Linked List Implementation</span>
+                <span><?= $as['as_title'] ?></span>
               </span>
               <span class="group-leader">
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
