@@ -146,18 +146,26 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
 }
 }
 
+function getGroupAs($pdo, $as_id, $groupName){
+    $stmt = $pdo->prepare("SELECT * FROM groupas WHERE as_id = ? AND group_name = ? LIMIT 1");
+    $stmt->execute([(int)$as_id, (string)$groupName]);
+    return $stmt->fetch();
+}
+
 function createMembersAssignment(PDO $pdo, $classCode, $groupName, $leader, ?array $members, $assignment) {
     $pdo->beginTransaction();
     try {
         $stmt = $pdo->prepare("INSERT INTO groupas (as_id, group_name) VALUES (?, ?)");
         $stmt->execute([(int)$assignment['as_id'], $groupName]);
 
-        $stmt = $pdo->prepare("INSERT INTO groupmembers (group_name, studentID, is_leader) VALUES (?, ?, ?)");
-        $stmt->execute([$groupName, (int) $leader, 1]);
+        $groupAs = getGroupAs($pdo, (int)$assignment['as_id'], $groupName);
+
+        $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader) VALUES (?, ?, ?)");
+        $stmt->execute([(int)$groupAs['groupID'], (int) $leader, 1]);
 
         foreach($members as $member){
-            $stmt = $pdo->prepare("INSERT INTO groupmembers (group_name, studentID, is_leader) VALUES (?, ?, ?)");
-            $stmt->execute([$groupName, (int) $member, 0]); 
+            $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader) VALUES (?, ?, ?)");
+            $stmt->execute([(int)$groupAs['groupID'], (int) $member, 0]); 
         }
         $pdo->commit();
     } catch (Exception $e) {
@@ -174,10 +182,16 @@ function getAllGroups(PDO $pdo, $as_id){
         return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then retur
 }
 
-function getAllMembers(PDO $pdo, $groupName){
-        $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE group_name = ?");
-        $stmt->execute([$groupName]);
+function getAllMembers(PDO $pdo, $groupID){
+        $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE groupID = ?");
+        $stmt->execute([$groupID]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+}
+
+function getLeaderID(PDO $pdo, $groupID){
+    $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE groupID = ? AND is_leader = 1 LIMIT 1");
+    $stmt->execute([$groupID]);
+    return $stmt->fetch(PDO::FETCH_ASSOC); 
 }
 
 function createGroupAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $students, ?array $files, $des, $deadline) {

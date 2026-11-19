@@ -142,7 +142,7 @@ if(isset($_POST['createGroup'])){
     <section class="grid" aria-label="Groups">
 
     <?php foreach($groups as $group): ?>
-      <?php $students = getAllMembers($pdo, $group['group_name']); ?>
+      <?php $students = getAllMembers($pdo, $group['groupID']); ?>
         <article class="card group-card">
         <details open>
           <summary class="group-head">
@@ -171,7 +171,7 @@ if(isset($_POST['createGroup'])){
                 <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
-                <span>Leader: <strong>??</strong></span>
+                <span>Leader: <strong><?= getStudentName($pdo, $classCode, getLeaderID($pdo, (int)$group['groupID'])['studentID']); ?></strong></span>
               </span>
             </span>
 
@@ -190,7 +190,7 @@ if(isset($_POST['createGroup'])){
 
               <?php foreach($students as $student): ?>
 
-                <?php if($student['group_name'] == $group['group_name'] && $student['is_leader'] == 1): ?>
+                <?php if($student['groupID'] == $group['groupID'] && $student['is_leader'] == 1): ?>
 
                 <li class="member is-leader">
                 <span class="member-avatar" aria-hidden="true">L</span>
@@ -200,7 +200,7 @@ if(isset($_POST['createGroup'])){
 
                 <?php endif; ?>
 
-                <?php if($student['group_name'] == $group['group_name'] && $student['is_leader'] == 0): ?>
+                <?php if($student['groupID'] == $group['groupID'] && $student['is_leader'] == 0): ?>
                 <li class="member">
                 <span class="member-avatar" aria-hidden="true">M</span>
                 <span class="member-name"><?= getStudentName($pdo, $classCode, $student['studentID']) ?></span>
