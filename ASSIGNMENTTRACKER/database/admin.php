@@ -146,6 +146,27 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
 }
 }
 
+function createAsOnlyForStudent(PDO $pdo, int $as_id, int $classCode, array $studentIDS, string $as_title, string $as_subject, string $as_description, $as_deadline, int $isGroupAs){
+$pdo->beginTransaction();
+try{
+
+$stmt = $pdo->prepare(
+            "INSERT INTO studentassignments (as_id, classCode, studentID, as_title, as_subject, as_description, as_deadline, is_group_as)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+
+foreach($studentIDS as $id){
+$stmt->execute([$as_id, $classCode, $id, $as_title, $as_subject, $as_description, $as_deadline, $isGroupAs]);
+}
+
+$pdo->commit();
+
+}catch(Exception $e){
+    $pdo->rollBack();
+    throw $e;
+}
+}
+
 function getGroupAs($pdo, $as_id, $groupName){
     $stmt = $pdo->prepare("SELECT * FROM groupas WHERE as_id = ? AND group_name = ? LIMIT 1");
     $stmt->execute([(int)$as_id, (string)$groupName]);
@@ -160,12 +181,12 @@ function createMembersAssignment(PDO $pdo, $classCode, $groupName, $leader, ?arr
 
         $groupAs = getGroupAs($pdo, (int)$assignment['as_id'], $groupName);
 
-        $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader) VALUES (?, ?, ?)");
-        $stmt->execute([(int)$groupAs['groupID'], (int) $leader, 1]);
+        $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader, as_id) VALUES (?, ?, ?, ?)");
+        $stmt->execute([(int)$groupAs['groupID'], (int) $leader, 1, (int)$assignment['as_id']]);
 
         foreach($members as $member){
-            $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader) VALUES (?, ?, ?)");
-            $stmt->execute([(int)$groupAs['groupID'], (int) $member, 0]); 
+            $stmt = $pdo->prepare("INSERT INTO groupmembers (groupID, studentID, is_leader, as_id) VALUES (?, ?, ?, ?)");
+            $stmt->execute([(int)$groupAs['groupID'], (int) $member, 0, (int)$assignment['as_id']]); 
         }
         $pdo->commit();
     } catch (Exception $e) {
@@ -259,9 +280,9 @@ function displayAssignments(PDO $pdo, $classCode){
 }
 
 function displayGroupAssignments(PDO $pdo, $classCode){
-        $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
-        $stmt->execute([$classCode, (int) 1]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
+    $stmt = $pdo->prepare("SELECT * FROM assignments WHERE classCode = ? AND is_group_as = ?");
+    $stmt->execute([$classCode, (int) 1]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);      // commit first...           // ...then return
 }
 
 function getAssignment(PDO $pdo, int $asId, $classCode): ?array {
@@ -278,6 +299,12 @@ function getAllStudents(PDO $pdo, $classCode): array {
     $stmt = $pdo->prepare("SELECT studentID, studentLastName, studentFirstName FROM students WHERE classCode = ?");
     $stmt->execute([$classCode]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function ifHasGroup(PDO $pdo, $studentID, $as_id){
+    $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE studentID = ? AND as_id = ? LIMIT 1");
+    $stmt->execute([$studentID, $as_id]);
+    return $stmt->fetch();
 }
 
 function getAsFile(PDO $pdo, $as_title, $classCode): array {

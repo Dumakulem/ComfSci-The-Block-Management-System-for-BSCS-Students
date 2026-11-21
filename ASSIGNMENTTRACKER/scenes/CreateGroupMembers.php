@@ -18,9 +18,19 @@ if(isset($_POST['createGroup']) &&
    isset($_POST['members']) &&
    isset($_POST['groupName'])){
 
+   $leader  = (int) $_POST['leader'];
+  $members = array_map('intval', $_POST['members']);
+
+// leader + members in one array, with duplicates removed
+  $allMembers = array_values(array_unique(array_merge($members, [$leader])));;
+
    //make an assignment and group members creator
    createMembersAssignment($pdo, $classCode, $_POST['groupName'],
                            $_POST['leader'], $_POST['members'], $assignment);
+
+    createAsOnlyForStudent($pdo, $assignment['as_id'], $classCode,
+                          $allMembers, $assignment['as_title'], $assignment['as_subject'],
+                          $assignment['as_description'], $assignment['as_deadline'], 1);
 
     header('Location: AdminCreateGroupMembers.php');
     exit;
@@ -194,7 +204,11 @@ if(isset($_POST['createGroup']) &&
                      The rows below are samples. Delete them when your foreach works. -->
                 <?php foreach($allStudents as $student): ?>
 
-                    <li class="combo-option" role="option" aria-selected="false" data-value="<?= (int) $student['studentID'] ?>"><?= $student['studentLastName'] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")" ?></li>
+                    <?php if(!ifHasGroup($pdo, $student['studentID'], (int)$assignment['as_id'])): ?>
+
+                      <li class="combo-option" role="option" aria-selected="false" data-value="<?= (int) $student['studentID'] ?>"><?= $student['studentLastName'] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")" ?></li>
+
+                    <?php endif; ?>
 
                 <?php endforeach; ?>
 
@@ -238,7 +252,11 @@ if(isset($_POST['createGroup']) &&
                      Delete the sample rows when your foreach works. -->
                 <?php foreach($allStudents as $student): ?>
 
-                    <li class="combo-option" role="option" aria-selected="false" data-value="<?= (int) $student['studentID'] ?>"><?= $student['studentLastName'] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")" ?></li>
+                    <?php if(!ifHasGroup($pdo, $student['studentID'], (int)$assignment['as_id'])): ?>
+
+                      <li class="combo-option" role="option" aria-selected="false" data-value="<?= (int) $student['studentID'] ?>"><?= $student['studentLastName'] . ", " . $student['studentFirstName'] . " (" . $student['studentID'] . ")" ?></li>
+
+                    <?php endif; ?>
 
                 <?php endforeach; ?>
 

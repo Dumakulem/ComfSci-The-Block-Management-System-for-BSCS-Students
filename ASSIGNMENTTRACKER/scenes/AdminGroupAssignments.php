@@ -172,7 +172,7 @@ if(isset($_POST['currentGroupAssignment'])){
               <span class="task-title-row">
                 <span class="task-title"><?= $assignment['as_title'] ?></span>
                 <!-- Optional label. Remove this line if you don't need it. -->
-                <span class="tag">Groups of 0</span>
+                <span class="tag">Groups of <?= count(getAllGroups($pdo, $assignment['as_id'])) ?></span>
               </span>
               <span class="task-desc" title="Present a working prototype of your capstone project to the panel."><?= $assignment['as_description'] ?></span>
               <span class="task-meta">

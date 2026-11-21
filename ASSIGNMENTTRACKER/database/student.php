@@ -166,4 +166,9 @@ function isStudentPassedEmpty(PDO $pdo, $classCode, $studentID, $as){
     }
 }
 
+function getStudentGroupAs(PDO $pdo, int $classCode, int $studentID){
+    $stmt = $pdo->prepare("SELECT * FROM studentassignments WHERE classCode = ? AND studentID = ? AND is_group_as = ?");
+    $stmt->execute([$classCode, $studentID, (int) 1]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

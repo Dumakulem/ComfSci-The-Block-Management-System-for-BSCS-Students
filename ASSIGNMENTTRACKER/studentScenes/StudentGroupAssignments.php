@@ -1,11 +1,14 @@
 <?php
 session_start();
 require_once __DIR__ . '/../database/student.php';
+require_once __DIR__ . '/../database/admin.php';
 
 $student = getStudent($pdo, (int) $_SESSION['currentStudent']);
 
 $name = $student['studentFirstName'];
 $classCode = $student['classCode'];
+
+$assignments = getStudentGroupAs($pdo, $classCode, $student['studentID']);
 
 if(isset($_POST['toAssignments'])){
     header('Location: StudentAssignments.php');
@@ -126,10 +129,11 @@ if(isset($_POST['toAssignments'])){
     <section class="grid panel panel-group" aria-label="Group Assignments">
 
       <!-- OUTER FOREACH START  (one card per class) -->
+       <?php foreach($assignments as $as): ?>
       <article class="card">
         <header class="card-head">
-          <h2 class="card-title">Object Oriented Programming (LAB)</h2>
-          <span class="block-pill">CS301A</span>
+          <h2 class="card-title"><?= $as['as_subject'] ?></h2>
+          <span class="block-pill"><?= $classCode ?></span>
         </header>
 
         <div class="card-body">
@@ -146,14 +150,14 @@ if(isset($_POST['toAssignments'])){
             </span>
             <span class="task-text">
               <span class="task-title-row">
-                <span class="task-title">Capstone Prototype Demo</span>
+                <span class="task-title"><?= $as['as_title'] ?></span>
                 <!-- Optional label. Remove this line if you don't need it. -->
-                <span class="tag">Groups of 5</span>
+                <span class="tag">Groups of <?= (int)count(getAllGroups($pdo, $as['as_id'])) ?></span>
               </span>
-              <span class="task-desc" title="Present a working prototype of your capstone project to the panel.">Present a working prototype of your capstone project to the panel.</span>
+              <span class="task-desc" title="Present a working prototype of your capstone project to the panel."><?= $as['as_description'] ?></span>
               <span class="task-meta">
-                <span>Posted: Oct 26, 2026</span>
-                <span class="due">Due: Nov 20, 2026, 9:00 AM</span>
+                <span>Posted: <?= (new DateTime($as['created_at']))->format('M j, Y, g:i A') ?></span>
+                <span class="due">Due: <?= (new DateTime($as['as_deadline']))->format('M j, Y, g:i A') ?></span>
               </span>
             </span>
             <svg class="task-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -169,6 +173,8 @@ if(isset($_POST['toAssignments'])){
           <a href="#" class="btn-enter" aria-label="Enter 10006 - CS401A">Enter</a>
         </footer>
       </article>
+
+      <?php endforeach; ?>
       <!-- OUTER FOREACH END -->
 
 

@@ -24,7 +24,7 @@ createGroupAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents(
 //$forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
 //$forDisplay  = $dt->format('M j, Y, g:i A'); // "Nov 20, 2026, 11:59 PM"
 
-    header("Location: AdminAssignments.php");
+    header("Location: AdminGroupAssignments.php");
     exit;
 }
 ?>
