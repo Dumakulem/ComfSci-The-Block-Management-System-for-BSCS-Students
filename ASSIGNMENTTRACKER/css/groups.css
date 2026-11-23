@@ -606,6 +606,44 @@ button.card-add {
   appearance: none;
 }
 
+/* Back and View details side by side */
+.back-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-details {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin: 0;
+  padding: 0 18px;
+  background: var(--orange);
+  border: 0;
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, box-shadow 0.15s;
+}
+
+.btn-details svg { width: 16px; height: 16px; }
+
+.btn-details:hover { background: var(--orange-hover); }
+
+.btn-details:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.55);
+}
+
 /* ================= Tablet / phone ================= */
 @media (max-width: 900px) {
   .shell { grid-template-columns: 1fr; }
