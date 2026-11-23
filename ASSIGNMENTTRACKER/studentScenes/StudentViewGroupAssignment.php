@@ -52,14 +52,15 @@ if (isset($_POST['addFile']) && $isLeader) {
     $newFiles = array_slice(normalizeFiles($_FILES['files'] ?? null), 0, 10);
 
     if (!empty($newFiles)) {
-        addStudentFiles($pdo, (int) $currentStudentID, $assigment['as_title'], $classcode, $newFiles, (int)$assigment['as_id']);
+        addAllGroupStudentFiles($pdo, getLeaderID($pdo, (int)$group['groupID'])['studentID'],
+                                $assigment['as_title'],
+                                $classcode, $newFiles, $assigment['as_id'], $members);
     }
-
     header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
     exit;
 }
 
-$myFiles = getStudentFiles($pdo, (int) $currentStudentID, $assigment['as_title'], $classcode);
+$myFiles = getStudentFiles($pdo, getLeaderID($pdo, (int)$group['groupID'])['studentID'], $assigment['as_title'], $classcode);
 
 $hasFiles = false;
 
@@ -80,9 +81,9 @@ exit;
 }
 
 if(isset($_POST['deleteFile']) && $isLeader){
-deleteFile($pdo, (int) $_POST['deleteFile'], $classcode, 
-                 (int)$currentStudentID, $assigment['as_title'], 
-                 (int)$assigment['as_id']) == false;
+deleteAllGroupStudentFile($pdo, (int) $_POST['deleteFile'], $classcode,
+                          getLeaderID($pdo, (int)$group['groupID'])['studentID'],
+                          $assigment['as_id'], $members);
 
 header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;

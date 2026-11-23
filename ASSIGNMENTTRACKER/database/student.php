@@ -130,6 +130,62 @@ function addStudentFiles(PDO $pdo, $studentId, $asTitle, $classCode, ?array $fil
     }
 }
 
+function addAllGroupStudentFiles(PDO $pdo, $leaderID, $asTitle, $classCode, ?array $files, $as_id, array $members): void {
+    $pdo->beginTransaction();
+    try {
+        $stmt = $pdo->prepare(
+            "INSERT INTO student_as_files (studentID, as_title, classCode, file_name, file_data)
+             VALUES (:sid, :title, :code, :name, :data)"
+        );
+        foreach ($files ?? [] as $f) {
+            if (isset($f['error']) && $f['error'] !== UPLOAD_ERR_OK) continue;   // skip empty pickers
+            $stmt->execute([
+                ':sid'   => $leaderID,
+                ':title' => $asTitle,
+                ':code'  => $classCode,
+                ':name'  => $f['name'],
+                ':data'  => file_get_contents($f['tmp_name']),
+            ]);
+        }
+
+        // change the status only after the files were saved
+        foreach($members as $student){
+            $status = assignmentStatusChecker($pdo, $classCode, (int)$student['studentID'], $as_id);
+        if ($status === 'Pending') {
+            assignmentChangeStatus($pdo, $classCode, (int)$student['studentID'], $as_id, 'Completed');
+        } else if ($status === 'Overdue') {
+            assignmentChangeStatus($pdo, $classCode, (int)$student['studentID'], $as_id, 'Late');
+        }
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+}
+
+function deleteAllGroupStudentFile(PDO $pdo, $fileId, $classCode, $leaderID, $as_id, array $members){
+    $pdo->beginTransaction();
+    try{
+
+    $stmtt= $pdo->prepare("DELETE FROM student_as_files WHERE id = ? AND classCode = ? AND studentID = ?");
+    $stmtt->execute([(int) $fileId, (int) $classCode, (int) $leaderID]);
+
+    $pdo->commit();
+
+    foreach($members as $member){
+        assignmentChangeStatus($pdo, $classCode, $member['studentID'], $as_id, "Pending");
+    }
+    
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
 function deleteFile(PDO $pdo, $fileId, $classCode, $studentID, $as, $as_id){
     $pdo->beginTransaction();
     try{
