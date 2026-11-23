@@ -16,6 +16,9 @@ $whereStudentGrouped = getStudentGrouped($pdo, $currentStudentID, $assigment['as
 $group = getYourGroup($pdo, (int)$whereStudentGrouped['groupID']);
 
 $members = getAllMembers($pdo, (int)$group['groupID']);
+
+$isLeader = ((int)$whereStudentGrouped['is_leader'] === 1);
+$lock = $isLeader ? '' : 'disabled';   // 'disabled' for everyone except the leader
 //------
 
 $profName = null;
@@ -45,7 +48,7 @@ function normalizeFiles(?array $f): array {
     return $out;
 }
 
-if (isset($_POST['addFile'])) {
+if (isset($_POST['addFile']) && $isLeader) {
     $newFiles = array_slice(normalizeFiles($_FILES['files'] ?? null), 0, 10);
 
     if (!empty($newFiles)) {
@@ -76,7 +79,7 @@ header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;
 }
 
-if(isset($_POST['deleteFile'])){
+if(isset($_POST['deleteFile']) && $isLeader){
 deleteFile($pdo, (int) $_POST['deleteFile'], $classcode, 
                  (int)$currentStudentID, $assigment['as_title'], 
                  (int)$assigment['as_id']) == false;
@@ -258,7 +261,7 @@ exit;
 
   <!-- Delete (minus) button. Replace FILE_ID_HERE with this file's ID -->
   <span class="file-actions">
-    <button type="submit" form="deleteForm" name="deleteFile" value="<?= $mf['id'] ?>" class="file-delete"
+    <button type="submit" form="deleteForm" name="deleteFile" value="<?= $mf['id'] ?>" class="file-delete" <?= $lock ?>
             aria-label="Delete <?= htmlspecialchars($mf['file_name']); ?>" title="Delete">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="5" y1="12" x2="19" y2="12"/>
@@ -276,8 +279,8 @@ exit;
 
       <div class="file-list" id="fileList">
         <div class="file-slot">
-          <input type="file" id="files" name="files[]">
-          <button type="button" class="file-remove" aria-label="Remove this file">
+          <input type="file" id="files" name="files[]" <?= $lock ?>>
+          <button type="button" class="file-remove" aria-label="Remove this file" <?= $lock ?>>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
@@ -286,12 +289,19 @@ exit;
         </div>
       </div>
 
+      <?php if (!$isLeader): ?>
+      <p class="hint">Only the group leader can add or remove files.</p>
+      <?php endif; ?>
+
+      <?php if ($isLeader): ?>
       <p class="hint">Choose a file and another picker appears. Up to 10 files.</p>
+      <?php endif; ?>
+      
     </section>
   </div>
 
   <footer class="work-foot">
-    <button type="submit" name="addFile" class="btn-add">
+      <button type="submit" name="addFile" class="btn-add" <?= $lock ?>>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>

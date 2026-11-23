@@ -1090,6 +1090,12 @@ details[open] .group-toggle svg { transform: rotate(180deg); }
   font-weight: 650;
 }
 
+.file-slot input[type="file"]:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 @media (max-width: 520px) {
   .group-head { padding: 16px; }
 }
