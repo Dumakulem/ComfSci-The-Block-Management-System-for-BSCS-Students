@@ -171,4 +171,16 @@ function getStudentGroupAs(PDO $pdo, int $classCode, int $studentID){
     $stmt->execute([$classCode, $studentID, (int) 1]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function getStudentGrouped(PDO $pdo, int $studentID, int $as_id){
+    $stmt = $pdo->prepare("SELECT * FROM groupmembers WHERE studentID = ? AND as_id = ? LIMIT 1");
+    $stmt->execute([$studentID, $as_id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+function getYourGroup(PDO $pdo, int $groupID){
+    $stmt = $pdo->prepare("SELECT * FROM groupas WHERE groupID = ? LIMIT 1");
+    $stmt->execute([$groupID]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
 ?>

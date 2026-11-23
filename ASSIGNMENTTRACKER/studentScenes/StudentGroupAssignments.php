@@ -14,6 +14,15 @@ if(isset($_POST['toAssignments'])){
     header('Location: StudentAssignments.php');
     exit;
 }
+if(isset($_POST['currentGroupAssignment'])){
+    $_SESSION['studentGroup'] = $student;
+    $_SESSION['asClassCodeGroup'] = (int)$classCode;
+    $_SESSION['currentStudentGroup'] = (int)$student['studentID'];
+    $_SESSION['assignmentGroup'] = (int)$_POST['currentGroupAssignment'];
+
+    header('Location: StudentViewGroupAssignment.php');
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -169,9 +178,14 @@ if(isset($_POST['toAssignments'])){
         </div>
 
         <footer class="card-foot">
-          <span class="count">Group assignments (1)</span>
-          <a href="#" class="btn-enter" aria-label="Enter 10006 - CS401A">Enter</a>
+          <span class="count">Prof. Un</span><!--DO SOMETHING ABOUT THIS -->
+          <!--<a href="#" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</a>-->
+          <form method="POST">
+            <button type="submit" name="enter" class="btn-enter" aria-label="Enter 10003 - CS201A">Enter</button>
+            <input type="hidden" name="currentGroupAssignment" value="<?= (int)$as['as_id'] ?>">
+          </form>
         </footer>
+      </article>
       </article>
 
       <?php endforeach; ?>
