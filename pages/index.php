@@ -240,7 +240,7 @@ $userType = $_SESSION['user_type'];
             </div>
 
             <nav class="navButtons">
-                <a class="navItem active" href="#dashboard">
+                <a class="navItem active" href="./index.php">
                     <span class="icon"><img src="./assets/dashboardIcon.png" alt=""></span>
                     <span class="label">Dashboard</span>
                 </a>
@@ -251,6 +251,10 @@ $userType = $_SESSION['user_type'];
                 <a class="navItem" href="#attendance">
                     <span class="icon"><img src="./assets/attendanceIcon.png" alt=""></span>
                     <span class="label">Attendance</span>   
+                </a>
+                <a class="navItem" href="./blockForum.php">
+                    <span class="icon"><img src="./assets/blockForumIcon.png" alt=""></span>
+                    <span class="label">Block Forum</span>   
                 </a>
                 <a class="navItem" href="#gamifiedQuiz">
                     <span class="icon"><img src="./assets/gamifiedIcon.png" alt=""></span>
@@ -300,7 +304,7 @@ $userType = $_SESSION['user_type'];
             </header>
 
             <main class="pageBody">
-                <p>Main Content Goes Here</p>
+                <h1>You are in the Dashboard Page!</h1>
             </main>
         </div>
 
