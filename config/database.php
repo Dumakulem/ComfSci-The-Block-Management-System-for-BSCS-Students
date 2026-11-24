@@ -1,9 +1,7 @@
 <?php
-// RevSpecs database connection.
-// XAMPP defaults: host=127.0.0.1, user=root, password is usually empty.
 
 define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'revspecs');
+define('DB_NAME', 'db_comfysci');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 

@@ -1,0 +1,1160 @@
+/* ==============================================================================
+   STYLE.CSS  ·  organised by component
+   Search for the number or name below (e.g. "07 ·" or "TO-DO LIST") to jump to a section.
+
+   Inside each section the order is:  base styles  >  light / dark theme  >  responsive.
+   Rules are unchanged from the original file; only their position and labels changed,
+   and a few grouped selectors were split so each component keeps its own styles.
+
+   01  Imports & design tokens                       @import, CSS variables (colours, sidebar width), dark-theme variables
+   02  Reset & page base                             *, html, body, links, lists, headings, focus ring, page background
+   03  Typography                                    Font families (body, form controls, headings)
+   04  App shell & grid layout                       .app, .main, .content, .grid, .col, .cell, grid areas (.a-*), responsive page flow
+   05  Sidebar                                       .sidebar, .avatar, .student-*, .nav-panel, collapsed icon rail, mobile slide-over
+   06  Top bar                                       .topbar, .tab, .actions, .icon-btn, bell badge, menu button
+   07  Welcome banner                                .hero (welcome banner)
+   08  Cards (shared)                                .card, .card-head, links, .muted, .dot, .scroll, .empty, scroll areas
+   09  Buttons                                       .btn, .btn-solid / -outline / -danger, .btn-row, .add-btn, .linkbtn, .full
+   10  Form controls                                 .field, .row, .two, .hint, .check, inputs
+   11  Notifications (list & bell dropdown)          .note, .meta, notification bell dropdown (.notif-pop)
+   12  Assignments                                   .assignment, .chips, .chip (priority labels)
+   13  To-do list                                    .tasks, .task, .task-text, checkbox .box
+   14  Calendar & month / year picker                .cal-card, .cal-grid, .cw / .cd, .class-card, legend, month / year picker (.cp-*)
+   15  Online meetings                               .meeting, .meet, .join, schedule day picker (.daypick)
+   16  Item surfaces (tinted inner cards, shared)    Shared look of inner cards: .note, .assignment, .task, .meet, .pick
+   17  Dialogs, list pickers & toast                 .modal, .dialog, .x-close, list pickers (.pick), .toast
+   18  Icons                                         span.ic (PNG icons drawn as CSS masks)
+   ============================================================================== */
+
+/* ==============================================================================
+   01 · IMPORTS & DESIGN TOKENS
+   @import, CSS variables (colours, sidebar width), dark-theme variables
+   ============================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+:root{--orange:#ff6b00;--orange-ink:#c2410c;--ink:#111;--card:#fff;--bar:#fff;--soft:#fcf6f0;--muted:#6b6258}
+:root{--line:#ebe6df}
+
+/* ---- Light / dark theme ---- */
+html[data-theme=dark]{--orange-ink:#ff8a4a;--card:#2a2420;--bar:#231c18;--muted:#b3a79d;color-scheme:dark}
+html[data-theme=dark]{--line:#4a3f38;--soft:#352d28}
+
+/* ==============================================================================
+   02 · RESET & PAGE BASE
+   *, html, body, links, lists, headings, focus ring, page background
+   ============================================================================== */
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-width:1280px;
+  font-family:Inter,system-ui,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#ff6a00 0%,#c64a1c 55%,#8f3a1a 100%) fixed;
+}
+ul{list-style:none;margin:0;padding:0}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4,p{margin:0}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+html,body{height:100%;overflow:hidden}
+body{min-width:1100px}
+html{background:#f4f2ee}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] body{color:#f3ece6;background:linear-gradient(180deg,#2e1507 0%,#1b0f09 55%,#120b08 100%) fixed}
+[data-theme=dark] :focus-visible{outline-color:#fff}
+[data-theme=light] body{background:linear-gradient(180deg,#d6d4d0 0,#f4f2ee 180px,#f4f2ee 100%) fixed}
+
+/* ---- Responsive ---- */
+@media (max-width:1100px),(max-height:640px){
+  html,body{height:auto;overflow:auto}
+  body{min-width:0}
+}
+
+/* ==============================================================================
+   03 · TYPOGRAPHY
+   Font families (body, form controls, headings)
+   ============================================================================== */
+
+body,button,input,select,textarea{font-family:'DM Sans',system-ui,sans-serif}
+h1,h2,h3,h4,.student-name,.tab,.cal-title,.meet-sub,.m-subject{font-family:'Poppins','DM Sans',sans-serif}
+
+/* ==============================================================================
+   04 · APP SHELL & GRID LAYOUT
+   .app, .main, .content, .grid, .col, .cell, grid areas (.a-*), responsive page flow
+   ============================================================================== */
+
+.app{display:grid;grid-template-columns:264px 1fr;min-height:100vh;max-width:1600px;margin:0 auto}
+.content{padding:24px 32px 40px}
+.grid{display:grid;grid-template-columns:1.1fr 1fr 1.25fr;gap:20px;margin-top:20px;align-items:start}
+.col{display:flex;flex-direction:column;gap:20px}
+.app{height:100vh;min-height:0;max-width:none}
+.main{display:flex;flex-direction:column;height:100vh;min-height:0;min-width:0}
+.content{flex:1;min-height:0;display:flex;flex-direction:column;padding:clamp(10px,2vh,24px) clamp(16px,2vw,32px)}
+.grid{flex:1;min-height:0;margin-top:clamp(10px,2vh,20px);gap:clamp(10px,1.6vw,20px);align-items:stretch}
+.col{min-height:0;gap:clamp(10px,2vh,20px)}
+.col>.card{flex:1 1 auto;min-height:0;overflow:hidden}
+.col>.card:only-child{display:flex;flex-direction:column}
+.col>.card{flex:1 1 0;min-height:0}
+.col>.cal-card{flex:1.35 1 0}
+.col>.meeting{flex:1 1 0!important}
+@media (min-width:1600px){
+  .grid{gap:24px}
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:minmax(0,1.2fr) minmax(0,1fr);
+  grid-template-areas:
+    "notif tasks cal"
+    "assign tasks meet";
+  gap:clamp(12px,1.5vw,20px);
+  align-items:stretch;
+}
+.a-notif{grid-area:notif}
+.a-tasks{grid-area:tasks}
+.a-cal{grid-area:cal}
+.a-assign{grid-area:assign}
+.a-meet{grid-area:meet}
+.cell{display:flex;min-width:0;min-height:0}
+.cell>.card{flex:1 1 0!important;min-width:0;min-height:0;overflow:hidden}
+
+/* Sidebar pushes the page content (margin-left on .main) instead of overlaying it */
+.app{grid-template-columns:1fr!important;padding-left:0}
+.main{margin-left:var(--sb-w);transition:margin-left .25s ease}
+
+/* Column 1: Assignments taller than Notifications (11-row grid: notif 5, assign 6, cal 6, meet 5) */
+.grid{
+  grid-template-rows:repeat(11,minmax(0,1fr));
+  grid-template-areas:
+    "notif tasks cal"
+    "notif tasks cal"
+    "notif tasks cal"
+    "notif tasks cal"
+    "notif tasks cal"
+    "assign tasks cal"
+    "assign tasks meet"
+    "assign tasks meet"
+    "assign tasks meet"
+    "assign tasks meet"
+    "assign tasks meet";
+}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .app{grid-template-columns:300px 1fr}
+  .content{padding:clamp(14px,2.4vh,28px) 40px}
+  .col{gap:24px}
+  .grid{gap:20px}
+}
+@media (max-width:900px){
+  .main{margin-left:0}
+}
+@media (max-width:1100px),(max-height:640px){
+  .app,.main{height:auto;min-height:100vh}
+  .content{flex:none;min-height:0}
+  .grid{
+    flex:none;
+    grid-template-rows:none;
+    grid-auto-rows:auto;
+    grid-template-areas:
+      "notif tasks cal"
+      "assign tasks meet";
+  }
+  .a-notif,.a-assign,.a-meet{height:340px}
+  .a-cal{height:clamp(420px,60vh,520px)}
+  .a-tasks{height:auto;min-height:340px}
+}
+@media (max-width:1100px){
+  .grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    grid-template-areas:
+      "cal tasks"
+      "notif assign"
+      "meet meet";
+  }
+  .content{padding:16px}
+}
+@media (max-width:700px){
+  .grid{
+    grid-template-columns:minmax(0,1fr);
+    grid-template-areas:
+      "cal"
+      "tasks"
+      "notif"
+      "assign"
+      "meet";
+  }
+  .a-tasks{height:420px}
+}
+
+/* ==============================================================================
+   05 · SIDEBAR
+   .sidebar, .avatar, .student-*, .nav-panel, collapsed icon rail, mobile slide-over
+   ============================================================================== */
+
+.sidebar{
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:26px 14px 0;
+  background:var(--ink);
+  color:#fff;
+}
+.sidebar :focus-visible{outline-color:#fff}
+.avatar{width:92px;height:92px;border-radius:50%;background:#fff;overflow:hidden}
+.avatar svg{width:100%;height:100%}
+.student-name{margin-top:12px;font-size:22px;font-weight:800}
+.student-no{margin-top:4px;font-size:11px;line-height:1.4;text-align:center;color:#d8d2cb}
+.nav-panel{
+  flex:1;
+  width:100%;
+  margin-top:22px;
+  padding:14px 10px 12px;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+  border-radius:18px 18px 0 0;
+  color:#2b2b2b;
+}
+.nav-panel :focus-visible{outline-color:var(--ink)}
+.nav-panel li+li{margin-top:2px}
+.nav-panel a{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:11px 14px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:500;
+  transition:background .15s,color .15s,box-shadow .15s;
+}
+.nav-panel a:hover,.nav-panel a:focus-visible{background:var(--orange);color:#fff;font-weight:700;box-shadow:0 6px 14px -6px rgba(255,95,0,.75)}
+.nav-panel a.active{font-weight:700}
+.nav-panel a.active .ic{color:var(--orange-ink)}
+.nav-panel a.active:hover .ic,.nav-panel a.active:focus-visible .ic{color:#fff}
+.nav-panel .logout{margin-top:auto;color:var(--orange-ink);font-weight:600}
+.sidebar{height:100vh;padding-top:clamp(14px,3vh,26px)}
+.avatar{width:clamp(64px,10vh,92px);height:clamp(64px,10vh,92px)}
+.student-name{margin-top:clamp(6px,1.2vh,12px);font-size:clamp(17px,2.6vh,22px)}
+.nav-panel{margin-top:clamp(10px,2.4vh,22px);padding:clamp(6px,1.4vh,14px) 10px;min-height:0}
+.nav-panel a{padding:clamp(6px,1.35vh,11px) 14px}
+@media (min-width:1600px){
+  .nav-panel a{font-size:15px;gap:14px}
+}
+.student-name{font-weight:700}
+
+/* Sidebar pushes the page content (margin-left on .main) instead of overlaying it */
+html{--sb-w:264px;--sb-rail:76px}
+html[data-sidebar=closed]{--sb-w:var(--sb-rail)}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);height:100vh;z-index:40;overflow:hidden;transition:width .25s ease,padding .25s ease}
+.sb-form{display:flex}
+.sb-backdrop{display:none}
+.avatar{transition:width .25s ease,height .25s ease}
+.student-name,.student-no{white-space:nowrap;overflow:hidden;max-height:4em;transition:opacity .2s ease,max-height .25s ease,margin .25s ease}
+.nav-panel a{gap:0}
+.nav-label{margin-left:12px;white-space:nowrap;overflow:hidden;max-width:200px;transition:opacity .2s ease,max-width .25s ease,margin .25s ease}
+
+/* Nav items look the same (Dashboard included); highlight only on hover / focus */
+.nav-panel a.active{font-weight:500}
+.nav-panel a.active .ic{color:inherit}
+.nav-panel a:hover,.nav-panel a:focus-visible{background:var(--orange);color:#fff;font-weight:700;box-shadow:0 6px 14px -6px rgba(255,95,0,.75)}
+.nav-panel a:hover .ic,.nav-panel a:focus-visible .ic{color:#fff}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .sidebar{background:#121212}
+[data-theme=dark] .nav-panel{background:var(--card);color:#e8e0d8}
+[data-theme=dark] .nav-panel a:hover,[data-theme=dark] .nav-panel a:focus-visible{color:#fff}
+[data-theme=light] .nav-panel{background:#f3f3f3}
+[data-theme=light] .nav-panel{background:#fff}
+[data-theme=dark] .sidebar{background:#0e0b09;border-right:1px solid #2c241f}
+[data-theme=dark] .student-no{color:#b3a79d}
+[data-theme=dark] .nav-panel{background:#231c18;color:#eadfd6}
+[data-theme=dark] .nav-panel .logout{color:#ff8a4a}
+
+/* Final look: orange nav panel with a white hover pill */
+[data-theme] .nav-panel{background:var(--orange);color:#fff}
+[data-theme] .nav-panel :focus-visible{outline-color:var(--ink)}
+[data-theme] .nav-panel a:hover,[data-theme] .nav-panel a:focus-visible{
+  background:#fff;
+  color:#c2410c;
+  font-weight:700;
+  box-shadow:0 6px 14px -8px rgba(0,0,0,.45);
+}
+[data-theme] .nav-panel a:hover .ic,[data-theme] .nav-panel a:focus-visible .ic{color:#c2410c}
+[data-theme] .nav-panel .logout{color:#fff}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .student-name{font-size:26px}
+  .student-no{font-size:13px}
+  html{--sb-w:300px}
+}
+@media (min-width:901px){
+  html[data-sidebar=closed] .sidebar{padding-left:8px;padding-right:8px}
+  html[data-sidebar=closed] .avatar{width:44px;height:44px}
+  html[data-sidebar=closed] .student-name,html[data-sidebar=closed] .student-no{opacity:0;max-height:0;margin-top:0}
+  html[data-sidebar=closed] .nav-panel{padding-left:6px;padding-right:6px}
+  html[data-sidebar=closed] .nav-panel a{justify-content:center;padding-left:0;padding-right:0}
+  html[data-sidebar=closed] .nav-label{opacity:0;max-width:0;margin-left:0}
+  .sb-form{display:none}
+}
+@media (max-width:900px){
+  .sidebar{width:264px;z-index:60;transform:translateX(-100%);transition:transform .25s ease}
+  html.sb-mobile-open .sidebar{transform:none}
+  html.sb-mobile-open .sb-backdrop{display:block;position:fixed;inset:0;z-index:59;background:rgba(0,0,0,.5)}
+}
+@media (prefers-reduced-motion:reduce){
+  .sidebar,.main,.avatar,.student-name,.student-no,.nav-label{transition:none}
+}
+
+/* ==============================================================================
+   06 · TOP BAR
+   .topbar, .tab, .actions, .icon-btn, bell badge, menu button
+   ============================================================================== */
+
+.topbar{display:flex;align-items:center;justify-content:space-between;height:60px;padding:0 24px;background:var(--bar)}
+.tab{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:18px 2px 14px;
+  font-size:13px;
+  font-weight:700;
+  color:var(--orange-ink);
+  border-bottom:3px solid var(--orange);
+}
+.actions{display:flex;gap:10px}
+.icon-btn{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border:1.5px solid var(--orange);
+  border-radius:10px;
+  color:var(--orange-ink);
+  transition:background .15s;
+}
+.icon-btn:hover{background:#ffe6d2}
+.has-dot::after{content:"";position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--orange)}
+.topbar{flex:none;height:clamp(46px,6.5vh,60px)}
+.tab{height:100%;padding:0 2px}
+.actions form{display:flex}
+@media (min-width:1600px){
+  .tab{font-size:15px}
+  .icon-btn{width:44px;height:44px}
+}
+.topbar{height:clamp(56px,8vh,72px);padding:0 28px}
+.tab{font-size:15px}
+.icon-btn{width:42px;height:42px}
+.icon-btn .ic{width:21px;height:21px}
+
+/* Sidebar pushes the page content (margin-left on .main) instead of overlaying it */
+.top-l{display:flex;align-items:center;gap:14px;height:100%}
+.topbar{position:relative;z-index:45}
+.bell-wrap{position:relative}
+.icon-btn .badge{
+  position:absolute;
+  top:-7px;
+  right:-7px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  display:grid;
+  place-items:center;
+  border-radius:99px;
+  font-size:10px;
+  font-weight:700;
+  line-height:1;
+  background:var(--orange);
+  color:#fff;
+  box-shadow:0 0 0 2px var(--bar);
+}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .icon-btn:hover{background:#3a2a20}
+
+/* Light theme: orange top bar */
+[data-theme=light] .topbar{background:var(--orange)}
+[data-theme=light] .tab{color:#fff;border-bottom-color:#fff}
+[data-theme=light] .icon-btn,[data-theme=light] button.icon-btn{border-color:rgba(255,255,255,.75);color:#fff}
+[data-theme=light] .icon-btn:hover{background:rgba(255,255,255,.2)}
+[data-theme=light] .has-dot::after{background:#fff}
+[data-theme=light] .icon-btn .badge{background:#fff;color:var(--orange-ink);box-shadow:0 0 0 2px var(--orange)}
+[data-theme=light] .icon-btn.on{background:rgba(255,255,255,.25)}
+[data-theme=dark] .icon-btn.on{background:#3a2a20}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .topbar{height:76px;padding:0 40px}
+  .tab{font-size:17px;gap:10px}
+  .icon-btn{width:46px;height:46px}
+  .icon-btn .ic{width:23px;height:23px}
+}
+@media (max-width:700px){
+  .topbar{padding:0 14px}
+}
+
+/* ==============================================================================
+   07 · WELCOME BANNER
+   .hero (welcome banner)
+   ============================================================================== */
+
+.hero{padding:34px 40px;border-radius:20px;background:var(--ink);color:#fff}
+.hero h1{font-size:38px;font-weight:800;line-height:1.1;color:var(--orange)}
+.hero h2{margin-top:8px;font-size:20px;font-weight:700;color:var(--orange)}
+.hero p{margin-top:12px;font-size:13px;font-weight:500;color:#e8e2db}
+.hero{flex:none;padding:clamp(12px,2.6vh,30px) 36px}
+.hero h1{font-size:clamp(24px,4.2vh,38px)}
+.hero h2{margin-top:clamp(2px,.8vh,8px);font-size:clamp(15px,2.4vh,20px)}
+.hero p{margin-top:clamp(4px,1vh,12px)}
+@media (min-width:1600px){
+  .hero{padding:clamp(16px,3vh,34px) 48px}
+  .hero h1{font-size:clamp(30px,4.6vh,48px)}
+  .hero h2{font-size:clamp(18px,2.6vh,26px)}
+  .hero p{font-size:15px}
+  .hero h1{font-size:clamp(28px,4.2vh,44px)}
+  .hero h2{font-size:clamp(17px,2.4vh,24px)}
+  .hero p{font-size:14px}
+}
+.hero h1{font-weight:700}
+.hero h1{color:#fff}
+.hero h2{color:#ff7a1a}
+.hero p{color:#cfcfcf}
+
+/* Welcome banner: black to orange gradient, left to right */
+.hero{padding:clamp(18px,3.8vh,42px) 44px}
+.hero h1{font-size:clamp(28px,5vh,46px)}
+.hero h2{font-size:clamp(16px,2.8vh,24px)}
+.hero p{font-size:14px}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .hero{background:#121212;box-shadow:inset 0 0 0 1px #3a312c}
+[data-theme=light] .hero{background:radial-gradient(ellipse at 88% 45%,rgba(255,107,0,.5) 0%,rgba(255,107,0,0) 55%),#111}
+[data-theme] .hero{background:linear-gradient(90deg,#111 0%,#ff6b00 100%)}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .hero{padding:clamp(22px,4vh,46px) 52px}
+  .hero h1{font-size:clamp(32px,5.4vh,56px)}
+  .hero h2{font-size:clamp(19px,3vh,28px)}
+  .hero p{font-size:16px}
+}
+@media (max-width:1100px),(max-height:640px){
+  .hero{padding:22px 28px}
+}
+@media (max-width:700px){
+  .hero{padding:18px 20px}
+}
+
+/* ==============================================================================
+   08 · CARDS (SHARED)
+   .card, .card-head, links, .muted, .dot, .scroll, .empty, scroll areas
+   ============================================================================== */
+
+.card{padding:18px;border-radius:18px;background:var(--card);box-shadow:0 8px 24px -12px rgba(0,0,0,.35)}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.card-head h3{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700}
+.link-muted,.link-orange{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600}
+.link-muted{color:var(--muted)}
+.link-orange{color:var(--orange-ink)}
+.link-muted:hover,.link-orange:hover{text-decoration:underline}
+.icon-link{padding:6px;border-radius:8px}
+.icon-link:hover{background:#ffe6d2;text-decoration:none}
+.muted{font-size:11px;color:var(--muted)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+.card{padding:clamp(10px,1.8vh,18px)}
+.card-head{margin-bottom:clamp(6px,1.4vh,14px)}
+.empty{padding:14px;border-radius:12px;font-size:12px;text-align:center;color:var(--muted);background:rgba(255,255,255,.5)}
+.more{margin-top:6px;text-align:center}
+.card-fill{display:flex;flex-direction:column}
+.scroll{
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding-right:4px;
+  scrollbar-width:thin;
+  scrollbar-color:var(--orange) transparent;
+}
+.scroll>*{flex:none}
+.scroll:focus-visible{outline-offset:-2px;border-radius:12px}
+@media (min-width:1600px){
+  .card{padding:22px;border-radius:20px}
+}
+.card{padding:clamp(10px,1.6vh,16px);border-radius:16px}
+.head-r{display:flex;align-items:center;gap:12px}
+
+/* "Clear" matches "Edit" (same size and padding) */
+.card-head .linkbtn{padding:0;font-size:12px;font-weight:600;color:var(--orange-ink)}
+.card-head .linkbtn:disabled{opacity:.55}
+.card-head .linkbtn:not(:disabled):hover{text-decoration:underline}
+.card-head h3 .ic{flex:none}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .card{box-shadow:0 8px 24px -12px rgba(0,0,0,.7)}
+[data-theme=dark] .icon-link:hover{background:#3a2a20}
+[data-theme=dark] .empty{background:rgba(255,255,255,.05)}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .card{background:#fff;border:1px solid var(--line);box-shadow:0 1px 3px rgba(0,0,0,.05)}
+[data-theme=light] .empty{background:var(--soft)}
+
+/* Hover / focus ring is drawn inside the card so the scroll area cannot clip it */
+[data-theme=light] .card{box-shadow:0 8px 22px -10px rgba(0,0,0,.28)}
+[data-theme=dark] .card{box-shadow:0 8px 22px -10px rgba(0,0,0,.7)}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .card-head h3{font-size:17px}
+  .link-muted,.link-orange{font-size:14px}
+  .muted{font-size:13px}
+  .empty{font-size:14px}
+  .card{padding:18px}
+  .card-head h3{font-size:16px}
+  .link-muted,.link-orange{font-size:13px}
+  .muted{font-size:12px}
+  .empty{font-size:13px}
+  .card-head .linkbtn{font-size:13px}
+}
+
+/* ==============================================================================
+   09 · BUTTONS
+   .btn, .btn-solid / -outline / -danger, .btn-row, .add-btn, .linkbtn, .full
+   ============================================================================== */
+
+.add-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin-top:12px;
+  padding:12px;
+  border:1.5px dashed var(--orange);
+  border-radius:12px;
+  font-size:12px;
+  font-weight:700;
+  color:var(--orange-ink);
+  background:rgba(255,95,0,.07);
+}
+.add-btn:hover{background:rgba(255,95,0,.16)}
+.btn-row{display:flex;gap:10px;margin-top:14px}
+.btn{flex:1;padding:10px;border-radius:10px;text-align:center;font-size:12px;font-weight:700;transition:.15s}
+.btn-outline{border:1.5px solid var(--ink);background:#fff}
+.btn-outline:hover{background:var(--ink);color:#fff}
+.btn-solid{background:var(--orange);color:var(--ink);border:1.5px solid var(--orange)}
+.btn-solid:hover{background:#e05300}
+.add-btn{margin-top:clamp(6px,1.2vh,12px);padding:clamp(8px,1.4vh,12px)}
+.btn-row{margin-top:clamp(8px,1.4vh,14px)}
+.btn{padding:clamp(7px,1.2vh,10px)}
+.linkbtn,button.icon-btn{background:none;border:0;font:inherit;cursor:pointer}
+button.icon-btn{border:1.5px solid var(--orange);color:var(--orange-ink)}
+.linkbtn:disabled{opacity:.4;cursor:default;text-decoration:none!important}
+.btn-solid{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+.add-btn{flex:none}
+@media (min-width:1600px){
+  .btn{font-size:14px}
+}
+.full{width:100%;border:0;cursor:pointer;font:inherit;font-size:13px;font-weight:700;padding:11px;border-radius:10px}
+.btn-danger{border:1.5px solid #b42318;color:#b42318;background:transparent;cursor:pointer;font:inherit;font-size:12px;font-weight:700}
+.btn-danger:hover{background:#b42318;color:#fff}
+.btn-danger:disabled{opacity:.4;pointer-events:none}
+
+/* List scrolls when long; cards keep their size */
+.card-fill>.add-btn{margin-top:12px}
+.btn-outline{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .add-btn{color:#ffb088}
+[data-theme=dark] .btn-outline{background:#352d28;color:#f3ece6;border-color:#6b5d54}
+[data-theme=dark] .btn-outline:hover{background:#f3ece6;color:var(--ink)}
+[data-theme=dark] .btn-danger{border-color:#ff7b6e;color:#ff9a90}
+[data-theme=dark] .btn-danger:hover{background:#ff7b6e;color:#1c1c1c}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .add-btn{font-size:14px}
+  .btn,.add-btn{font-size:13px}
+}
+
+/* ==============================================================================
+   10 · FORM CONTROLS
+   .field, .row, .two, .hint, .check, inputs
+   ============================================================================== */
+
+.field{display:block;margin-bottom:12px;font-size:12px;font-weight:600}
+.field input,.field select,.row input:not([type=checkbox]),.row select{
+  display:block;
+  width:100%;
+  margin-top:5px;
+  padding:10px 12px;
+  border:1.5px solid #d9c3ad;
+  border-radius:10px;
+  font:inherit;
+  font-size:13px;
+  color:var(--ink);
+  background:#fff;
+}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.row input:not([type=checkbox]){margin-top:0}
+.row input[type=checkbox]{width:20px;height:20px;accent-color:var(--orange);flex:none}
+.row.stack{flex-direction:column;align-items:stretch;padding:10px;border-radius:12px;background:rgba(255,255,255,.45)}
+.hint{margin-top:4px;font-size:11px;color:var(--muted)}
+.hint a{color:var(--orange-ink);font-weight:600;text-decoration:underline}
+.check{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:600}
+.check input{width:18px;height:18px;accent-color:var(--orange)}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .row.stack{background:rgba(255,255,255,.05)}
+[data-theme=dark] .field input,[data-theme=dark] .field select,[data-theme=dark] .row input:not([type=checkbox]),[data-theme=dark] .row select{
+  background:#1d1814;
+  border-color:#4a3f38;
+  color:#f3ece6;
+}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .field input,[data-theme=light] .field select,[data-theme=light] .row input:not([type=checkbox]),[data-theme=light] .row select{border-color:#e3dbd2}
+
+/* ==============================================================================
+   11 · NOTIFICATIONS (LIST & BELL DROPDOWN)
+   .note, .meta, notification bell dropdown (.notif-pop)
+   ============================================================================== */
+
+.note{padding:14px;border-radius:12px;background:#fff}
+.note+.note{margin-top:10px;background:#ece9e6}
+.note h4{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
+.note-msg h4{justify-content:space-between}
+.note-msg time{font-size:11px;font-weight:600;color:var(--muted)}
+.note .muted{margin-top:6px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:10px;font-size:11px;font-weight:500}
+.meta span{display:inline-flex;align-items:center;gap:5px}
+.meta .ic{color:var(--orange-ink)}
+.note{padding:clamp(8px,1.5vh,14px)}
+.note+.note{margin-top:clamp(6px,1.2vh,10px)}
+.notif-backdrop{position:fixed;inset:0;z-index:-1;cursor:default}
+.notif-pop{
+  position:absolute;
+  top:calc(100% + 12px);
+  right:0;
+  z-index:46;
+  width:min(380px,92vw);
+  max-height:72vh;
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+  border-radius:16px;
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+  box-shadow:0 24px 50px -12px rgba(0,0,0,.45);
+}
+.notif-pop .card-head{margin-bottom:10px}
+.notif-pop .scroll{max-height:56vh}
+.notif-pop h3{font-size:14px}
+
+/* Notification pop-up shows about 2 items, the rest scrolls */
+.notif-pop .scroll{max-height:clamp(150px,27vh,230px)}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .note+.note{background:#2f2824}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .note+.note{background:#f7f3ee}
+[data-theme=dark] .notif-pop{background:var(--card);color:#f3ece6}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .note h4{font-size:14px}
+  .meta{font-size:13px}
+  .note h4{font-size:13px}
+  .meta{font-size:12px}
+}
+
+/* ==============================================================================
+   12 · ASSIGNMENTS
+   .assignment, .chips, .chip (priority labels)
+   ============================================================================== */
+
+.assignment{padding:14px;border-radius:12px;background:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:3px 9px;border-radius:99px;font-size:10px;font-weight:600;background:var(--card)}
+.chip-grey{background:#e8e8e8;color:#444}
+.chip-hot{background:#ffd9c2;color:var(--orange-ink);font-weight:700}
+.assignment h4{margin:14px 0 6px;font-size:13px;font-weight:700;line-height:1.35}
+.assignment{padding:clamp(8px,1.5vh,14px)}
+.assignment h4{margin:clamp(8px,1.6vh,14px) 0 4px}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .chip{background:#463c35;color:#f3ece6}
+[data-theme=dark] .chip-grey{background:#3f3631;color:#d8cfc7}
+[data-theme=dark] .chip-hot{background:rgba(255,95,0,.22);color:#ffb88a}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .chip{background:#f1ebe4}
+[data-theme=light] .chip-grey{background:#ece8e3;color:#444}
+[data-theme=light] .chip-hot{background:#ffe5d8;color:var(--orange-ink)}
+
+/* Medium priority = light orange / yellow */
+[data-theme] .chip-med{background:#fff0b3;color:#8a5a00;font-weight:700}
+[data-theme=dark] .chip-med{background:rgba(255,200,60,.22);color:#ffd77a}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .chip{font-size:12px;padding:4px 11px}
+  .assignment h4{font-size:16px}
+  .chip{font-size:11px}
+  .assignment h4{font-size:15px}
+}
+
+/* ==============================================================================
+   13 · TO-DO LIST
+   .tasks, .task, .task-text, checkbox .box
+   ============================================================================== */
+
+.tasks{display:flex;flex-direction:column;gap:10px}
+.task{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-radius:12px;
+  background:#fff;
+  cursor:pointer;
+}
+.task:hover{box-shadow:0 0 0 2px #ffd2b3}
+.task-text{display:flex;flex-direction:column;gap:2px}
+.task-text strong{font-size:12px;font-weight:700}
+.task-text small{font-size:10px;color:var(--muted)}
+.task input{position:absolute;opacity:0;width:1px;height:1px}
+.box{display:grid;place-items:center;width:24px;height:24px;border:2px solid var(--orange);border-radius:7px;color:transparent;transition:.15s}
+.task input:checked~.box{background:var(--orange);color:#fff}
+.task input:checked~.task-text strong{text-decoration:line-through;color:var(--muted)}
+.task input:focus-visible~.box{outline:3px solid var(--ink);outline-offset:2px}
+.tasks{flex:1;min-height:0;gap:clamp(6px,1.3vh,10px)}
+.tasks li{flex:1;min-height:0}
+.task{height:100%;padding:0 16px}
+button.task{width:100%;border:0;font:inherit;color:inherit;text-align:left}
+.tasks li>form{height:100%}
+.task.done .box{background:var(--orange);color:#fff}
+.task.done strong{text-decoration:line-through;color:var(--muted)}
+.task-text small.late{color:var(--orange-ink);font-weight:700}
+
+/* List scrolls when long; cards keep their size */
+.tasks{flex:1 1 auto;min-height:0;overflow-y:auto;gap:10px;padding:2px 4px 2px 0;scrollbar-width:thin;scrollbar-color:var(--orange) transparent}
+.tasks li{flex:1 0 58px;min-height:58px;max-height:78px;display:flex}
+.tasks li>form{flex:1;display:flex;height:auto;min-width:0}
+button.task{flex:1;height:auto;min-height:58px;padding:10px 16px;gap:12px}
+.task-text{min-width:0}
+.task-text strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Hover / focus ring is drawn inside the card so the scroll area cannot clip it */
+.tasks{padding:4px 6px 4px 4px}
+.task-text small{display:flex;align-items:center;gap:5px}
+.task-text small .ic{width:12px;height:12px;color:var(--orange-ink)}
+
+/* ---- Light / dark theme ---- */
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .task:hover{box-shadow:0 0 0 2px #ffd2b3}
+[data-theme] button.task{border-radius:12px;transition:box-shadow .15s,border-color .15s}
+[data-theme] button.task:hover,[data-theme] button.task:focus-visible,[data-theme] button.task:active{
+  box-shadow:inset 0 0 0 2px var(--orange);
+  border-color:var(--orange);
+  outline:none;
+}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .task-text strong{font-size:15px}
+  .task-text small{font-size:12px}
+  .box{width:28px;height:28px}
+  .task-text strong{font-size:14px}
+  .task-text small{font-size:12px}
+  .box{width:26px;height:26px}
+}
+
+/* ==============================================================================
+   14 · CALENDAR & MONTH / YEAR PICKER
+   .cal-card, .cal-grid, .cw / .cd, .class-card, legend, month / year picker (.cp-*)
+   ============================================================================== */
+
+.cal-title{font-size:18px!important}
+.cal-nav{display:flex;gap:4px}
+.cal-nav a{display:grid;place-items:center;width:28px;height:28px;border-radius:8px}
+.cal-nav a:hover{background:#ffe6d2}
+.cal{width:100%;border-collapse:collapse;text-align:center;font-size:12px}
+.cal th{padding:6px 0;font-size:11px;font-weight:700}
+.cal th.wk,.cal td.sun{color:var(--orange-ink)}
+.cal td{padding:3px 0;font-weight:600}
+.cal td span{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%}
+.cal td span.today{background:var(--orange);color:#fff}
+.class-card{display:flex;flex-direction:column;gap:3px;margin-top:10px;padding:12px 14px;border-radius:12px;color:#fff}
+.cal+.class-card{margin-top:16px}
+.class-card.dark{background:var(--ink)}
+.class-card.orange{background:var(--orange)}
+.class-card small{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.class-card.dark small{color:var(--orange)}
+.class-card strong{font-size:12px;font-weight:800}
+.class-card span{font-size:11px}
+.cal-title{font-size:clamp(15px,2.4vh,18px)!important}
+.cal th{padding:clamp(2px,.6vh,6px) 0}
+.cal td{padding:clamp(0px,.25vh,3px) 0}
+.cal td span{width:clamp(20px,3.2vh,26px);height:clamp(20px,3.2vh,26px)}
+.class-card{margin-top:clamp(6px,1vh,10px);padding:clamp(6px,1.3vh,12px) 14px}
+.cal+.class-card{margin-top:clamp(8px,1.6vh,16px)}
+.cal td span.has-meet{box-shadow:inset 0 0 0 2px var(--orange)}
+
+/* Calendar card is fixed-size with a border; the day grid auto-fits */
+.cal-card{display:flex;flex-direction:column;border:1.5px solid var(--line)}
+.cal-grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(7,1fr);grid-template-rows:auto repeat(6,1fr)}
+.cw{padding:4px 0;text-align:center;font-size:11px;font-weight:700}
+.cw.wk,.cd.sun{color:var(--orange-ink)}
+.cd{display:grid;place-items:center;font-size:12px;font-weight:600}
+.cd>*{display:grid;place-items:center;width:clamp(22px,3.6vh,34px);height:clamp(22px,3.6vh,34px);border-radius:50%}
+.cd .today{background:var(--orange);color:#fff}
+.cd .has-meet{box-shadow:inset 0 0 0 2px var(--orange);font-weight:800}
+.cd a.has-meet:hover{background:var(--orange);color:#fff}
+.legend{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:11px;color:var(--muted)}
+.ring{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--orange)}
+@media (min-width:1600px){
+  .cw{font-size:13px}
+  .cd{font-size:15px}
+  .legend{font-size:13px}
+  .cw{font-size:12px}
+  .cd{font-size:14px}
+  .legend{font-size:12px}
+}
+
+/* Calendar header adapts to the card width (an open sidebar makes the card narrower) */
+.cal-card{container:calcard/inline-size}
+.cal-title{white-space:nowrap}
+@container calcard (max-width:330px){
+  .cal-pick-btn{gap:3px;padding:2px 4px}
+}
+
+/* Day circles size themselves from the space the card actually has */
+.cal-card{min-height:0}
+.cal-card .card-head{margin-bottom:clamp(2px,.8vh,8px)}
+.cal-grid{container-type:size;grid-template-rows:auto repeat(6,minmax(0,1fr))}
+.cw{padding:2px 0;font-size:clamp(10px,1.7vh,13px);line-height:1.2}
+.cd{min-width:0;min-height:0;font-size:clamp(10px,3.2cqh,15px)}
+.cd>*{--d:max(18px,min(calc((100cqh - 22px)/6 - 2px),calc(100cqw/7 - 4px),38px));width:var(--d);height:var(--d)}
+.legend{flex:none;margin-top:clamp(2px,.8vh,6px);font-size:clamp(10px,1.6vh,12px);line-height:1.2}
+
+/* Calendar title is a button that opens the month / year pop-up */
+.cal-pick-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-left:-6px;
+  padding:2px 8px 2px 6px;
+  border-radius:8px;
+  color:inherit;
+  cursor:pointer;
+  transition:background .15s;
+}
+.cal-pick-btn:hover{background:#fff0e6}
+.cal-pick-btn .chev{color:var(--orange-ink)}
+
+/* Month / year pop-up (a normal centred dialog, like the to-do list) */
+.cp-year{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-family:'Poppins','DM Sans',sans-serif;
+  font-size:18px;
+  font-weight:700;
+}
+.cp-year a{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;border:1px solid var(--line)}
+.cp-year a:hover{background:#ffe6d2}
+.cp-months{display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:48px;gap:8px}
+.cp-m{
+  display:grid;
+  place-items:center;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--soft);
+  font-size:14px;
+  font-weight:600;
+  transition:background .15s,border-color .15s;
+}
+.cp-m:hover{background:#ffe6d2;border-color:var(--orange)}
+.cp-m.now{color:var(--orange-ink);border-color:var(--orange)}
+.cp-m.sel{background:var(--orange);border-color:var(--orange);color:#fff}
+
+/* Picker zooms in: year > month > days */
+.cp-year a.cp-back{width:auto;flex:1;margin:0 10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--orange-ink)}
+.cp-zoom{animation:cpzoom .28s ease-out}
+@keyframes cpzoom{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+.cp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cp-dw{padding:4px 0;text-align:center;font-size:11px;font-weight:700}
+.cp-dw.wk{color:var(--orange-ink)}
+.cp-d{
+  position:relative;
+  display:grid;
+  place-items:center;
+  aspect-ratio:1;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:var(--soft);
+  font-size:13px;
+  font-weight:600;
+  transition:background .15s,color .15s,border-color .15s;
+}
+.cp-d.wk{background:#fff1e6;color:var(--orange-ink)}
+.cp-d:hover,.cp-d.today{background:var(--orange);border-color:var(--orange);color:#fff}
+.dialog .cp-zoom .hint{display:flex;align-items:center;gap:6px;margin-top:12px}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .class-card.dark{background:#121212;box-shadow:inset 0 0 0 1px #3a312c}
+[data-theme=dark] .cal-nav a:hover{background:#3a2a20}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .cal-nav a:hover{background:#fff0e6}
+
+/* Hover / focus ring is drawn inside the card so the scroll area cannot clip it */
+[data-theme] .cal-card{border:1px solid var(--line)}
+[data-theme=dark] .cal-pick-btn:hover{background:#3a2a20}
+[data-theme=dark] .cp-year a:hover,[data-theme=dark] .cp-m:hover{background:#3a2a20}
+[data-theme=dark] .cp-d.wk{background:#3a2a20}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .cal-title{font-size:22px!important}
+  .cal-title{font-size:20px!important}
+}
+@container calcard (max-width:400px){
+  .lbl-a{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+}
+@container calcard (max-width:330px){
+  .cal-title{font-size:16px!important;gap:6px}
+  .cal-card .head-r{gap:6px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cp-zoom{animation:none}
+}
+
+/* ==============================================================================
+   15 · ONLINE MEETINGS
+   .meeting, .meet, .join, schedule day picker (.daypick)
+   ============================================================================== */
+
+.meeting{border:1.5px solid var(--orange)}
+.when{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--orange-ink)}
+.meeting{flex:none!important}
+.m-subject{font-size:15px;font-weight:800;margin-bottom:6px}
+.meet{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:#fff}
+.meet h4{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700}
+.meet .meta{margin-top:6px}
+.meet-sub{margin-top:6px;font-size:13px;font-weight:800}
+.join{
+  flex:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:10px 16px;
+  border-radius:10px;
+  background:var(--orange);
+  color:var(--ink);
+  font-size:12px;
+  font-weight:700;
+}
+.join:hover{background:#e05300}
+.meet-stack{display:flex;flex-direction:column;gap:10px}
+.dialog .meet{background:rgba(255,255,255,.6)}
+.join-off{background:#e8e4df;color:#8a8178;cursor:not-allowed}
+.field-days{margin-bottom:14px}
+.lbl{display:block;margin-bottom:6px;font-size:12px;font-weight:600}
+.lbl small{font-weight:500;color:var(--muted)}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.daypick{position:relative;cursor:pointer}
+.daypick input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.daypick span{
+  display:grid;
+  place-items:center;
+  height:38px;
+  border:1.5px solid #e3dbd2;
+  border-radius:10px;
+  background:#fff;
+  font-size:12px;
+  font-weight:700;
+  transition:background .15s,border-color .15s,color .15s;
+}
+.daypick:hover span{border-color:var(--orange)}
+.daypick input:checked+span{background:var(--orange);border-color:var(--orange);color:#fff}
+.daypick input:focus-visible+span{outline:3px solid var(--orange);outline-offset:2px}
+
+/* Schedule rows: Edit + Delete on the right */
+.day-sub{margin-top:14px}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .meet{background:#352d28}
+[data-theme=dark] .dialog .meet{background:#352d28}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .meeting{border:1.5px solid var(--orange)}
+
+/* Hover / focus ring is drawn inside the card so the scroll area cannot clip it */
+[data-theme] .meeting{border:1px solid var(--line)}
+[data-theme=dark] .join-off{background:#3a322c;color:#8f857b}
+[data-theme=dark] .daypick span{background:#1d1814;border-color:#4a3f38}
+[data-theme=dark] .daypick input:checked+span{background:var(--orange);border-color:var(--orange)}
+
+/* ---- Responsive ---- */
+@media (min-width:1600px){
+  .meet h4{font-size:14px}
+  .meet-sub{font-size:16px}
+  .join{font-size:14px;padding:12px 20px}
+  .meet h4{font-size:13px}
+  .meet-sub{font-size:15px}
+  .join{font-size:13px;padding:10px 18px}
+}
+
+/* ==============================================================================
+   16 · ITEM SURFACES (TINTED INNER CARDS, SHARED)
+   Shared look of inner cards: .note, .assignment, .task, .meet, .pick
+   ============================================================================== */
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .note,[data-theme=dark] .assignment,[data-theme=dark] button.task{background:#352d28}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .note,
+[data-theme=light] .assignment,
+[data-theme=light] .task,
+[data-theme=light] .meet,
+[data-theme=light] .dialog .meet,
+[data-theme=light] .pick{
+  background:var(--soft);
+  border:1px solid var(--line);
+}
+
+/* ==============================================================================
+   17 · DIALOGS, LIST PICKERS & TOAST
+   .modal, .dialog, .x-close, list pickers (.pick), .toast
+   ============================================================================== */
+
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center}
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.dialog{
+  position:relative;
+  width:min(460px,92vw);
+  max-height:88vh;
+  overflow:auto;
+  padding:22px;
+  border-radius:18px;
+  background:var(--bar);
+  box-shadow:0 24px 60px -10px rgba(0,0,0,.6);
+}
+.dialog h3{margin-bottom:14px;font-size:17px;font-weight:800}
+.dialog .btn-row{margin-top:16px}
+.dialog .btn{cursor:pointer;font:inherit;font-size:12px;font-weight:700}
+.dialog :focus-visible{outline-color:var(--orange)}
+.toast{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:60;
+  max-width:340px;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+  background:var(--ink);
+  box-shadow:0 10px 30px -8px rgba(0,0,0,.6);
+  animation:toast 4.5s forwards;
+}
+@keyframes toast{0%,85%{opacity:1;transform:none}100%{opacity:0;transform:translateY(8px);visibility:hidden}}
+.sub{margin:2px 0 8px;font-size:13px;font-weight:700}
+.add-form{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.pick-list{max-height:30vh;overflow:auto;display:flex;flex-direction:column;gap:8px}
+.pick{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.6);cursor:pointer}
+.pick input{width:18px;height:18px;flex:none;accent-color:#b42318}
+.pick-text{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.pick-text strong{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-text small{font-size:11px;color:var(--muted)}
+.pick-edit{flex:none;padding:6px 14px;border:1.5px solid var(--orange);border-radius:8px;font-size:12px;font-weight:700;color:var(--orange-ink)}
+.pick:hover .pick-edit,.pick-edit:hover{background:var(--orange);color:var(--ink)}
+
+/* To-do add / edit dialog */
+.dialog form+form{margin-top:4px}
+.add-form{padding-bottom:16px;margin-bottom:16px}
+.dialog .sub{margin:0 0 12px}
+.dialog .field{margin-bottom:14px}
+.dialog .field-priority{margin-top:16px}
+.dialog .full{margin-top:4px}
+.pick-list{margin-bottom:12px;padding-right:2px}
+
+/* Month / year pop-up (a normal centred dialog, like the to-do list) */
+.dialog h3{display:flex;align-items:center;gap:8px}
+.dialog-sm{width:min(360px,92vw)}
+
+/* Final look: orange nav panel with a white hover pill */
+.dialog .field-days+.two,.dialog .hint{margin-bottom:10px}
+.x-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  color:var(--muted);
+  transition:background .15s,color .15s;
+}
+.x-close:hover{background:#ffe6d2;color:var(--orange-ink)}
+.dialog h3{padding-right:40px}
+
+/* Picker zooms in: year > month > days */
+.dialog-md{width:min(420px,92vw)}
+
+/* Schedule rows: Edit + Delete on the right */
+.pick-actions{display:flex;gap:8px;flex:none}
+.pick-actions .pick-edit,.pick-actions .pick-del{display:inline-grid;place-items:center}
+.pick:hover .pick-actions .pick-edit{background:none;color:var(--orange-ink)}
+.pick-actions .pick-edit:hover{background:var(--orange);color:var(--ink)}
+.pick-del{flex:none;padding:6px 14px;border:1.5px solid #b42318;border-radius:8px;font-size:12px;font-weight:700;color:#b42318}
+.pick-del:hover{background:#b42318;color:#fff}
+
+/* ---- Light / dark theme ---- */
+[data-theme=dark] .dialog{background:var(--card)}
+[data-theme=dark] .toast{background:#f3ece6;color:#1c1c1c}
+[data-theme=dark] .pick{background:#352d28}
+
+/* Light theme: white cards with a thin border, tinted items inside */
+[data-theme=light] .dialog{background:#fff}
+[data-theme=dark] .x-close:hover{background:#3a2a20}
+[data-theme=dark] .pick-del{border-color:#ff7b6e;color:#ff9a90}
+[data-theme=dark] .pick-del:hover{background:#ff7b6e;color:#1c1c1c}
+
+/* ==============================================================================
+   18 · ICONS
+   span.ic (PNG icons drawn as CSS masks)
+   ============================================================================== */
+
+.ic{flex:none}
+
+/* Icons are PNG files in /icons, drawn as a CSS mask so they follow the text colour (hover, dark mode...) */
+span.ic{
+  display:inline-block;
+  flex:none;
+  background-color:currentColor;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:center;
+  mask-position:center;
+  -webkit-mask-size:contain;
+  mask-size:contain;
+}
