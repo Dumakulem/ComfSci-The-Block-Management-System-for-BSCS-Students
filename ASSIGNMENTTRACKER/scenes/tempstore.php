@@ -1,51 +1,64 @@
-<?php foreach($students as $student): ?>
+<?php
+session_start();
+require_once __DIR__ . '/../database/admin.php';
+require_once __DIR__ . '/../database/student.php';
+require_once __DIR__ . '/../controllers/AdminCon.php';
 
-            <?php if($student['as_status'] == "Completed"): ?>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">U</span>
-              <span class="student-info">
-                <form method="POST" class="student-form">
-                    <button type="submit" name="viewStudent" value="<?= (int) $student['studentID'] ?>" class="student-name">
-                    <?= getStudentName($pdo, $classCode, $student['studentID']) ?>
-                    </button>
-                </form>
-                <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
-              </span>
-              <?php if(isAdminHasFeedback($pdo, $student['sa_id']) != false): ?>
-                <?php $stat =  "Graded"?>
-                <?php else: ?>
-                    <?php $stat =  "Completed On Time"?>
-              <?php endif; ?>
-              <span class="status status-ontime">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
-                <?= $stat ?>
-              </span>
-            </li>
-          
-            <?php endif; ?>
-            
-            <?php if($student['as_status'] == "Late"): ?>
-            <li class="student">
-              <span class="student-avatar" aria-hidden="true">U</span>
-              <span class="student-info">
-                <form method="POST" class="student-form">
-                    <button type="submit" name="viewStudent" value="<?= (int) $student['studentID'] ?>" class="student-name">
-                    <?= getStudentName($pdo, $classCode, $student['studentID']) ?>
-                    </button>
-                </form>
-                <span class="student-time">Submitted <?= (new DateTime($student['edited_at']))->format('M j, Y, g:i A') ?></span>
-              </span>
-              <?php if(isAdminHasFeedback($pdo, $student['sa_id']) != false): ?>
-                <?php $stat =  "Graded"?>
-                <?php else: ?>
-                    <?php $stat = "Late Submission"?>
-              <?php endif; ?>
-              <span class="status status-late">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                <?= $stat ?>
-              </span>
-            </li>
-    
-            <?php endif; ?>
+$name       = $_SESSION['name'];
+$classCode  = $_SESSION['code'];
 
-            <?php endforeach; ?>
+$adminID = (int)getAdmin($pdo, $name)['adminID'];
+
+$student = getStudent($pdo, getLeaderID($pdo, (int)$_SESSION['gID'])['studentID']);
+
+$assignment = getStudentAssignment($pdo, (int)$_SESSION['currentGroupAsID'], $classCode, $student['studentID']);
+
+$myFiles = getStudentFiles($pdo, (int) $student['studentID'], $assignment['as_title'], $classCode);
+
+(int) $score = null;
+$comment = null;
+(int) $scoreOver = 100;
+
+$hasFeedback = false;  
+
+$feedbackID = null;// <-- added
+
+if(isAdminHasFeedback($pdo, $assignment['sa_id']) == true){
+  $hasFeedback = true;                                  // <-- added
+  $f = getFeedback($pdo, $assignment['sa_id']);
+  $feedbackID = (int)$f['feedback_id'];
+  $score = $f['score'];
+  $comment = $f['feedback'];
+  $scoreOver = $f['score_over'];
+}
+
+if(isset($_POST['backToGroupAssignment'])){
+
+header('Location: AdminCreateGroupAssignment.php');
+exit;
+}
+
+if(isset($_POST['downloadFile'])){
+downloadStudentFile($pdo, (int) $_POST['downloadFile'], $classCode);
+
+header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
+exit;
+}
+
+/*if(isset($_POST['sendFeedback'])){
+  $c = $_POST['comment'];
+  $s = (int)$_POST['score'];
+  $ms = (int)$_POST['maxScore'];
+
+  createFeedback($pdo, $assignment['sa_id'], $adminID, $c, $s, $ms);
+
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // '#!' replaces any leftover #delete-feedback-modal
+  exit;
+}
+if(isset($_POST['deleteFeedback'])){
+  deleteFeedback($pdo, $feedbackID);
+
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // this is where the stale hash used to survive
+  exit;
+}*/
+?>

@@ -7,30 +7,34 @@ if (!isset($_SESSION['name'], $_SESSION['code'], $_SESSION['currentGroupAsID']))
 }
 
 require_once __DIR__ . '/../database/admin.php';
+require_once __DIR__ . '/../database/student.php';
 require_once __DIR__ . '/../controllers/AdminCon.php';
 
 $name       = $_SESSION['name'];
 $classCode  = $_SESSION['code'];
 $assignment = getAssignment($pdo, (int)$_SESSION['currentGroupAsID'], $classCode);
 
-//$students = getAllStudentAssignments($pdo, (int) $assignment['as_id'], $classCode);
+$groups = getAllGroups($pdo, (int) $assignment['as_id']);
 
-//$stat = "err";
+//group as status is get from the leader
+
+$stat = "err";
 
 if (!$assignment) {
     header('Location: AdminAssignments.php');
     exit;
 }
-
-/*$onTime = $late = $pending = 0;
-foreach ($students as $s) {
-    switch ($s['as_status']) {
+$onTime = $late = $pending = 0;
+foreach ($groups as $s) {
+  $currentLeaderAs = getStudentAssignment($pdo, $s['as_id'], $classCode, getLeaderID($pdo, $s['groupID'])['studentID']);
+    switch ($currentLeaderAs['as_status']) {
         case 'Completed': $onTime++;  break;
         case 'Late':      $late++;    break;
         default:          $pending++; break;
-    }
+  }
 }
 $total = $onTime + $late;
+
 if(isset($_POST['deleteAssignment'])){
   deleteAs($pdo, $assignment['as_id'], $classCode);
 
@@ -38,12 +42,12 @@ if(isset($_POST['deleteAssignment'])){
     exit;
 }
 
-if(isset($_POST['viewStudent'])){
-  $_SESSION['s'] = (int)$_POST['viewStudent'];
+if(isset($_POST['viewGroup'])){
+  $_SESSION['gID'] = (int)$_POST['viewGroup'];
 
-  header('Location: AdminStudentSubmission.php');
+  header('Location: AdminGroupStudentSubmission.php');
   exit;
-}*/
+}
 ?>
 
 <!DOCTYPE html>
@@ -260,53 +264,6 @@ if(isset($_POST['viewStudent'])){
             <?php endif; ?>
 
             <?php endforeach; ?>
-              <!-- ATTACHMENTS FOREACH END  (put endforeach; here)
-                   The two rows below are extra samples. Delete them when your foreach works. -->
-              <!--<li class="file">
-                <span class="file-type" aria-hidden="true">ZIP</span>
-                <span class="file-info">
-                  <span class="file-name">Starter Code.zip</span>
-                  <span class="file-meta">ZIP &middot; 340 KB</span>
-                </span>
-                <span class="file-actions">
-                  <a href="#" class="icon-btn" aria-label="View Starter Code.zip" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="icon-btn" aria-label="Download Starter Code.zip" title="Download" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </a>
-                </span>
-              </li>
-              <li class="file">
-                <span class="file-type" aria-hidden="true">DOCX</span>
-                <span class="file-info">
-                  <span class="file-name">Grading Rubric.docx</span>
-                  <span class="file-meta">DOCX &middot; 86 KB</span>
-                </span>
-                <span class="file-actions">
-                  <a href="#" class="icon-btn" aria-label="View Grading Rubric.docx" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="icon-btn" aria-label="Download Grading Rubric.docx" title="Download" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </a>
-                </span>
-              </li>-->
-
             </ul>
           </section>
 
@@ -323,21 +280,21 @@ if(isset($_POST['viewStudent'])){
           <div class="sub-title-row">
             <h2>Submissions</h2>
             <!-- submitted / total students -->
-            <span class="count-pill"><?= 0/*$total; ?> / <?= count($students);*/ ?></span>
+            <span class="count-pill"><?= $total; ?> / <?= count($groups); ?></span>
           </div>
 
           <!-- Progress bar: set the widths in % (on time / total and late / total) -->
           <div class="bar" role="img" aria-label="10 on time, 
                                                   4 late, 
                                                   21 pending">
-            <span class="bar-ontime" style="width: <?= 50/*($onTime / count($students)) * 100*/ ?>%"></span>
-            <span class="bar-late" style="width: <?= 50/*($late / count($students)) * 100*/ ?>%"></span>
+            <span class="bar-ontime" style="width: <?= ($onTime / count($groups)) * 100 ?>%"></span>
+            <span class="bar-late" style="width: <?= ($late / count($groups)) * 100 ?>%"></span>
           </div>
 
           <ul class="legend">
-            <li><span class="dot dot-ontime"></span><?= 0//$onTime ?> On time</li>
-            <li><span class="dot dot-late"></span><?= 0//$late ?> Late</li>
-            <li><span class="dot dot-pending"></span><?= 0//$pending ?> Pending</li>
+            <li><span class="dot dot-ontime"></span><?= $onTime ?> On time</li>
+            <li><span class="dot dot-late"></span><?= $late ?> Late</li>
+            <li><span class="dot dot-pending"></span><?= $pending ?> Pending</li>
           </ul>
         </div>
 
@@ -345,17 +302,64 @@ if(isset($_POST['viewStudent'])){
         <div class="students-scroll" tabindex="0" role="region" aria-label="Students who submitted">
           <ul class="students">
 
-          <li class="student">
+          <?php foreach($groups as $group): ?>
+
+         <?php $studentAs = getStudentAssignment($pdo, $group['as_id'], $classCode, getLeaderID($pdo, $group['groupID'])['studentID'])?>
+
+             <?php if($studentAs['as_status'] == "Completed"): ?>
+                 <li class="student">
+                  <span class="student-avatar" aria-hidden="true">U</span>
+                    <span class="student-info">
+                     <form method="POST" class="student-form">
+                         <button type="submit" name="viewGroup" value="<?= (int) $group['groupID'] ?>" class="student-name">
+                         <?= $group['group_name'] ?>
+                        </button>
+                     </form>
+                    <span class="student-time">Submitted <?= (new DateTime($studentAs['edited_at']))->format('M j, Y, g:i A') ?></span>
+                 </span>
+
+    <?php if(isAdminHasFeedback($pdo, $studentAs['sa_id']) != false): ?>
+      <?php $stat = "Graded"; ?>
+    <?php else: ?>
+      <?php $stat = "Completed On Time"; ?>
+    <?php endif; ?>
+    <span class="status status-ontime">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+      <?= $stat ?>
+    </span>
+  </li>
+  <?php endif; ?>   <!-- this endif now closes AFTER </li> -->
+
+  <!-- your Late block stays exactly as it is -->
+
+
+            <?php if($studentAs['as_status'] == "Late"): ?>
+            <li class="student">
               <span class="student-avatar" aria-hidden="true">U</span>
               <span class="student-info">
                 <form method="POST" class="student-form">
-                    <button type="submit" name="viewStudent" value="samplevalue" class="student-name">
-                    Sample Name
+                    <button type="submit" name="viewGroup" value="<?= (int) $group['groupID'] ?>" class="student-name">
+                    <?= getStudentName($pdo, $classCode, $studentAs['studentID']) ?>
                     </button>
                 </form>
-                <span class="student-time">Submitted 0/0/00</span>
+                <span class="student-time">Submitted <?= (new DateTime($studentAs['edited_at']))->format('M j, Y, g:i A') ?></span>
               </span>
-          </li>
+
+              <?php if(isAdminHasFeedback($pdo, $studentAs['sa_id']) != false): ?>
+                <?php $stat = "Graded"?>
+                <?php else: ?>
+                    <?php $stat = "Late Submission"?>
+              <?php endif; ?>
+              <span class="status status-late">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <?= $stat ?>
+              </span>
+
+            </li>
+    
+            <?php endif; ?>
+
+          <?php endforeach; ?>
 
           </ul>
         </div>
