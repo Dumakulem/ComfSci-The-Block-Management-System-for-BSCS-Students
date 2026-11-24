@@ -49,7 +49,7 @@ header('Location: ' . $_SERVER['PHP_SELF']);   // prevents re-upload on refresh
 exit;
 }
 
-/*if(isset($_POST['sendFeedback'])){
+if(isset($_POST['sendFeedback'])){
   $c = $_POST['comment'];
   $s = (int)$_POST['score'];
   $ms = (int)$_POST['maxScore'];
@@ -64,7 +64,7 @@ if(isset($_POST['deleteFeedback'])){
 
   header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // this is where the stale hash used to survive
   exit;
-}*/
+}
 ?>
 
 <!DOCTYPE html>

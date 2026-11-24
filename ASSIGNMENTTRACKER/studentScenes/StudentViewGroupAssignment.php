@@ -23,11 +23,13 @@ $lock = $isLeader ? '' : 'disabled';   // 'disabled' for everyone except the lea
 
 $profName = null;
 
-$hasFeedback = isAdminHasFeedback($pdo, $assigment['sa_id']);
+$leader = getStudentAssignment($pdo, $assigment['as_id'], $classcode, getLeaderID($pdo, $group['groupID'])['studentID']);
+
+$hasFeedback = isAdminHasFeedback($pdo, $leader['sa_id']);
 $feedback = null;
 
 if($hasFeedback == true){
-  $feedback = getFeedback($pdo, $assigment['sa_id']);
+  $feedback = getFeedback($pdo, $leader['sa_id']);
   $profName = getAdminInfo($pdo, $feedback['adminID'])['adminName'];
 }
 
