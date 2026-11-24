@@ -1,10 +1,5 @@
-<?php
-
-require_once __DIR__ . '/../auth/require_auth.php';
-
-$userName = $_SESSION['user_name'] ?? $_SESSION['user_email'];
-$userEmail = $_SESSION['user_email'];
-$userType = $_SESSION['user_type'];
+<?php 
+//put ur php code here
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -235,8 +230,8 @@ $userType = $_SESSION['user_type'];
         <aside class="sidebar">
             <div class="userAvatar">
                 <img class="avatarImg" src="./assets/profileImage.png" alt="Profile picture">
-                <p class="userName"><?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?></p>
-                <p class="studentNo"><?= htmlspecialchars($userType, ENT_QUOTES, 'UTF-8') ?>: <?= htmlspecialchars($userEmail, ENT_QUOTES, 'UTF-8') ?></p>
+                <p class="userName">Pogi</p>
+                <p class="studentNo">Student Number: 676767</p>
             </div>
 
             <nav class="navButtons">
@@ -276,7 +271,7 @@ $userType = $_SESSION['user_type'];
                     <span class="icon"><img src="./assets/moduleIcon.png" alt=""></span>
                     <span class="label">Module Sources</span>
                 </a>
-                <a class="navItem logout" href="../auth/logout.php">
+                <a class="navItem logout" href="#logout">
                     <span class="icon"><img src="./assets/logoutIcon.png" alt=""></span>
                     <span class="label">Logout</span>
                 </a>
