@@ -67,8 +67,8 @@ body {
 
 .masked {
   position: absolute;
-  -webkit-mask: url("decorative-shape.svg") 0 0 / 519.448px 700px no-repeat;
-          mask: url("decorative-shape.svg") 0 0 / 519.448px 700px no-repeat;
+  -webkit-mask: url("./decorative-shape.svg") 0 0 / 519.448px 700px no-repeat;
+          mask: url("./decorative-shape.svg") 0 0 / 519.448px 700px no-repeat;
 }
 
 .art__fill {
@@ -229,6 +229,13 @@ body {
 .submit:hover { filter: brightness(1.06); }
 .submit:active { filter: brightness(0.94); }
 .submit:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.login-error {
+  margin: 0;
+  color: #b00020;
+  font: 700 16px/1.2 var(--font-ui);
+  text-align: center;
+}
 
 /* ---------- Narrow screens: stack, hide art ---------- */
 @media (max-width: 960px) {
