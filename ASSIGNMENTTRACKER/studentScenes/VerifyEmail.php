@@ -9,14 +9,55 @@ $student = getStudent($pdo, (int) $_SESSION['currentStudent']);
 $name = $student['studentFirstName'];
 $classCode = $student['classCode'];
 
-if(isset($_POST['verifyEmail'])){
-    $ok = sendMail('baltazarjaydenross@gmail.com',
-            'Test from my PHP app',
-            '<h2>It works!</h2><p>This email was sent through Brevo.</p>');
-            
- header('Location: ' . $_SERVER['PHP_SELF'] . '#!');   // '#!' replaces any leftover #delete-feedback-modal
- exit;
+$typedEmail = $_SESSION['typedEmail'] ?? '';
+
+$emailVerified = ((int)$student['is_email_verified'] == 0) ? false : true;
+
+if (isset($_POST['verifyEmail'])) {
+  $_SESSION['typedEmail'] = trim($_POST['email']);
+
+  $sent = verifyEmail($_SESSION['typedEmail']);
+
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#verify-modal');
+  exit;
 }
+
+if (isset($_POST['confirmCode'])) {
+  $verification = checkEmailCode($_POST['code'] ?? '');
+
+  if ($verification['ok']) {
+    $_SESSION['verified_email'] = $verification['email'];
+    studentEmailVerify($pdo, $student['studentID'], $classCode);
+    changeEmailVerify($pdo, $student['studentID'], $classCode, $_SESSION['typedEmail']);
+                           // shows the success popup once
+    header('Location: ' . $_SERVER['PHP_SELF'] . '#verified-modal');
+  } else {
+    $_SESSION['codeError'] = [                                // shows the wrong-code popup once
+      'reason'  => $verification['reason'],
+      'message' => $verification['message'],
+      'attempt' => $verification['attempt'] ?? 0,
+      'max'     => $verification['max'] ?? 0,
+    ];
+    header('Location: ' . $_SERVER['PHP_SELF'] . '#wrong-code-modal');
+  }
+  exit;
+}
+
+if (isset($_POST['resendCode'])) {
+  verifyEmail($_SESSION['typedEmail'] ?? '');
+  header('Location: ' . $_SERVER['PHP_SELF'] . '#verify-modal');
+  exit;
+}
+
+// One-time messages left by the redirects above (shown by the popups at the bottom)
+$codeError    = $_SESSION['codeError'] ?? null;
+$justVerified = !empty($_SESSION['justVerified']);
+unset($_SESSION['codeError'], $_SESSION['justVerified']);
+
+// Seconds left before "Resend code" may be used (same 60 s rule as verifyEmail())
+$resendWait = isset($_SESSION['email_code']['sent'])
+  ? max(0, 60 - (time() - $_SESSION['email_code']['sent']))
+  : 0;
 ?>
 
 <!DOCTYPE html>
@@ -121,7 +162,6 @@ if(isset($_POST['verifyEmail'])){
          Change to true to preview the "verified" state.
          Later, replace this line with the real value from your DB.
          ########################################################## -->
-    <?php $emailVerified = false; ?>
 
     <section class="ev-layout" aria-label="Email verification">
 
@@ -158,7 +198,7 @@ if(isset($_POST['verifyEmail'])){
                   <polyline points="22 6 12 13 2 6"/>
                 </svg>
                 <!-- Replace the value with the student's saved email -->
-                <input class="ev-input" type="email" id="email" name="email" value="student@example.com" readonly>
+                <input class="ev-input" type="email" id="email" name="email" value="<?= htmlspecialchars($_SESSION['verified_email'] ?? '') ?>" readonly>
               </div>
 
               <button type="button" class="ev-btn ev-btn--done" disabled>
@@ -188,7 +228,7 @@ if(isset($_POST['verifyEmail'])){
                   <rect x="2" y="4" width="20" height="16" rx="2"/>
                   <polyline points="22 6 12 13 2 6"/>
                 </svg>
-                <input class="ev-input" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                <input class="ev-input" type="email" id="email" name="email" placeholder="<?= $student['studentEmail'] ?>" autocomplete="email" required>
               </div>
 
               <button type="submit" name="verifyEmail" class="ev-btn">Verify Email</button>
@@ -262,5 +302,188 @@ if(isset($_POST['verifyEmail'])){
   </main>
 
 </div>
+
+
+</div>
+
+<?php if (!$emailVerified): ?>
+<!-- ================= Email verification popup (opens when the address ends in #verify-modal) ================= -->
+<div class="vm" id="verify-modal" role="dialog" aria-modal="true" aria-labelledby="verify-title">
+  <a href="#!" class="vm-backdrop" aria-label="Close dialog"></a>
+
+  <div class="vm-box">
+    <div class="vm-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2"/>
+        <polyline points="22 6 12 13 2 6"/>
+      </svg>
+    </div>
+
+    <h2 class="vm-title" id="verify-title">Verify your email</h2>
+    <!-- Replace example@gmail.com with the email the student typed -->
+    <p class="vm-text">An email was sent to <strong><?= htmlspecialchars($typedEmail) ?></strong>. Enter the 6-digit code to confirm it.</p>
+
+    <!-- Verification form (template). PHP receives $_POST['code'] -->
+    <form method="POST" class="vm-form" autocomplete="off">
+
+      <div class="vm-otp" role="group" aria-label="6-digit verification code">
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 1" required>
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 2" required>
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 3" required>
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 4" required>
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 5" required>
+        <input class="vm-digit" type="text" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="Digit 6" required>
+      </div>
+      <!-- The six boxes are combined into this one value by the script below -->
+      <input type="hidden" name="code" id="vmCode">
+
+      <!-- Resend button and countdown -->
+      <div class="vm-meta">
+        <button type="submit" form="resendForm" name="resendCode" id="vmResend" class="vm-resend" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          Resend code
+        </button>
+        <span class="vm-timer" id="vmTimer" aria-live="polite"></span>
+      </div>
+
+      <div class="vm-actions">
+        <a href="#!" class="vm-btn vm-btn-outline">Cancel</a>
+        <button type="submit" name="confirmCode" class="vm-btn vm-btn-primary">Confirm</button>
+      </div>
+    </form>
+
+    <!-- Empty form used only by the Resend button, so the code boxes never block it -->
+    <form method="POST" id="resendForm"></form>
+  </div>
+</div>
+
+<script>
+ (function () {
+  var digits = document.querySelectorAll('.vm-digit');
+  var hidden = document.getElementById('vmCode');
+  var form   = hidden.form;
+
+  function combine() {
+    hidden.value = Array.prototype.map.call(digits, function (d) { return d.value; }).join('');
+  }
+
+  digits.forEach(function (box, i) {
+    box.addEventListener('input', function () {
+      box.value = box.value.replace(/\D/g, '').slice(0, 1);
+      if (box.value && i < digits.length - 1) digits[i + 1].focus();
+      combine();
+    });
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace' && !box.value && i > 0) digits[i - 1].focus();
+    });
+    box.addEventListener('paste', function (e) {
+      var text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+      if (!text) return;
+      e.preventDefault();
+      for (var k = 0; k < digits.length; k++) digits[k].value = text.charAt(k);
+      digits[Math.min(text.length, digits.length) - 1].focus();
+      combine();
+    });
+  });
+
+  form.addEventListener('submit', combine);
+
+  // Put the cursor in the first box whenever the code popup opens
+  function focusFirst() { if (location.hash === '#verify-modal') digits[0].focus(); }
+  window.addEventListener('hashchange', focusFirst);
+  window.addEventListener('load', focusFirst);   // after a redirect the popup is only "open" once the page has loaded
+
+  // Resend button: enabled when the 60-second cooldown (counted by PHP) is over
+  var resend = document.getElementById('vmResend');
+  var timer  = document.getElementById('vmTimer');
+  var left   = <?= (int) $resendWait ?>;
+
+  function showTimer() {
+    if (left <= 0) { resend.disabled = false; timer.textContent = ''; return false; }
+    timer.textContent = 'Resend available in ' + left + 's';
+    return true;
+  }
+
+  if (showTimer()) {
+    var t = setInterval(function () {
+      left--;
+      if (!showTimer()) clearInterval(t);
+    }, 1000);
+  }
+})();
+</script>
+
+<?php endif; ?>
+
+<?php if ($codeError):
+  $titles = [
+    'wrong'   => 'Incorrect Code',
+    'expired' => 'Code Expired',
+    'locked'  => 'Too Many Attempts',
+    'none'    => 'No Code Found',
+  ];
+  $errTitle    = $titles[$codeError['reason']] ?? 'Verification Failed';
+  $showCounter = in_array($codeError['reason'], ['wrong', 'locked'], true) && $codeError['max'] > 0;
+?>
+<!-- ================= Wrong code popup (opens when the address ends in #wrong-code-modal) ================= -->
+<div class="vm" id="wrong-code-modal" role="alertdialog" aria-modal="true" aria-labelledby="wrong-title" aria-describedby="wrong-text">
+  <a href="#verify-modal" class="vm-backdrop" aria-label="Back to code entry"></a>
+
+  <div class="vm-box">
+    <div class="vm-icon vm-icon--error" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+    </div>
+
+    <h2 class="vm-title" id="wrong-title"><?= htmlspecialchars($errTitle) ?></h2>
+    <p class="vm-text" id="wrong-text"><?= htmlspecialchars($codeError['message']) ?></p>
+
+    <?php if ($showCounter): ?>
+    <!-- Attempt counter: one dot per allowed attempt, used ones are filled -->
+    <div class="vm-attempts" role="status">
+      <span class="vm-attempts-label">Attempt <strong><?= (int) $codeError['attempt'] ?></strong> of <strong><?= (int) $codeError['max'] ?></strong></span>
+      <span class="vm-dots" aria-hidden="true">
+        <?php for ($i = 1; $i <= $codeError['max']; $i++): ?><i<?= $i <= $codeError['attempt'] ? ' class="is-used"' : '' ?>></i><?php endfor; ?>
+      </span>
+    </div>
+    <?php endif; ?>
+
+    <div class="vm-actions">
+      <a href="#verify-modal" class="vm-btn vm-btn-primary">Confirm</a>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
+<?php if ($justVerified): ?>
+<!-- ================= Success popup (opens when the address ends in #verified-modal) ================= -->
+<div class="vm" id="verified-modal" role="dialog" aria-modal="true" aria-labelledby="verified-title">
+  <a href="#!" class="vm-backdrop" aria-label="Close dialog"></a>
+
+  <div class="vm-box">
+    <div class="vm-icon vm-icon--success" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+
+    <h2 class="vm-title" id="verified-title">Email Verified Successfully</h2>
+    <p class="vm-text"><strong><?= htmlspecialchars($_SESSION['verified_email'] ?? '') ?></strong> is now verified. You will receive updates on upcoming and overdue assignments.</p>
+
+    <div class="vm-actions">
+      <a href="#!" class="vm-btn vm-btn-primary">Confirm</a>
+    </div>
+  </div>
+</div>
+<?php endif; ?>
+
+
 </body>
 </html>

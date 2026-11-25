@@ -239,4 +239,34 @@ function getYourGroup(PDO $pdo, int $groupID){
     $stmt->execute([$groupID]);
     return $stmt->fetch(PDO::FETCH_ASSOC);
 }
+
+function studentEmailVerify(PDO $pdo, int $studentID, $classCode){
+    $pdo->beginTransaction();
+    try{
+
+    $stmt = $pdo->prepare("UPDATE students SET is_email_verified = ? WHERE studentID = ? AND classCode = ?");
+    $stmt->execute([1, $studentID, $classCode]);
+    
+    $pdo->commit();
+
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
+
+function changeEmailVerify(PDO $pdo, int $studentID, $classCode, string $email){
+    $pdo->beginTransaction();
+    try{
+
+    $stmt = $pdo->prepare("UPDATE students SET studentEmail = ? WHERE studentID = ? AND classCode = ? AND is_email_verified = ?");
+    $stmt->execute([$email, $studentID, $classCode, 1]);
+    
+    $pdo->commit();
+
+    }catch(Exception $e){
+        $pdo->rollBack();
+        throw $e;
+    }
+}
 ?>

@@ -244,6 +244,229 @@
   font-size: 0.875rem;
 }
 
+/* ================= Email verification popup ================= */
+.vm {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.vm:target { display: flex; }
+
+.vm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 14, 16, 0.6);
+}
+
+.vm-box {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 28px 28px;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(14, 14, 16, 0.3);
+  text-align: center;
+}
+
+.vm-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  border-radius: 50%;
+  color: var(--orange-ink);
+}
+
+.vm-icon svg { width: 26px; height: 26px; }
+
+.vm-title {
+  margin: 0 0 8px;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.vm-text {
+  max-width: 340px;
+  margin: 0 auto;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+
+.vm-text strong {
+  color: var(--ink);
+  font-weight: 650;
+}
+
+/* Six code boxes */
+.vm-otp {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0 0;
+}
+
+.vm-digit {
+  width: 100%;
+  max-width: 52px;
+  min-width: 0;
+  height: 58px;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  border-radius: var(--radius);
+  color: var(--ink);
+  font: inherit;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.vm-digit:hover { border-color: #bdb5ab; }
+
+/* A box with a digit in it turns soft orange */
+.vm-digit:valid {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+}
+
+.vm-digit:focus {
+  outline: none;
+  background: var(--surface);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.2);
+}
+
+/* Resend button + countdown */
+.vm-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.vm-resend {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  margin: 0;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--orange);
+  border-radius: 8px;
+  color: var(--orange-ink);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.vm-resend svg { width: 14px; height: 14px; }
+
+.vm-resend:hover:not(:disabled) {
+  background: var(--orange);
+  color: #fff;
+}
+
+.vm-resend:disabled {
+  background: var(--surface-tint);
+  border-color: #d9d3cc;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.vm-resend:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+.vm-timer {
+  min-width: 40px;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+}
+
+/* Cancel + Confirm */
+.vm-actions {
+  display: flex;
+  gap: 10px;
+  margin: 24px 0 0;
+}
+
+.vm-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  margin: 0;
+  padding: 0 22px;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.vm-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+.vm-btn-outline {
+  background: var(--surface);
+  border: 1px solid #d9d3cc;
+  color: var(--ink);
+}
+
+.vm-btn-outline:hover {
+  background: var(--orange-soft);
+  border-color: var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.vm-btn-primary {
+  background: var(--orange);
+  border: 1px solid var(--orange);
+  color: #fff;
+}
+
+.vm-btn-primary:hover {
+  background: var(--orange-hover);
+  border-color: var(--orange-hover);
+}
+
+@media (max-width: 520px) {
+  .vm-box { padding: 26px 20px 22px; }
+  .vm-digit { height: 52px; font-size: 1.375rem; }
+  .vm-otp { gap: 6px; }
+}
+
 /* ---------- Tablet / phone ---------- */
 @media (max-width: 900px) {
   .ev-layout { grid-template-columns: 1fr; }
@@ -252,4 +475,76 @@
 @media (max-width: 520px) {
   .ev-body { padding: 28px 20px 24px; }
   .ev-heading { font-size: 1.25rem; }
+}
+
+/* ================= Result popups (wrong code / verified) =================
+   Reuse the .vm popup above. Only the icon colour, the attempt counter and a
+   small entrance animation are new. */
+:root {
+  --danger: #d92d20;
+  --danger-ink: #b42318;
+  --danger-soft: #fdecea;
+  --danger-border: #f6c7c2;
+}
+
+.vm-icon--error {
+  background: var(--danger-soft);
+  border-color: var(--danger-border);
+  color: var(--danger);
+}
+
+.vm-icon--success {
+  background: var(--success-soft);
+  border-color: var(--success-border);
+  color: var(--success);
+}
+
+/* Attempt counter */
+.vm-attempts {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 10px 18px;
+  background: var(--surface-tint);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.vm-attempts-label {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.vm-attempts-label strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.vm-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.vm-dots i {
+  width: 10px;
+  height: 10px;
+  background: var(--border);
+  border-radius: 50%;
+}
+
+.vm-dots i.is-used { background: var(--danger); }
+
+/* Soft entrance for every popup */
+@keyframes vm-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+
+.vm:target .vm-box { animation: vm-pop 0.18s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .vm:target .vm-box { animation: none; }
 }
