@@ -58,9 +58,121 @@ function verifyEmail(string $email): array
 
     $code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-    $html = '<p>Your verification code is:</p>'
-          . '<p style="font-size:28px;font-weight:bold;letter-spacing:6px;">' . $code . '</p>'
-          . '<p>It expires in 3 minutes.</p>';
+    // ---- Email design (only this part changed) ----
+    $font = '-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif';
+
+    // One box per digit, like the code boxes in the web app
+    $cells = [];
+    foreach (str_split($code) as $digit) {
+        $cells[] = '<td class="digit" width="44" height="56" align="center" valign="middle" bgcolor="#fff1e6" '
+                 . 'style="width:44px;height:56px;background-color:#fff1e6;border:1px solid #ffd9bd;border-radius:10px;'
+                 . 'font-family:Arial,Helvetica,sans-serif;font-size:28px;font-weight:700;color:#17171a;">'
+                 . $digit . '</td>';
+    }
+    $boxes = implode('<td width="6" style="width:6px;font-size:0;line-height:0;">&nbsp;</td>', $cells);
+
+    $html = <<<HTML
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="color-scheme" content="light">
+ <title>Your verification code</title>
+ <style>
+ @media only screen and (max-width:480px) {
+  .px { padding-left:20px !important; padding-right:20px !important; }
+  .digit { width:40px !important; height:52px !important; font-size:24px !important; }
+ }
+ </style>
+ </head>
+ <body style="margin:0;padding:0;background-color:#f5f3f0;">
+
+ <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+  Your verification code is {$code}. It expires in 3 minutes.
+ </div>
+
+ <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f5f3f0" style="background-color:#f5f3f0;">
+ <tr><td align="center" style="padding:32px 16px;">
+
+  <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:560px;background-color:#ffffff;border:1px solid #e6e1db;border-radius:16px;overflow:hidden;">
+
+    <!-- Header -->
+    <tr>
+      <td class="px" bgcolor="#0e0e10" style="background-color:#0e0e10;padding:24px 32px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td width="36" valign="middle">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="36" height="36" align="center" valign="middle" bgcolor="#ff6a00" style="width:36px;height:36px;background-color:#ff6a00;border-radius:10px;font-family:{$font};font-size:18px;font-weight:700;color:#ffffff;">A</td>
+                </tr>
+              </table>
+            </td>
+            <td valign="middle" style="padding-left:12px;font-family:{$font};font-size:17px;font-weight:700;color:#ffffff;">Assignment Tracker</td>
+            <td align="right" valign="middle" style="font-family:{$font};font-size:12px;color:#9a9aa2;">Email verification</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr><td height="4" bgcolor="#ff6a00" style="height:4px;line-height:4px;font-size:0;background-color:#ff6a00;">&nbsp;</td></tr>
+
+    <!-- Message and code -->
+    <tr>
+      <td class="px" style="padding:36px 32px 8px;font-family:{$font};">
+        <h1 style="margin:0 0 10px;font-family:{$font};font-size:24px;line-height:1.3;font-weight:700;color:#17171a;">Verify your email</h1>
+        <p style="margin:0;font-family:{$font};font-size:15px;line-height:1.6;color:#6b6b72;">
+          Use the code below to confirm your email address and start receiving assignment reminders.
+        </p>
+
+        <p style="margin:28px 0 12px;font-family:{$font};font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#6b6b72;text-align:center;">
+          Your verification code
+        </p>
+
+        <table role="presentation" align="center" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+          <tr>{$boxes}</tr>
+        </table>
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+          <tr>
+            <td align="center" bgcolor="#fbf6f1" style="background-color:#fbf6f1;border:1px solid #e6e1db;border-radius:12px;padding:14px 16px;font-family:{$font};font-size:14px;color:#6b6b72;">
+              This code expires in <strong style="color:#c24e00;">3 minutes</strong>.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+    <!-- Divider -->
+    <tr>
+      <td class="px" style="padding:24px 32px 0;">
+        <div style="height:1px;line-height:1px;font-size:0;background-color:#e6e1db;">&nbsp;</div>
+      </td>
+    </tr>
+
+    <!-- Security note -->
+    <tr>
+      <td class="px" style="padding:20px 32px 32px;font-family:{$font};font-size:13px;line-height:1.6;color:#6b6b72;">
+        <strong style="color:#17171a;">Didn&rsquo;t request this?</strong>
+        You can safely ignore this email. For your security, never share this code with anyone.
+      </td>
+    </tr>
+
+    <!-- Footer -->
+    <tr>
+      <td class="px" align="center" bgcolor="#fbf6f1" style="background-color:#fbf6f1;border-top:1px solid #e6e1db;padding:18px 32px;font-family:{$font};font-size:12px;line-height:1.6;color:#6b6b72;">
+        This is an automated message from Assignment Tracker. Please do not reply to this email.
+      </td>
+    </tr>
+
+  </table>
+
+ </td></tr>
+ </table>
+
+ </body>
+</html>
+HTML;
 
     if (!sendMail($email, 'Your verification code', $html)) {
         return ['ok' => false, 'message' => 'Could not send the email. Try again later.'];
