@@ -33,6 +33,7 @@ unset($_SESSION['dashboard_flash']);
                 <li><a href="#assignments" title="Assignments"><?= dashboard_icon('file') ?><span class="nav-label">Assignments</span></a></li>
                 <li><a href="#events" title="Events"><?= dashboard_icon('calendar') ?><span class="nav-label">Events</span></a></li>
                 <li><a href="#announcements" title="Announcements"><?= dashboard_icon('bell') ?><span class="nav-label">Announcements</span></a></li>
+                <li><a href="../pages/blockForum.php" title="Forum"><?= dashboard_icon('forum') ?><span class="nav-label">Block Forum</span></a></li>
             </ul>
             <a href="../auth/logout.php" class="logout" title="Logout"><?= dashboard_icon('logout') ?><span class="nav-label">Logout</span></a>
         </nav>
