@@ -1,0 +1,255 @@
+/* ==========================================================
+   Email Verification scene
+   Load AFTER assignments.css so it can reuse its variables
+   (--orange, --border, --surface, etc.) and the .card styles.
+   ========================================================== */
+
+:root {
+  --success: #1a8f4c;
+  --success-ink: #137a3e;
+  --success-soft: #e8f6ee;
+  --success-border: #bfe5cd;
+}
+
+/* ---------- Layout ---------- */
+.ev-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+/* ---------- Status pill (card header) ---------- */
+.ev-status {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.ev-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.ev-status--pending {
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.ev-status--verified {
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+  color: var(--success-ink);
+}
+
+/* ---------- Verify card body ---------- */
+.ev-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 32px 32px;
+  text-align: center;
+}
+
+.ev-icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 18px;
+}
+
+.ev-icon svg { width: 30px; height: 30px; }
+
+.ev-icon--pending {
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  color: var(--orange-ink);
+}
+
+.ev-icon--verified {
+  background: var(--success-soft);
+  border: 1px solid var(--success-border);
+  color: var(--success);
+}
+
+.ev-heading {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.ev-sub {
+  max-width: 380px;
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* ---------- Form ---------- */
+.ev-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.ev-label {
+  color: #3a3a40;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.ev-input-wrap {
+  position: relative;
+}
+
+.ev-input-wrap svg {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: #a8a8ae;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.ev-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px 0 42px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.9375rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ev-input::placeholder { color: #a8a8ae; }
+
+.ev-input:hover { border-color: #d3cbc2; }
+
+.ev-input:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.25);
+}
+
+.ev-input[readonly] {
+  background: var(--surface-tint);
+  color: #3a3a40;
+  cursor: default;
+}
+
+.ev-input[readonly]:focus {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.ev-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  margin-top: 8px;
+  padding: 0 20px;
+  background: var(--orange);
+  border: 1px solid var(--orange);
+  border-radius: var(--radius);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.ev-btn svg { width: 18px; height: 18px; }
+
+.ev-btn:hover {
+  background: var(--orange-hover);
+  border-color: var(--orange-hover);
+}
+
+.ev-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+.ev-btn:disabled,
+.ev-btn--done {
+  background: var(--success-soft);
+  border-color: var(--success-border);
+  color: var(--success-ink);
+  cursor: default;
+}
+
+.ev-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Benefits card ---------- */
+.ev-benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.ev-benefit + .ev-benefit { border-top: 1px solid var(--border); }
+
+.ev-benefit-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--orange-soft);
+  border: 1px solid var(--orange-border);
+  border-radius: 10px;
+  color: var(--orange-ink);
+}
+
+.ev-benefit-icon svg { width: 18px; height: 18px; }
+
+.ev-benefit-title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 650;
+}
+
+.ev-benefit-desc {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+/* ---------- Tablet / phone ---------- */
+@media (max-width: 900px) {
+  .ev-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .ev-body { padding: 28px 20px 24px; }
+  .ev-heading { font-size: 1.25rem; }
+}
