@@ -1,0 +1,4 @@
+.env
+*.log
+/pages/uploads/
+.DS_Store

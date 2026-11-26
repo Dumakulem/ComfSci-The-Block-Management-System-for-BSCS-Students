@@ -2,7 +2,7 @@
     width: min(100% - 32px, 1100px);
     margin: 0 auto;
     padding: 34px 0 64px;
-    color: #172a3a;
+    color: var(--brand-dark);
 }
 
 .module-sources-header {
@@ -12,7 +12,7 @@
 .module-sources-back {
     display: inline-block;
     margin-bottom: 22px;
-    color: #06676a;
+    color: var(--brand-dark);
     font-weight: 650;
     text-decoration: none;
 }
@@ -23,7 +23,7 @@
 
 .module-sources-eyebrow {
     margin: 0 0 7px;
-    color: #06676a;
+    color: var(--brand-dark);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.13em;
@@ -38,16 +38,16 @@
 .module-sources-header > p:last-child {
     max-width: 720px;
     margin: 0;
-    color: #647789;
+    color: var(--muted);
 }
 
 .module-sources-toolbar,
 .module-sources-form-card {
     margin-bottom: 20px;
     padding: 20px;
-    border: 1px solid #dce5eb;
+    border: 1px solid var(--brand-line);
     border-radius: 16px;
-    background: #fff;
+    background: var(--card);
     box-shadow: 0 12px 32px rgba(27, 55, 74, 0.05);
 }
 
@@ -62,7 +62,7 @@
 .module-sources-fields label {
     display: grid;
     gap: 7px;
-    color: #24394b;
+    color: var(--brand-dark);
     font-size: 0.9rem;
     font-weight: 700;
 }
@@ -74,10 +74,10 @@
     width: 100%;
     min-height: 44px;
     padding: 10px 12px;
-    border: 1px solid #cbd8e0;
+    border: 1px solid var(--brand-line);
     border-radius: 9px;
-    background: #fff;
-    color: #172a3a;
+    background: var(--card);
+    color: var(--brand-dark);
     font: inherit;
 }
 
@@ -93,12 +93,12 @@
 .module-sources-fields input:focus,
 .module-sources-fields select:focus,
 .module-sources-fields textarea:focus {
-    border-color: #087f82;
-    outline: 3px solid rgba(8, 127, 130, 0.14);
+    border-color: var(--brand-dark);
+    outline: 3px solid rgba(255, 107, 0, 0.18);
 }
 
 .module-sources-block {
-    color: #647789;
+    color: var(--muted);
     font-size: 0.85rem;
 }
 
@@ -127,7 +127,7 @@
 }
 
 .module-sources-optional {
-    color: #647789;
+    color: var(--muted);
     font-size: 0.75rem;
     font-weight: 500;
 }
@@ -137,15 +137,15 @@
     padding: 8px 14px;
     border: 0;
     border-radius: 8px;
-    background: #087f82;
-    color: #fff;
+    background: var(--brand-dark);
+    color: var(--card);
     cursor: pointer;
     font: inherit;
     font-weight: 700;
 }
 
 .module-sources-button:hover {
-    background: #06676a;
+    background: var(--brand-dark);
 }
 
 .module-sources-button:disabled {
@@ -154,33 +154,33 @@
 }
 
 .module-sources-button-muted {
-    border: 1px solid #cbd8e0;
-    background: #fff;
-    color: #24394b;
+    border: 1px solid var(--brand-line);
+    background: var(--card);
+    color: var(--brand-dark);
 }
 
 .module-sources-button-muted:hover {
-    background: #f3f7f9;
-    color: #172a3a;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
 }
 
 .module-sources-button-danger {
-    background: #a63d47;
+    background: var(--danger);
 }
 
 .module-sources-button-danger:hover {
-    background: #842e38;
+    background: var(--danger-dark);
 }
 
 .module-sources-status {
     min-height: 1.4em;
     margin: 8px 0;
-    color: #526879;
+    color: var(--muted);
     font-size: 0.9rem;
 }
 
 .module-sources-status.is-error {
-    color: #842e38;
+    color: var(--danger-dark);
 }
 
 .module-sources-grid {
@@ -192,15 +192,15 @@
 .module-source-card {
     min-width: 0;
     padding: 20px;
-    border: 1px solid #dce5eb;
+    border: 1px solid var(--brand-line);
     border-radius: 15px;
-    background: #fff;
+    background: var(--card);
     box-shadow: 0 10px 28px rgba(27, 55, 74, 0.05);
 }
 
 .module-source-meta {
     margin: 0 0 10px;
-    color: #06676a;
+    color: var(--brand-dark);
     font-size: 0.78rem;
     font-weight: 750;
 }
@@ -212,7 +212,7 @@
 }
 
 .module-source-description {
-    color: #526879;
+    color: var(--muted);
     line-height: 1.5;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
@@ -221,13 +221,13 @@
 .module-source-link {
     display: inline-block;
     margin: 3px 0 12px;
-    color: #06676a;
+    color: var(--brand-dark);
     font-weight: 750;
 }
 
 .module-source-date {
     margin: 0;
-    color: #718391;
+    color: var(--muted-2);
     font-size: 0.76rem;
 }
 
@@ -240,9 +240,9 @@
 .module-sources-empty {
     grid-column: 1 / -1;
     padding: 28px;
-    border: 1px dashed #cbd8e0;
+    border: 1px dashed var(--brand-line);
     border-radius: 14px;
-    color: #647789;
+    color: var(--muted);
     text-align: center;
 }
 

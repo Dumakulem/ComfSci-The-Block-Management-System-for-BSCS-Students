@@ -409,6 +409,7 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Block Forum</title>
+    <link rel="stylesheet" href="assets/theme.css?v=1">
     <link rel="stylesheet" href="assets/forum.css">
     <link rel="stylesheet" href="assets/sidebar.css?v=1">
 </head>

@@ -106,6 +106,7 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AI Assistant | ComfSci</title>
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
     <link rel="stylesheet" href="./assets/ai_consultation.css">
     <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>

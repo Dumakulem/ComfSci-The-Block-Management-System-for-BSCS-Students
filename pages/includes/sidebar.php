@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 (static function (): void {
 $navScriptPath = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? ''));
-$gamifiedPathPosition = strpos($navScriptPath, '/gamified/');
-$pagesBaseUrl = $gamifiedPathPosition === false
+$nestedModulePathPosition = strpos($navScriptPath, '/gamified/');
+if ($nestedModulePathPosition === false) {
+    $nestedModulePathPosition = strpos($navScriptPath, '/attendance/');
+}
+$pagesBaseUrl = $nestedModulePathPosition === false
     ? rtrim(dirname($navScriptPath), '/')
-    : substr($navScriptPath, 0, $gamifiedPathPosition);
+    : substr($navScriptPath, 0, $nestedModulePathPosition);
 $pagesBaseUrl = $pagesBaseUrl === '' ? '' : $pagesBaseUrl;
 $authBaseUrl = rtrim(dirname($pagesBaseUrl), '/');
 $userType = strtolower((string) ($_SESSION['user_type'] ?? ''));
@@ -22,6 +25,10 @@ $userName = $userName !== '' ? $userName : ($isAdmin ? 'Administrator' : 'Studen
 $scriptName = basename($navScriptPath);
 $isGamifiedStudentPage = !$isAdmin && strpos($navScriptPath, '/gamified/Student/') !== false;
 $isGamifiedAdminPage = $isAdmin && strpos($navScriptPath, '/gamified/Admin/') !== false;
+$isAttendanceModulePage = strpos($navScriptPath, '/pages/attendance/') !== false;
+$isAttendanceEventList = $isAttendanceModulePage && $scriptName === 'campus-event.php';
+$isAttendanceNavActive = $isAttendanceModulePage && ($isAdmin || !$isAttendanceEventList);
+$isLegacyEventPage = in_array($scriptName, ['events.php', 'event_attendance.php'], true);
 $escapeNavigationValue = static function (string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 };
@@ -40,6 +47,7 @@ if ($isAdmin) {
         ['Announcements', '/admin_announcements.php', 'bell', $scriptName === 'admin_announcements.php'],
         ['Gamified Quiz', '/gamified/Admin/quiz1.php?tab=create', 'quiz', $isGamifiedAdminPage],
         ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
+        ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
         ['Event operations', '/admin_event_operations.php?tab=approvals', 'calendar', $scriptName === 'admin_event_operations.php'],
         ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
         ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
@@ -48,11 +56,10 @@ if ($isAdmin) {
     $navigationItems = [
         ['Dashboard', '/dashboard.php', 'dashboard', $scriptName === 'dashboard.php'],
         ['Profile', '/student_profile.php', 'user', $scriptName === 'student_profile.php'],
-        ['Classes', '/student_class.php', 'layout', $scriptName === 'student_class.php'],
-        ['Attendance', '/dashboard.php#attendance', 'attendance', $scriptName === 'dashboard.php' && isset($_GET['section']) && $_GET['section'] === 'attendance'],
+        ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
         ['Gamified Quiz', '/gamified/Student/student_dashboard.php', 'quiz', $isGamifiedStudentPage],
         ['Assignments', '/assignments.php', 'file', $scriptName === 'assignments.php'],
-        ['Campus Events', '/events.php', 'calendar', in_array($scriptName, ['events.php', 'event_attendance.php'], true)],
+        ['Campus Events', '/attendance/student/campus-event.php', 'calendar', $isAttendanceEventList || $isLegacyEventPage],
         ['Group Activities', '/group_activities.php', 'layout', $scriptName === 'group_activities.php'],
         ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
         ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
@@ -89,9 +96,9 @@ if ($isAdmin) {
     </nav>
 </aside>
 <a class="comfsci-sidebar-backdrop" href="#" data-sidebar-close aria-label="Close navigation"></a>
-<button class="comfsci-sidebar-trigger" type="button" aria-controls="dashboardSidebar" aria-expanded="false" aria-label="Open navigation">
+<!-- <button class="comfsci-sidebar-trigger" type="button" aria-controls="dashboardSidebar" aria-expanded="false" aria-label="Open navigation">
     <?= $navigationIcon('menu') ?>
-</button>
+</button> -->
 <script src="<?= $escapeNavigationValue($pagesBaseUrl . '/assets/sidebar.js?v=1') ?>" defer></script>
 <?php
 })();

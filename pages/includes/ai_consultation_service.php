@@ -6,8 +6,28 @@ function aiConsultationProviders(): array
 {
     $providers = [];
     $configurationErrors = [];
+    $localProviders = [];
+    $configurationPath = dirname(__DIR__, 2) . '/config.php';
+    if (is_file($configurationPath)) {
+        require_once $configurationPath;
+        $localProviders[1] = [
+            'base_url' => defined('GROQ_API_URL') ? constant('GROQ_API_URL') : '',
+            'api_key' => defined('GROQ_API_KEY') ? constant('GROQ_API_KEY') : '',
+            'model' => defined('GROQ_MODEL') ? constant('GROQ_MODEL') : '',
+        ];
+    }
+
     $environment = getenv();
     $providerIndexes = [];
+
+    foreach (array_keys($localProviders) as $localIndex) {
+        if ((!is_int($localIndex) && (!is_string($localIndex) || !ctype_digit($localIndex)))
+            || (int) $localIndex < 1) {
+            $configurationErrors[] = 'Local AI configuration: provider indexes must be positive integers.';
+            continue;
+        }
+        $providerIndexes[(int) $localIndex] = (int) $localIndex;
+    }
 
     if (is_array($environment)) {
         foreach (array_keys($environment) as $environmentName) {
@@ -22,12 +42,26 @@ function aiConsultationProviders(): array
     ksort($providerIndexes, SORT_NUMERIC);
 
     foreach ($providerIndexes as $index) {
+        $localProvider = $localProviders[$index] ?? [];
+        if (!is_array($localProvider)) {
+            $configurationErrors[] = 'Provider ' . $index . ': local configuration must be an array.';
+            continue;
+        }
+
         $baseUrlValue = getenv('COMFSCI_AI_PROVIDER_' . $index . '_BASE_URL');
         $apiKeyValue = getenv('COMFSCI_AI_PROVIDER_' . $index . '_API_KEY');
         $modelValue = getenv('COMFSCI_AI_PROVIDER_' . $index . '_MODEL');
-        $baseUrl = $baseUrlValue === false ? '' : trim($baseUrlValue);
-        $apiKey = $apiKeyValue === false ? '' : trim($apiKeyValue);
-        $model = $modelValue === false ? '' : trim($modelValue);
+        $localBaseUrl = $localProvider['base_url'] ?? '';
+        $localApiKey = $localProvider['api_key'] ?? '';
+        $localModel = $localProvider['model'] ?? '';
+        if (!is_string($localBaseUrl) || !is_string($localApiKey) || !is_string($localModel)) {
+            $configurationErrors[] = 'Provider ' . $index . ': local settings must be strings.';
+            continue;
+        }
+
+        $baseUrl = trim($baseUrlValue === false ? $localBaseUrl : $baseUrlValue);
+        $apiKey = trim($apiKeyValue === false ? $localApiKey : $apiKeyValue);
+        $model = trim($modelValue === false ? $localModel : $modelValue);
 
         if ($baseUrl === '' && $apiKey === '' && $model === '') {
             continue;

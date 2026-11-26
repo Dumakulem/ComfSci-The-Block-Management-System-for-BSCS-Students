@@ -1,15 +1,11 @@
 :root {
     color-scheme: light;
-    --ink: #1d2b3a;
-    --muted: #64748b;
-    --line: #e4eaf0;
-    --paper: #ffffff;
-    --canvas: #f3f6f9;
-    --blue: #2563a6;
-    --blue-dark: #174979;
-    --mint: #e8f7f1;
-    --rose: #fff0ef;
-    --shadow: 0 14px 36px rgba(31, 52, 74, 0.07);
+    --paper: var(--card);
+    --canvas: var(--page);
+    --blue: var(--brand);
+    --blue-dark: var(--brand-dark);
+    --mint: var(--ok-soft);
+    --rose: var(--danger-soft);
 }
 
 * {
@@ -37,7 +33,7 @@ button,
     border: 0;
     border-radius: 9px;
     background: var(--blue);
-    color: #fff;
+    color: var(--card);
     cursor: pointer;
     font-weight: 700;
     padding: 11px 16px;
@@ -52,7 +48,7 @@ button:hover,
 }
 
 button:disabled {
-    background: #aab8c7;
+    background: var(--line-strong);
     cursor: not-allowed;
     transform: none;
 }
@@ -131,16 +127,16 @@ button:disabled {
 .notice {
     margin: 0 0 16px;
     padding: 12px 15px;
-    border: 1px solid #b9e2d2;
+    border: 1px solid var(--ok);
     border-radius: 10px;
     background: var(--mint);
-    color: #205b45;
+    color: var(--ok-dark);
 }
 
 .notice-error {
-    border-color: #f2c5c1;
+    border-color: var(--danger);
     background: var(--rose);
-    color: #8e302b;
+    color: var(--danger);
 }
 
 .block-picker {
@@ -170,13 +166,13 @@ button:disabled {
 
 .note-composer {
     padding: 16px;
-    border: 1px solid #f0dfab;
+    border: 1px solid var(--warn);
     border-radius: 12px;
-    background: #fffaf0;
+    background: var(--warn-soft);
 }
 
 label {
-    color: #34465b;
+    color: var(--brand-dark);
     font-size: 0.88rem;
     font-weight: 700;
 }
@@ -190,9 +186,9 @@ textarea,
 select,
 input[type="file"] {
     width: 100%;
-    border: 1px solid #d5dee8;
+    border: 1px solid var(--brand-line);
     border-radius: 9px;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
 }
 
@@ -238,9 +234,9 @@ input[type="file"]:focus {
     flex-direction: column;
     justify-content: space-between;
     padding: 17px;
-    border: 1px solid #f0e2b9;
+    border: 1px solid var(--warn);
     border-radius: 12px;
-    background: #fff9e8;
+    background: var(--warn-soft);
     box-shadow: 0 5px 13px rgba(109, 88, 31, 0.06);
     overflow-wrap: anywhere;
 }
@@ -267,7 +263,7 @@ input[type="file"]:focus {
 
 .sticky-note footer span,
 .message-meta strong {
-    color: #42556b;
+    color: var(--brand-dark);
     font-weight: 700;
 }
 
@@ -284,14 +280,14 @@ input[type="file"]:focus {
     padding: 12px 15px;
     border: 1px solid var(--line);
     border-radius: 12px 12px 12px 3px;
-    background: #f8fafc;
+    background: var(--brand-soft);
 }
 
 .chat-message:nth-child(even) {
     justify-self: end;
-    border-color: #d7e8f8;
+    border-color: var(--brand-line);
     border-radius: 12px 12px 3px 12px;
-    background: #eff7ff;
+    background: var(--brand-soft);
 }
 
 .message-meta {
@@ -331,7 +327,7 @@ input[type="file"]:focus {
     padding: 17px;
     border: 1px solid var(--line);
     border-radius: 12px;
-    background: #fcfdff;
+    background: var(--brand-soft);
 }
 
 .ticket-header,
@@ -359,35 +355,35 @@ input[type="file"]:focus {
 }
 
 .category-pill {
-    background: #e8f1fb;
-    color: #245b8f;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
     text-transform: capitalize;
 }
 
 .block-tag {
-    background: #f1f5f9;
-    color: #52657a;
+    background: var(--brand-soft);
+    color: var(--muted);
 }
 
 .ticket-owner {
-    color: #52657a;
+    color: var(--muted);
     font-size: 0.82rem;
 }
 
 .status-pill {
     flex: 0 0 auto;
-    background: #fff3d4;
-    color: #815d12;
+    background: var(--warn-soft);
+    color: var(--warn);
 }
 
 .status-in_progress {
-    background: #e8f1ff;
-    color: #295991;
+    background: var(--brand-soft);
+    color: var(--brand-dark);
 }
 
 .status-closed {
-    background: #e8f7f1;
-    color: #286247;
+    background: var(--ok-soft);
+    color: var(--ok-dark);
 }
 
 .ticket-content {
@@ -408,15 +404,15 @@ input[type="file"]:focus {
 .ticket-response {
     margin-top: 14px;
     padding: 12px 14px;
-    border-left: 3px solid #71b89b;
+    border-left: 3px solid var(--ok);
     border-radius: 0 8px 8px 0;
-    background: #f0faf5;
+    background: var(--ok-soft);
 }
 
 .ticket-response strong {
     display: block;
     margin-bottom: 4px;
-    color: #286247;
+    color: var(--ok-dark);
 }
 
 .ticket-response time {
@@ -450,7 +446,7 @@ input[type="file"]:focus {
 .empty-state {
     margin: 0;
     padding: 16px;
-    border: 1px dashed #d5dee8;
+    border: 1px dashed var(--brand-line);
     border-radius: 10px;
     color: var(--muted);
     text-align: center;

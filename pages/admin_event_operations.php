@@ -96,13 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateStatement = $pdo->prepare(
                 'UPDATE tbleventpayment
                  SET amountPaid = ?, paymentStatus = ?, paymentDate = NOW(),
-                     paymentRemarks = ?, receivedByAdminID = ?
+                     paymentRemarks = ?, receivedByAdminID = ?,
+                     processedByAdminID = ?, processedByStudentID = NULL
                  WHERE paymentID = ?'
             );
             $updateStatement->execute([
                 number_format($newAmountPaidCents / 100, 2, '.', ''),
                 $paymentStatus,
                 $remarks === '' ? null : $remarks,
+                $userContext['id'],
                 $userContext['id'],
                 $paymentId,
             ]);
@@ -188,6 +190,7 @@ function eventOperationsEscape(?string $value): string
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Operations</title>
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
     <link rel="stylesheet" href="./assets/dashboard.css?v=10">
     <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>

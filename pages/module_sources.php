@@ -37,6 +37,7 @@ function moduleSourcesEscape(?string $value): string
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Module Sources | ComfSci</title>
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
     <link rel="stylesheet" href="./assets/module_sources.css">
     <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>
