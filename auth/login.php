@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <header class="brand">
                 <img class="brand__logo" src="../assets/auth/portal.png" alt="">
                 <h1 class="brand__title">
-                    <span class="brand__college">Comfy Sci</span>
+                    <span class="brand__college">COMFYSCI</span>
                     <span class="brand__portal">Portal</span>
                 </h1>
             </header>
