@@ -1,5 +1,8 @@
 <?php
 
+$usesAdminDialogs = in_array($adminEntity, ['students', 'blocks'], true);
+$singularTitle = rtrim($entity['title'], 's');
+
 $renderFields = static function (?array $record) use ($entity, $options, $adminEntity): void {
     foreach ($entity['fields'] as $field) {
         $name = $field['name'];
@@ -94,16 +97,38 @@ $formatCell = static function (string $key, $value): string {
                     <?= $showArchived ? 'View active' : 'View archived' ?>
                 </a>
                 <?php if (!$showArchived): ?>
-                    <details class="admin-create">
-                        <summary class="btn btn-solid">Add <?= dashboard_escape(rtrim($entity['title'], 's')) ?></summary>
-                        <form class="admin-form" method="post" action="./admin_action.php">
-                            <?= dashboard_csrf_field() ?>
-                            <input type="hidden" name="entity" value="<?= dashboard_escape($adminEntity) ?>">
-                            <input type="hidden" name="action" value="create">
-                            <div class="admin-form-grid"><?php $renderFields(null); ?></div>
-                            <button class="btn btn-solid" type="submit">Create</button>
-                        </form>
-                    </details>
+                    <?php if ($usesAdminDialogs): ?>
+                        <button class="btn btn-solid" type="button" data-admin-dialog-open="admin-create-dialog">
+                            Add <?= dashboard_escape($singularTitle) ?>
+                        </button>
+                        <dialog class="admin-dialog" id="admin-create-dialog" aria-labelledby="admin-create-title">
+                            <div class="admin-dialog-head">
+                                <div><p class="admin-dialog-kicker"><?= dashboard_escape($entity['title']) ?></p><h2 id="admin-create-title">Add <?= dashboard_escape($singularTitle) ?></h2></div>
+                                <button class="admin-dialog-close" type="button" data-admin-dialog-close>Close</button>
+                            </div>
+                            <form class="admin-form" method="post" action="./admin_action.php">
+                                <?= dashboard_csrf_field() ?>
+                                <input type="hidden" name="entity" value="<?= dashboard_escape($adminEntity) ?>">
+                                <input type="hidden" name="action" value="create">
+                                <div class="admin-form-grid"><?php $renderFields(null); ?></div>
+                                <div class="admin-dialog-actions">
+                                    <button class="admin-dialog-cancel" type="button" data-admin-dialog-close>Cancel</button>
+                                    <button class="btn btn-solid" type="submit">Create</button>
+                                </div>
+                            </form>
+                        </dialog>
+                    <?php else: ?>
+                        <details class="admin-create">
+                            <summary class="btn btn-solid">Add <?= dashboard_escape($singularTitle) ?></summary>
+                            <form class="admin-form" method="post" action="./admin_action.php">
+                                <?= dashboard_csrf_field() ?>
+                                <input type="hidden" name="entity" value="<?= dashboard_escape($adminEntity) ?>">
+                                <input type="hidden" name="action" value="create">
+                                <div class="admin-form-grid"><?php $renderFields(null); ?></div>
+                                <button class="btn btn-solid" type="submit">Create</button>
+                            </form>
+                        </details>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         </div>
@@ -132,6 +157,29 @@ $formatCell = static function (string $key, $value): string {
                                         <button class="linkbtn" type="submit">Restore</button>
                                     </form>
                                 <?php else: ?>
+                                    <?php if ($usesAdminDialogs):
+                                        $dialogId = 'admin-edit-' . $adminEntity . '-' . (int) $record[$entity['primaryKey']];
+                                        $dialogTitleId = $dialogId . '-title';
+                                    ?>
+                                        <button class="linkbtn" type="button" data-admin-dialog-open="<?= dashboard_escape($dialogId) ?>">Edit</button>
+                                        <dialog class="admin-dialog" id="<?= dashboard_escape($dialogId) ?>" aria-labelledby="<?= dashboard_escape($dialogTitleId) ?>">
+                                            <div class="admin-dialog-head">
+                                                <div><p class="admin-dialog-kicker"><?= dashboard_escape($entity['title']) ?></p><h2 id="<?= dashboard_escape($dialogTitleId) ?>">Edit <?= dashboard_escape($singularTitle) ?></h2></div>
+                                                <button class="admin-dialog-close" type="button" data-admin-dialog-close>Close</button>
+                                            </div>
+                                            <form class="admin-form" method="post" action="./admin_action.php">
+                                                <?= dashboard_csrf_field() ?>
+                                                <input type="hidden" name="entity" value="<?= dashboard_escape($adminEntity) ?>">
+                                                <input type="hidden" name="action" value="update">
+                                                <input type="hidden" name="id" value="<?= (int) $record[$entity['primaryKey']] ?>">
+                                                <div class="admin-form-grid"><?php $renderFields($record); ?></div>
+                                                <div class="admin-dialog-actions">
+                                                    <button class="admin-dialog-cancel" type="button" data-admin-dialog-close>Cancel</button>
+                                                    <button class="btn btn-solid" type="submit">Save changes</button>
+                                                </div>
+                                            </form>
+                                        </dialog>
+                                    <?php else: ?>
                                     <details class="admin-row-edit">
                                         <summary class="linkbtn">Edit</summary>
                                         <form class="admin-form" method="post" action="./admin_action.php">
@@ -143,6 +191,7 @@ $formatCell = static function (string $key, $value): string {
                                             <div class="admin-form-buttons"><button class="btn btn-solid" type="submit">Save changes</button></div>
                                         </form>
                                     </details>
+                                    <?php endif; ?>
                                     <form method="post" action="./admin_action.php" onsubmit="return confirm('Archive this record? It can be restored later.');">
                                         <?= dashboard_csrf_field() ?>
                                         <input type="hidden" name="entity" value="<?= dashboard_escape($adminEntity) ?>">

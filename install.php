@@ -35,6 +35,7 @@ $files = [
     'pages/sql/module_sources.sql',
     'pages/sql/ai_consultation_tables.sql',
     'pages/sql/gamified_quiz_tables.sql',
+    'pages/assignmenttracker/sql/assignment_tracker_tables.sql',
 ];
 
 try {

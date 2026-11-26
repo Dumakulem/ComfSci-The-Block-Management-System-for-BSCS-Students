@@ -8,6 +8,9 @@ $nestedModulePathPosition = strpos($navScriptPath, '/gamified/');
 if ($nestedModulePathPosition === false) {
     $nestedModulePathPosition = strpos($navScriptPath, '/attendance/');
 }
+if ($nestedModulePathPosition === false) {
+    $nestedModulePathPosition = strpos($navScriptPath, '/assignmenttracker/');
+}
 $pagesBaseUrl = $nestedModulePathPosition === false
     ? rtrim(dirname($navScriptPath), '/')
     : substr($navScriptPath, 0, $nestedModulePathPosition);
@@ -26,6 +29,7 @@ $scriptName = basename($navScriptPath);
 $isGamifiedStudentPage = !$isAdmin && strpos($navScriptPath, '/gamified/Student/') !== false;
 $isGamifiedAdminPage = $isAdmin && strpos($navScriptPath, '/gamified/Admin/') !== false;
 $isAttendanceModulePage = strpos($navScriptPath, '/pages/attendance/') !== false;
+$isAssignmentTrackerPage = strpos($navScriptPath, '/pages/assignmenttracker/') !== false;
 $isAttendanceEventList = $isAttendanceModulePage && $scriptName === 'campus-event.php';
 $isAttendanceNavActive = $isAttendanceModulePage && ($isAdmin || !$isAttendanceEventList);
 $isLegacyEventPage = in_array($scriptName, ['events.php', 'event_attendance.php'], true);
@@ -42,30 +46,32 @@ if ($isAdmin) {
         ['Dashboard', '/dashboard.php', 'dashboard', $scriptName === 'dashboard.php'],
         ['Students', '/admin_students.php', 'user', $scriptName === 'admin_students.php'],
         ['Blocks', '/admin_blocks.php', 'layout', $scriptName === 'admin_blocks.php'],
-        ['Assignments', '/admin_assignments.php', 'file', $scriptName === 'admin_assignments.php'],
-        ['Events', '/admin_events.php', 'calendar', $scriptName === 'admin_events.php'],
+        // ['Assignments', '/admin_assignments.php', 'file', $scriptName === 'admin_assignments.php'],
+        // ['Events', '/admin_events.php', 'calendar', $scriptName === 'admin_events.php'],
         ['Announcements', '/admin_announcements.php', 'bell', $scriptName === 'admin_announcements.php'],
         ['Gamified Quiz', '/gamified/Admin/quiz1.php?tab=create', 'quiz', $isGamifiedAdminPage],
-        ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
+        // ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
         ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
-        ['Event operations', '/admin_event_operations.php?tab=approvals', 'calendar', $scriptName === 'admin_event_operations.php'],
-        ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
-        ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
+        ['Assignment Tracker', '/assignmenttracker/scenes/AdminClassCodes.php', 'file', $isAssignmentTrackerPage],
+        // ['Event operations', '/admin_event_operations.php?tab=approvals', 'calendar', $scriptName === 'admin_event_operations.php'],
+        // ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
+        // ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
     ];
 } else {
     $navigationItems = [
         ['Dashboard', '/dashboard.php', 'dashboard', $scriptName === 'dashboard.php'],
         ['Profile', '/student_profile.php', 'user', $scriptName === 'student_profile.php'],
-        ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
+        // ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
+        ['Assignment Tracker', '/assignmenttracker/studentScenes/StudentAssignments.php', 'file', $isAssignmentTrackerPage],
         ['Gamified Quiz', '/gamified/Student/student_dashboard.php', 'quiz', $isGamifiedStudentPage],
-        ['Assignments', '/assignments.php', 'file', $scriptName === 'assignments.php'],
+        // ['Assignments', '/assignments.php', 'file', $scriptName === 'assignments.php'],
         ['Campus Events', '/attendance/student/campus-event.php', 'calendar', $isAttendanceEventList || $isLegacyEventPage],
-        ['Group Activities', '/group_activities.php', 'layout', $scriptName === 'group_activities.php'],
-        ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
-        ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
-        ['Grade Breakdown', '/grade_calculator.php', 'checklist', $scriptName === 'grade_calculator.php'],
-        ['Announcements', '/dashboard.php#notifications', 'bell', false],
-        ['Academic Calendar', '/dashboard.php#academicCalendar', 'calendar', false],
+        // ['Group Activities', '/group_activities.php',    'layout', $scriptName === 'group_activities.php'],
+        // ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
+        // ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
+        // ['Grade Breakdown', '/grade_calculator.php', 'checklist', $scriptName === 'grade_calculator.php'],
+        // ['Announcements', '/dashboard.php#notifications', 'bell', false],
+        // ['Academic Calendar', '/dashboard.php#academicCalendar', 'calendar', false],
         ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
     ];
 }

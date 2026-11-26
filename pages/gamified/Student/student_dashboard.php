@@ -952,4 +952,4 @@ function selectAvatar(radio) {
 }
 </script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<!-- <?php include __DIR__ . '/includes/footer.php'; ?> -->
