@@ -14,7 +14,7 @@ moduleSourcesRequireManager($context);
 moduleSourcesRequireCsrf();
 $payload = moduleSourcesJsonBody();
 $rawModuleId = $payload['moduleId'] ?? null;
-if ((!is_int($rawModuleId) && !(is_string($rawModuleId) && ctype_digit($rawModuleId)))
+if ((!is_int($rawModuleId) && !(is_string($rawModuleId) && ctype_digit((string) $rawModuleId)))
     || (int) $rawModuleId < 1
 ) {
     moduleSourcesRespond(400, ['ok' => false, 'message' => 'Choose a valid module to delete.']);
@@ -24,7 +24,9 @@ $isAdmin = in_array('admin', $context['roles'], true);
 
 try {
     $pdo = db();
-    $statement = $pdo->prepare('SELECT blockId FROM moduleSources WHERE moduleId = ? LIMIT 1');
+    $statement = $pdo->prepare(
+        'SELECT blockId, fileName FROM moduleSources WHERE moduleId = ? LIMIT 1'
+    );
     $statement->execute([$moduleId]);
     $module = $statement->fetch();
     if (!$module) {
@@ -36,6 +38,11 @@ try {
 
     $deleteStatement = $pdo->prepare('DELETE FROM moduleSources WHERE moduleId = ?');
     $deleteStatement->execute([$moduleId]);
+
+    // Remove stored file after successful DB delete
+    if (!empty($module['fileName'])) {
+        moduleSourcesDeleteFile((string) $module['fileName']);
+    }
 } catch (PDOException $exception) {
     error_log('Module source delete failed (code ' . (string) $exception->getCode() . ').');
     moduleSourcesRespond(500, ['ok' => false, 'message' => 'The module could not be deleted. Please try again.']);

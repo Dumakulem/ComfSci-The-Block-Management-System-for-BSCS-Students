@@ -1,105 +1,133 @@
+/* Module Sources — aligned with resources.css / theme tokens */
+
+:root {
+    color-scheme: light;
+    --surface: var(--card);
+    --canvas: var(--page);
+    --accent: var(--brand);
+    --accent-dark: var(--brand-dark);
+    --accent-soft: var(--brand-soft);
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font: 16px/1.5 var(--font, "Segoe UI", Arial, sans-serif);
+    overflow-x: hidden;
+}
+
+a {
+    color: var(--accent);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--brand);
+    outline-offset: 2px;
+}
+
+/* Page shell — same width formula as resources / group activities */
 .module-sources-page {
-    width: min(100% - 32px, 1100px);
+    width: min(1120px, calc(100% - 40px));
+    max-width: 100%;
     margin: 0 auto;
-    padding: 34px 0 64px;
-    color: var(--brand-dark);
+    padding: 32px 0 64px;
+    color: var(--ink);
 }
 
 .module-sources-header {
-    margin-bottom: 24px;
+    padding: 12px 0 24px;
 }
 
 .module-sources-back {
     display: inline-block;
-    margin-bottom: 22px;
-    color: var(--brand-dark);
-    font-weight: 650;
+    margin-bottom: 30px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
     text-decoration: none;
 }
 
 .module-sources-back:hover {
+    color: var(--accent-dark);
     text-decoration: underline;
 }
 
 .module-sources-eyebrow {
     margin: 0 0 7px;
-    color: var(--brand-dark);
-    font-size: 0.72rem;
+    color: var(--accent);
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.13em;
 }
 
 .module-sources-header h1 {
     margin: 0 0 8px;
-    font-size: clamp(2rem, 5vw, 2.7rem);
-    letter-spacing: -0.045em;
+    font-size: clamp(32px, 5vw, 46px);
+    letter-spacing: -0.04em;
+    line-height: 1.12;
+    color: var(--ink);
 }
 
-.module-sources-header > p:last-child {
+.module-sources-header > p:last-child,
+.module-sources-intro {
     max-width: 720px;
     margin: 0;
     color: var(--muted);
+}
+
+/* Cards / panels */
+.module-sources-toolbar,
+.module-sources-form-card,
+.module-source-card,
+.module-sources-empty {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgb(34 45 77 / 4%);
 }
 
 .module-sources-toolbar,
 .module-sources-form-card {
     margin-bottom: 20px;
     padding: 20px;
-    border: 1px solid var(--brand-line);
-    border-radius: 16px;
-    background: var(--card);
-    box-shadow: 0 12px 32px rgba(27, 55, 74, 0.05);
 }
 
 .module-sources-toolbar {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-end;
+    gap: 12px 14px;
 }
 
-.module-sources-toolbar label,
-.module-sources-fields label {
+.module-sources-toolbar label {
+    flex: 1 1 280px;
     display: grid;
-    gap: 7px;
+    gap: 6px;
     color: var(--brand-dark);
-    font-size: 0.9rem;
+    font-size: 13px;
     font-weight: 700;
 }
 
-.module-sources-toolbar input,
-.module-sources-fields input,
-.module-sources-fields select,
-.module-sources-fields textarea {
-    width: 100%;
-    min-height: 44px;
-    padding: 10px 12px;
-    border: 1px solid var(--brand-line);
-    border-radius: 9px;
-    background: var(--card);
-    color: var(--brand-dark);
-    font: inherit;
-}
-
-.module-sources-toolbar input {
-    flex: 1 1 280px;
-}
-
-.module-sources-fields textarea {
-    resize: vertical;
-}
-
-.module-sources-toolbar input:focus,
-.module-sources-fields input:focus,
-.module-sources-fields select:focus,
-.module-sources-fields textarea:focus {
-    border-color: var(--brand-dark);
-    outline: 3px solid rgba(255, 107, 0, 0.18);
-}
-
 .module-sources-block {
+    flex: 0 0 auto;
+    align-self: center;
     color: var(--muted);
-    font-size: 0.85rem;
+    font-size: 13px;
 }
 
 .module-sources-form-heading {
@@ -112,13 +140,14 @@
 
 .module-sources-form-heading h2 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.25rem;
+    color: var(--ink);
 }
 
 .module-sources-fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px;
+    gap: 14px;
     margin-bottom: 16px;
 }
 
@@ -126,26 +155,127 @@
     grid-column: 1 / -1;
 }
 
-.module-sources-optional {
-    color: var(--muted);
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.module-sources-button {
-    min-height: 40px;
-    padding: 8px 14px;
-    border: 0;
-    border-radius: 8px;
-    background: var(--brand-dark);
-    color: var(--card);
-    cursor: pointer;
-    font: inherit;
+.module-sources-fields label,
+.module-sources-form-card label {
+    display: grid;
+    gap: 6px;
+    color: var(--brand-dark);
+    font-size: 13px;
     font-weight: 700;
 }
 
-.module-sources-button:hover {
+.module-sources-optional {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.module-sources-hint {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted-2, var(--muted));
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* Form controls — match resources */
+.module-sources-toolbar input,
+.module-sources-fields input,
+.module-sources-fields select,
+.module-sources-fields textarea {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid var(--brand-line);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.module-sources-toolbar input,
+.module-sources-fields input,
+.module-sources-fields select {
+    height: 42px;
+    min-height: 42px;
+    padding: 0 11px;
+}
+
+.module-sources-fields textarea {
+    min-height: 82px;
+    padding: 10px 11px;
+    resize: vertical;
+}
+
+.module-sources-toolbar input:focus,
+.module-sources-fields input:focus,
+.module-sources-fields select:focus,
+.module-sources-fields textarea:focus {
+    border-color: var(--brand-dark);
+    outline: 3px solid rgba(255, 107, 0, 0.18);
+}
+
+.module-sources-fields input[type="file"] {
+    height: auto;
+    min-height: 0;
+    padding: 8px 0;
+    border: 0;
+    background: transparent;
+}
+
+.module-sources-current-file {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    padding: 10px 12px;
+    border: 1px dashed var(--line);
+    border-radius: 8px;
+    background: var(--page-soft, var(--brand-soft));
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+}
+
+.module-sources-remove-file {
+    display: inline-flex !important;
+    grid: none !important;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--brand-dark);
+}
+
+.module-sources-remove-file input {
+    width: auto;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+}
+
+/* Buttons — match resources */
+.module-sources-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: 8px;
     background: var(--brand-dark);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.module-sources-button:hover {
+    background: var(--ink);
+    color: #fff;
 }
 
 .module-sources-button:disabled {
@@ -154,29 +284,31 @@
 }
 
 .module-sources-button-muted {
-    border: 1px solid var(--brand-line);
+    border: 1px solid var(--line);
     background: var(--card);
-    color: var(--brand-dark);
+    color: var(--ink);
 }
 
 .module-sources-button-muted:hover {
-    background: var(--brand-soft);
+    background: var(--page-soft, #faf8f6);
     color: var(--brand-dark);
 }
 
 .module-sources-button-danger {
     background: var(--danger);
+    color: #fff;
 }
 
 .module-sources-button-danger:hover {
     background: var(--danger-dark);
+    color: #fff;
 }
 
 .module-sources-status {
     min-height: 1.4em;
-    margin: 8px 0;
+    margin: 8px 0 12px;
     color: var(--muted);
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 .module-sources-status.is-error {
@@ -192,66 +324,98 @@
 .module-source-card {
     min-width: 0;
     padding: 20px;
-    border: 1px solid var(--brand-line);
-    border-radius: 15px;
-    background: var(--card);
-    box-shadow: 0 10px 28px rgba(27, 55, 74, 0.05);
 }
 
 .module-source-meta {
-    margin: 0 0 10px;
-    color: var(--brand-dark);
-    font-size: 0.78rem;
-    font-weight: 750;
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
 }
 
 .module-source-title {
-    margin: 0 0 10px;
-    overflow-wrap: anywhere;
+    margin: 0 0 8px;
     font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 1.25;
 }
 
 .module-source-description {
+    margin: 0 0 8px;
     color: var(--muted);
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.module-source-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    margin: 12px 0 4px;
 }
 
 .module-source-link {
-    display: inline-block;
-    margin: 3px 0 12px;
+    display: inline-flex;
+    align-items: center;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.module-source-link:hover {
+    color: var(--accent-dark);
+    text-decoration: underline;
+}
+
+.module-source-link-file {
     color: var(--brand-dark);
-    font-weight: 750;
+}
+
+.module-source-link-download {
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 13px;
 }
 
 .module-source-date {
-    margin: 0;
-    color: var(--muted-2);
-    font-size: 0.76rem;
+    margin: 10px 0 0;
+    color: var(--muted-2, var(--muted));
+    font-size: 12px;
 }
 
 .module-source-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    margin-top: 15px;
+    margin-top: 14px;
 }
 
 .module-sources-empty {
     grid-column: 1 / -1;
     padding: 28px;
-    border: 1px dashed var(--brand-line);
-    border-radius: 14px;
     color: var(--muted);
     text-align: center;
+    border-style: dashed;
 }
 
-@media (max-width: 620px) {
+@media (max-width: 720px) {
+    .module-sources-page {
+        width: min(100% - 24px, 1120px);
+        padding-top: 20px;
+    }
+
     .module-sources-fields {
         grid-template-columns: 1fr;
     }
 
-    .module-sources-field-wide {
-        grid-column: auto;
+    .module-sources-header h1 {
+        font-size: clamp(28px, 8vw, 36px);
     }
+}
+
+body.comfsci-shell {
+    overflow-x: hidden;
 }
