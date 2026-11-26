@@ -235,11 +235,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('Ticket details must contain 1–2,000 characters.');
             }
 
-            $attachmentPath = forumUploadTicketProof($_FILES['proofAttachment'] ?? []);
             try {
                 $insertTicket = $pdo->prepare(
                     "INSERT INTO tblmessage
-                        (blockID, studentID, messageContent, attachmentPath, messageType, ticketCategory, ticketStatus, createdAt)
+                        (blockID, studentID, messageContent, messageType, ticketCategory, ticketStatus, createdAt)
                      VALUES (?, ?, ?, ?, 'ticket', ?, 'open', NOW())"
                 );
                 $insertTicket->execute([$blockId, $userId, $content, $attachmentPath, $category]);
@@ -487,12 +486,12 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
                 </div>
             <?php endif; ?>
         </section>
-
+    <div id="forumChat">
         <section class="forum-section chat-section" aria-labelledby="chat-heading">
             <div class="section-heading">
                 <div>
                     <p class="eyebrow">Block <?= (int) $selectedBlockId ?></p>
-                    <h2 id="chat-heading">Block chat</h2>
+                    <h2 id="chat-heading">Block Chat</h2>
                 </div>
                 <span class="section-count">Shared conversation</span>
             </div>
@@ -524,6 +523,7 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
                 </form>
             <?php endif; ?>
         </section>
+    </div>
     <?php else: ?>
         <section class="forum-section"><p class="empty-state">No active blocks are available.</p></section>
     <?php endif; ?>
