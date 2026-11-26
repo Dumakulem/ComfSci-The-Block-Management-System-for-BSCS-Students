@@ -429,6 +429,17 @@ html[data-sidebar="open"] .main { margin-left: var(--sidebar-open-width); }
 .admin-create > summary::-webkit-details-marker, .admin-row-edit > summary::-webkit-details-marker { display: none; }
 .admin-create > summary { white-space: nowrap; }
 .admin-form { display: grid; gap: 12px; min-width: min(520px, calc(100vw - 48px)); margin-top: 10px; padding: 13px; border: 1px solid var(--line); border-radius: 11px; background: var(--card); }
+.admin-dialog { width: min(580px, calc(100vw - 32px)); max-height: min(88vh, 780px); margin: auto; padding: 22px; overflow-y: auto; border: 1px solid var(--line); border-radius: 18px; background: var(--card); color: var(--ink); box-shadow: 0 24px 70px rgba(0,0,0,.24); }
+.admin-dialog[open] { display: grid; gap: 18px; }
+.admin-dialog::backdrop { background: rgba(23,20,17,.55); backdrop-filter: blur(2px); }
+.admin-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.admin-dialog-kicker { margin: 0 0 4px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.admin-dialog-head h2 { margin: 0; color: var(--ink); font-size: 20px; line-height: 1.25; }
+.admin-dialog-close, .admin-dialog-cancel { padding: 8px 11px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); color: var(--ink); font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.admin-dialog-close:hover, .admin-dialog-cancel:hover { background: var(--page); }
+.admin-dialog .admin-form { min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; }
+.admin-dialog .admin-form-grid { gap: 13px; }
+.admin-dialog-actions { display: flex; justify-content: flex-end; gap: 9px; padding-top: 3px; }
 .admin-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .admin-form-field { min-width: 0; display: grid; gap: 5px; }
 .admin-field-full { grid-column: 1 / -1; }

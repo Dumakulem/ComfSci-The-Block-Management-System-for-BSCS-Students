@@ -1969,4 +1969,4 @@ include __DIR__ . '/includes/header.php';
 
 <script src="js/student_quiz.js?v=8"></script>
 
-<?php include __DIR__ . '/includes/footer.php'; ?>
+<!-- <?php include __DIR__ . '/includes/footer.php'; ?> -->

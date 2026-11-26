@@ -1,0 +1,65 @@
+:root {
+  --bg: var(--page);
+  --surface: var(--card);
+  --surface-tint: var(--page-soft);
+  --border: var(--line);
+  --accent: var(--brand);
+  --accent-hover: var(--brand-dark);
+  --accent-soft: var(--brand-soft);
+  --accent-border: var(--brand-line);
+  --black: #171411;
+  --orange: var(--brand);
+  --orange-hover: var(--brand-dark);
+  --orange-ink: var(--brand-dark);
+  --orange-soft: var(--brand-soft);
+  --orange-border: var(--brand-line);
+  --radius: 12px;
+}
+
+body.comfsci-shell {
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0 0 0 var(--comfsci-sidebar-width);
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--font);
+}
+
+html[data-sidebar="open"] body.comfsci-shell {
+  padding-left: var(--comfsci-sidebar-open-width);
+}
+
+body.comfsci-shell > .shell {
+  display: block;
+  min-height: 100vh;
+  margin: 0;
+}
+
+body.comfsci-shell > .shell > .sidebar {
+  display: none;
+}
+
+body.comfsci-shell .main {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0 28px 56px;
+}
+
+@media (min-width: 901px) {
+  .comfsci-sidebar-trigger {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  body.comfsci-shell,
+  html[data-sidebar="open"] body.comfsci-shell {
+    padding-left: 0;
+  }
+
+  body.comfsci-shell .main {
+    padding: 0 16px 40px;
+  }
+}

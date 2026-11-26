@@ -47,6 +47,47 @@
         });
     }
 
+    document.addEventListener('click', function (event) {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+
+        const opener = event.target.closest('[data-admin-dialog-open]');
+        if (opener) {
+            const dialog = document.getElementById(opener.dataset.adminDialogOpen);
+            if (dialog && typeof dialog.showModal === 'function' && !dialog.open) {
+                dialog.showModal();
+                const firstField = dialog.querySelector('input:not([type="hidden"]), select, textarea');
+                if (firstField) {
+                    firstField.focus();
+                }
+            }
+            return;
+        }
+
+        const closer = event.target.closest('[data-admin-dialog-close]');
+        if (closer) {
+            const dialog = closer.closest('dialog');
+            if (dialog && dialog.open) {
+                dialog.close();
+            }
+        }
+    });
+
+    document.querySelectorAll('dialog.admin-dialog').forEach(function (dialog) {
+        dialog.addEventListener('close', function () {
+            const form = dialog.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+        });
+        dialog.addEventListener('click', function (event) {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+    });
+
     const addTaskForm = document.querySelector('.add-task-form');
     document.querySelectorAll('.addTaskToggle').forEach(function (button) {
         button.addEventListener('click', function () {

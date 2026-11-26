@@ -1,0 +1,549 @@
+:root {
+  --bg: #f5f3f0;
+  --surface: #ffffff;
+  --surface-tint: #fbf6f1;
+  --border: #e6e1db;
+  --ink: #17171a;
+  --muted: #6b6b72;
+  --accent: #ff6a00;
+  --accent-hover: #e55f00;
+  --accent-soft: #fff1e6;
+  --accent-border: #ffd9bd;
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.mark {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  border-radius: 8px;
+}
+
+.mark svg { width: 18px; height: 18px; }
+
+.btn-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.btn-logout svg { width: 16px; height: 16px; }
+
+.btn-logout:hover {
+  background: var(--accent-soft);
+  border-color: #b8c8f5;
+}
+
+.btn-logout:focus-visible,
+.btn-enter:focus-visible,
+.card-add:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.28);
+}
+
+/* ---------- Page heading ---------- */
+.page-head { padding: 40px 0 28px; }
+
+.page-head h1 {
+  margin: 0 0 6px;
+  font-size: 1.75rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.page-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+/* ---------- Card grid ---------- */
+/* New cards flow into the grid automatically and wrap onto new rows. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  padding-bottom: 56px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(24, 32, 43, 0.04);
+  overflow: hidden;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+
+.card:hover {
+  border-color: #c3cad6;
+  box-shadow: 0 1px 2px rgba(24, 32, 43, 0.04), 0 8px 20px rgba(24, 32, 43, 0.06);
+}
+
+.card-body {
+  flex: 1;
+  padding: 22px 22px 20px;
+}
+
+.code-badge {
+  display: inline-block;
+  max-width: 100%;
+  padding: 4px 10px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  color: #1a3fa8;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.block-label {
+  margin: 18px 0 2px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.block-name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  background: var(--surface-tint);
+  border-top: 1px solid var(--border);
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-border);
+  border-radius: 50%;
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.person-name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-enter {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  margin: 0;                    /* added: buttons can have a default margin */
+  padding: 0 18px;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: inherit;         /* added: buttons don't inherit the page font */
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;               /* added */
+  text-decoration: none;            /* added */
+  -webkit-appearance: none;     /* added: removes native button look */
+  appearance: none;     
+  cursor: pointer;  
+  transition: background-color 0.15s, color 0.15s;
+}
+
+/* The form is now the flex item in the card footer, so keep it tight */
+.enter-form {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.btn-enter:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---------- "Add" card ---------- */
+.card-add {
+  min-height: 190px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: transparent;
+  border: 2px dashed #c3cad6;
+  box-shadow: none;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.card-add:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: none;
+  color: var(--accent);
+}
+
+.plus {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(24, 32, 43, 0.06);
+  color: var(--accent);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.plus svg { width: 24px; height: 24px; }
+
+.card-add:hover .plus {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* The form becomes the grid item, so it stretches to the row height like the other cards */
+.add-form {
+  display: flex;
+  margin: 0;
+}
+
+/* Reset the browser's default button styling so it looks like the card */
+button.card-add {
+  flex: 1;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  text-align: center;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ---------- Small screens ---------- */
+@media (max-width: 520px) {
+  .container { padding: 0 16px; }
+  .page-head { padding: 28px 0 20px; }
+  .page-head h1 { font-size: 1.5rem; }
+  .btn-logout span { display: none; }
+  .btn-logout { padding: 0 11px; }
+}
+
+/* ---------- Create class form ---------- */
+.form-wrap {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.breadcrumb a {
+  color: var(--muted);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: 4px;
+}
+
+.breadcrumb a:hover { color: var(--accent); }
+
+.breadcrumb a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.28);
+}
+
+.breadcrumb [aria-current] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.form-card {
+  padding: 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(24, 32, 43, 0.04), 0 8px 24px rgba(24, 32, 43, 0.06);
+}
+
+.form-card h1 {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.form-card .subtitle {
+  margin: 0 0 28px;
+  color: var(--muted);
+  font-size: 0.9375rem;
+}
+
+.field { margin-bottom: 18px; }
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input::placeholder { color: #98a1ae; }
+
+.field input:hover { border-color: #b9c1cd; }
+
+.field input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.18);
+}
+
+.hint {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: var(--radius);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.28);
+}
+
+.btn-primary {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-soft);
+  border-color: #b8c8f5;
+}
+
+/* Lets the button sit directly in the grid, so the form doesn't break the layout */
+.add-form { display: contents; }
+
+/* Remove default button styling so it matches the other cards */
+button.card-add {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row-reverse; /* Cancel on the left, Create on the right */
+  gap: 12px;
+  margin-top: 28px;
+}
+
+@media (max-width: 520px) {
+  .form-wrap { padding: 20px 0 40px; }
+  .form-card { padding: 28px 20px; }
+}
+
+/* ---------- Block selection page ---------- */
+.content {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.class-card {
+  display: flex;
+  min-width: 0;
+  margin: 0;
+}
+
+.class-card .btn-enter {
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  min-height: 104px;
+  padding: 20px 22px;
+  gap: 6px;
+  border-color: var(--border);
+  border-radius: 14px;
+  color: var(--ink);
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.class-card .btn-enter:hover {
+  background: var(--surface);
+  border-color: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 8px 20px rgba(14, 14, 16, 0.07);
+  transform: translateY(-2px);
+}
+
+.class-card .btn-enter span {
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.btn-enter:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 106, 0, 0.35);
+}
+
+.back-dashboard {
+  display: inline-block;
+  margin-top: 28px;
+  color: #c24e00;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.back-dashboard:hover { text-decoration: underline; }
