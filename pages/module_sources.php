@@ -139,7 +139,7 @@ function moduleSourcesEscape(?string $value): string
     <p class="module-sources-status" id="module-source-list-status" role="status" aria-live="polite"></p>
     <section class="module-sources-grid" id="module-source-list" aria-live="polite"></section>
 </main>
-<script src="./assets/module_sources.js?v=3" defer></script>
+<script src="./assets/module_sources.js?v=4" defer></script>
 <?php
 $aiChatWidget = __DIR__ . '/includes/ai_chat_widget.php';
 if (is_file($aiChatWidget)) {

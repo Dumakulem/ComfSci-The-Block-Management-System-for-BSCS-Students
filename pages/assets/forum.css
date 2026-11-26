@@ -147,28 +147,34 @@ article.chat-message {
     flex: 0 0 auto;
     margin-top: 16px;
 }
-
+/* Modified START*/
 .forum-section {
     margin: 18px 0;
     padding: 24px;
-    border: 1px solid var(--line);
+    border: 1rem solid;
     border-radius: 16px;
     background: var(--paper);
     box-shadow: var(--shadow);
+    background: var(--bg, linear-gradient(174deg, #F76E10 -7.13%, #B24B28 44.24%, #682C0C 97.4%));
 }
 
 .section-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding: 1rem;
     gap: 16px;
     margin-bottom: 20px;
+    background: #000;
+    border: .5rem solid #000 ;
+    border-radius: 16px;
 }
 
 .section-heading h2 {
     font-size: 1.45rem;
+    color: white;
 }
-
+/* Modified END */
 .section-count {
     color: var(--muted);
     font-size: 0.82rem;
@@ -224,8 +230,9 @@ article.chat-message {
 
 label {
     color: var(--brand-dark);
-    font-size: 0.88rem;
-    font-weight: 700;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: black;
 }
 
 label span {
@@ -237,10 +244,11 @@ textarea,
 select,
 input[type="file"] {
     width: 100%;
-    border: 1px solid var(--brand-line);
+    border: .25rem solid black;
     border-radius: 9px;
     background: var(--card);
     color: var(--ink);
+    background: #b1ffa2;
 }
 
 textarea,
@@ -501,8 +509,10 @@ input[type="file"]:focus {
 .empty-state {
     margin: 0;
     padding: 16px;
-    border: 1px dashed var(--brand-line);
+    text-size-adjust: inherit;
+    border: .25rem dashed var(--brand-line);
     border-radius: 10px;
+    background: white;
     color: var(--muted);
     text-align: center;
 }

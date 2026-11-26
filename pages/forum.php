@@ -242,13 +242,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, ?, ?, 'ticket', ?, 'open', NOW())"
                 );
                 $insertTicket->execute([$blockId, $userId, $content, $attachmentPath, $category]);
-            } catch (Throwable $exception) {
+            } catch (Throwable $exception)  {
                 if ($attachmentPath !== null) {
                     $savedPath = __DIR__ . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $attachmentPath);
                     if (is_file($savedPath)) {
                         @unlink($savedPath);
                     }
-                }
+                } 
                 throw $exception;
             }
             forumRedirect('Your support ticket was submitted.');
@@ -627,7 +627,7 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-    </section>
+</section>
 
     <footer class="forum-footer">Be kind, keep private information in tickets, and look out for one another.</footer>
 </main>

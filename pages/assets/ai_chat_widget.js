@@ -1,137 +1,149 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const panel = document.getElementById('comfsci-chat-panel');
-    const toggle = document.getElementById('comfsci-chat-toggle');
-    const closeButton = document.getElementById('comfsci-chat-close');
-    const form = document.getElementById('comfsci-chat-form');
-    const input = document.getElementById('comfsci-chat-user-message');
-    const sendButton = document.getElementById('comfsci-chat-send');
-    const shareContext = document.getElementById('comfsci-chat-share-context');
-    const messages = document.getElementById('comfsci-chat-messages');
+    const chatContainer = document.getElementById('chat-container');
+    const chatToggle = document.getElementById('chat-toggle');
+    const closeChat = document.getElementById('close-chat');
+    const userMessage = document.getElementById('user-message');
+    const sendButton = document.getElementById('send-button');
+    const chatMessages = document.getElementById('chat-messages');
 
-    if (!panel || !toggle || !closeButton || !form || !input || !sendButton || !shareContext || !messages) {
+    if (!chatContainer || !chatToggle || !closeChat || !userMessage || !sendButton || !chatMessages) {
         return;
     }
 
-    const history = [];
+    const apiURL = chatContainer.dataset.apiUrl;
+    const csrfToken = chatContainer.dataset.csrfToken || '';
+    const conversationHistory = [];
 
     function openChat() {
-        panel.classList.add('comfsci-chat-active');
-        panel.setAttribute('aria-hidden', 'false');
-        toggle.setAttribute('aria-expanded', 'true');
-        toggle.hidden = true;
-        input.focus();
+        chatContainer.classList.add('active');
+        chatContainer.setAttribute('aria-hidden', 'false');
+        chatToggle.setAttribute('aria-expanded', 'true');
+        chatToggle.hidden = true;
+        userMessage.focus();
     }
 
-    function closeChat() {
-        panel.classList.remove('comfsci-chat-active');
-        panel.setAttribute('aria-hidden', 'true');
-        toggle.setAttribute('aria-expanded', 'false');
-        toggle.hidden = false;
-        toggle.focus();
+    function closeChatPanel() {
+        chatContainer.classList.remove('active');
+        chatContainer.setAttribute('aria-hidden', 'true');
+        chatToggle.setAttribute('aria-expanded', 'false');
+        chatToggle.hidden = false;
+        chatToggle.focus();
     }
 
-    function addMessage(content, sender) {
-        const element = document.createElement('div');
-        element.className = 'comfsci-chat-message comfsci-chat-message-' + sender;
-        element.textContent = content;
-        messages.appendChild(element);
-        messages.scrollTop = messages.scrollHeight;
-        return element;
+    function addMessage(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+        messageElement.textContent = message;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return messageElement;
     }
 
-    function getPageContext(includeText) {
-        let text = '';
-        if (includeText) {
-            const root = document.querySelector('[data-chat-context]') || document.querySelector('main') || document.body;
-            const ignored = '#comfsci-chat-toggle, #comfsci-chat-panel, [data-chatbot-ignore]';
-            const skipTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'LINK']);
+    function getPageContext() {
+        const skipTags = new Set(['SCRIPT', 'STYLE', 'NOSCRIPT', 'LINK']);
+        const ignore = '#chat-toggle, #chat-container, [data-chatbot-ignore]';
 
-            if (root === document.body) {
-                text = Array.from(document.body.children)
-                    .filter(function (element) {
-                        return !skipTags.has(element.tagName) && !element.matches(ignored);
-                    })
-                    .map(function (element) {
-                        return element.innerText || '';
-                    })
-                    .join('\n');
-            } else {
-                text = root.innerText || '';
-            }
-            text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+        const root = document.querySelector('[data-chat-context]')
+                  || document.querySelector('main')
+                  || document.body;
+
+        let text;
+        if (root === document.body) {
+            text = Array.from(document.body.children)
+                .filter(function (element) {
+                    return !skipTags.has(element.tagName) && !element.matches(ignore);
+                })
+                .map(function (element) {
+                    return element.innerText || '';
+                })
+                .join('\n');
+        } else {
+            text = root.innerText || '';
         }
 
+        text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+        const limit = 12000;
+
         return {
-            title: document.title.slice(0, 200),
-            url: location.pathname.slice(0, 300),
-            text: text.slice(0, 12000)
+            title: document.title,
+            url: location.pathname + location.search,
+            text: text.slice(0, limit),
+            truncated: text.length > limit
         };
     }
 
+    function renderBotReply(element, reply) {
+        if (typeof marked !== 'undefined' && typeof DOMPurify !== 'undefined') {
+            element.innerHTML = DOMPurify.sanitize(marked.parse(String(reply || '')));
+        } else {
+            element.textContent = reply;
+        }
+    }
+
     async function sendMessage() {
-        const message = input.value.trim();
+        const message = userMessage.value.trim();
         if (!message || sendButton.disabled) {
             return;
         }
 
         addMessage(message, 'user');
-        input.value = '';
+        userMessage.value = '';
         sendButton.disabled = true;
-        const includePageText = shareContext.checked;
-        shareContext.checked = false;
-        const responseMessage = addMessage('Thinking...', 'bot');
+
+        const loadingMessage = addMessage('Thinking...', 'bot');
 
         try {
-            const response = await fetch(panel.dataset.apiUrl, {
+            const response = await fetch(apiURL, {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': panel.dataset.csrfToken
+                    'X-CSRF-Token': csrfToken
                 },
                 body: JSON.stringify({
                     message: message,
-                    chatHistory: history.slice(-20),
-                    pageContext: getPageContext(includePageText),
-                    sharePageText: includePageText
+                    chatHistory: conversationHistory.slice(-20),
+                    pageContext: getPageContext(),
+                    sharePageText: true
                 })
             });
+
             const data = await response.json().catch(function () {
                 return {};
             });
+
             if (!response.ok) {
-                throw new Error(data.error || 'The assistant could not complete that request.');
+                throw new Error(data.error || 'Request failed');
             }
 
-            responseMessage.textContent = data.reply;
-            history.push(
+            renderBotReply(loadingMessage, data.reply);
+            conversationHistory.push(
                 { role: 'user', content: message },
                 { role: 'assistant', content: data.reply }
             );
-            if (Number.isInteger(data.remaining)) {
-                const privacyNotice = document.querySelector('.comfsci-chat-privacy');
-                if (privacyNotice) {
-                    privacyNotice.textContent = data.remaining + ' question' + (data.remaining === 1 ? '' : 's') + ' left today. Page text sharing is off unless you opt in below.';
-                }
-            }
         } catch (error) {
-            responseMessage.textContent = error.message;
-        } finally {
-            sendButton.disabled = false;
-            input.focus();
-            messages.scrollTop = messages.scrollHeight;
+            loadingMessage.textContent = 'Error: ' + error.message;
         }
+
+        sendButton.disabled = false;
+        userMessage.focus();
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    toggle.addEventListener('click', openChat);
-    closeButton.addEventListener('click', closeChat);
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-        sendMessage();
+    chatToggle.addEventListener('click', openChat);
+    closeChat.addEventListener('click', closeChatPanel);
+    sendButton.addEventListener('click', sendMessage);
+
+    userMessage.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            sendMessage();
+        }
     });
+
     document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && panel.classList.contains('comfsci-chat-active')) {
-            closeChat();
+        if (event.key === 'Escape' && chatContainer.classList.contains('active')) {
+            closeChatPanel();
         }
     });
 });
