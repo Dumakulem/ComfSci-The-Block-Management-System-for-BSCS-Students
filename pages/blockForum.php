@@ -1,7 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../auth/require_auth.php';
-require_once '../pages/renderers/dashboard_helpers.php';
+require_once __DIR__ . '/../pages/renderers/dashboard_helpers.php';
+require_once __DIR__ . '/../pages/blockForum/message.php';
 
 $userName = $_SESSION['user_name'] ?? $_SESSION['user_email'];
 $userEmail = $_SESSION['user_email'];
@@ -14,6 +15,7 @@ $announcements = $adminData['announcements'];
 $flashMessage = (string) ($_SESSION['dashboard_flash'] ?? '');
 unset($_SESSION['dashboard_flash']);
 
+$i = 0;
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light" data-sidebar="closed">
@@ -54,19 +56,28 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   border-radius: 16px;
 }
 
+#messageFrame {
+    display: inherit;
+    flex-direction: inherit;
+    width: 100%;
+    height: 70%;
+    padding: 10px;
+    gap: 1rem;
+    border-radius: 16px;
+    align-items: flex-start;
+    background-color: black;
+}
 
-.messageFrame {
+.messageStack {
   /* Layout */
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 70%;
+  height: 80%;
   overflow-y: auto;
   align-items: flex-start;
   background: #000;
-  padding: 10px;
   gap: 1rem;
-  border-radius: 16px;
 }
 
 .messageContent {
@@ -74,7 +85,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   flex-direction: column;
   width: 100%;
   height: 100%;
-  min-height: 33%;
+  min-height: 50%;
   align-items: flex-start;
   max-height: 40%;
   background: var(--bg, linear-gradient(174deg, #F76E10 -7.13%, #B24B28 44.24%, #682C0C 97.4%));
@@ -83,7 +94,6 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
 
   border-radius: 18px;
 }
-
 .messengerFrame {
   display: flex;
   flex-direction: row;
@@ -109,7 +119,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   padding: 0px 10px 0 10px;
 }
 
-#messageText {
+#messageText, #inputField{
   font-family: 'Courier New', Courier, monospace;
   font-style: monospace;
   font-weight: bold;
@@ -153,6 +163,43 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   font-size: 1.2rem;
   color: #000;
 }
+
+#messageField {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    background: var(--bg, linear-gradient(174deg, #F76E10 -7.13%, #B24B28 44.24%, #682C0C 97.4%));
+    border-radius: 18px;
+    width: 100%;
+    height: 20%;
+    padding: 1rem 1rem 1rem 1rem;
+}
+    
+
+#inputForm {
+    display: inherit;
+    flex-direction: row;
+    align-items: inherit;
+    width: 90%;
+    height: 100%;
+}
+
+#inputField {
+    display: inherit;
+    flex-direction: inherit;
+    align-items: inherit;
+    background-color: #b1ffa2;
+    /* padding: 1rem 1rem 1rem 1rem; */
+    border-radius: 18px;
+    border: 0.5rem solid black;
+    width: 100%;
+    height: 100%;
+}
+
+#InputButtons {
+
+}
+
 /* 
 Individual Styling, if Needed
 .studentFrame {
@@ -206,7 +253,8 @@ Individual Styling, if Needed
     </div>
 
     <!-- Message Stack -->
-    <div class="messageFrame">
+    <div id="messageFrame">
+    <div class="messageStack">
         <!--
         The div below is to be copied by the Backend
         and filled with queried content. 
@@ -249,121 +297,25 @@ Individual Styling, if Needed
                 <p id="messageText">Hard Coded Message Test</p>
             </div>
         </div>
-        <div class="messageContent"> 
-            <!-- Where the users information is displayed -->
-            <div class="messengerFrame">
+        <?php 
+        for ($i = 0; $i <= 100 ; $i++) {
+        sendMessage("Test", "uuiiaiuiiai"); 
+        }
+        ?>
+    <!-- End of messageStack --></div> 
 
-                <div class="studentFrame">
-                <div id="studentFrame" class="identifierFrame">
-                    <p class="identifierTextStyle">Student:</p>
-                </div>
-                <div class="studentName">
-                    <p class="messengerInfoText">Test Student</p>
-                </div>
-                </div>
-
-                <div class="dateFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Date:</p>
-                </div>
-                <div class="dateSent">
-                    <p class="messengerInfoText">00/00/0000</p>
-                </div>
-                </div>
-
-                <div class="timeFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Time:</p>
-                </div>
-                <div class="timeSent">
-                    <p class="messengerInfoText">00:00am</p>
-                </div>
-                </div>
+    <div id="messageField">
+       <form id="inputForm"> 
+        <input id="inputField" placeholder="Enter a message">
+            <div id="inputButtons">
 
             </div>
-
-            <!-- Where the users message is displayed -->
-            <div class="messengerMessage">
-                <p id="messageText">Hard Coded Message Test</p>
-            </div>
-        </div>
-        <div class="messageContent"> 
-            <!-- Where the users information is displayed -->
-            <div class="messengerFrame">
-
-                <div class="studentFrame">
-                <div id="studentFrame" class="identifierFrame">
-                    <p class="identifierTextStyle">Student:</p>
-                </div>
-                <div class="studentName">
-                    <p class="messengerInfoText">Test Student</p>
-                </div>
-                </div>
-
-                <div class="dateFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Date:</p>
-                </div>
-                <div class="dateSent">
-                    <p class="messengerInfoText">00/00/0000</p>
-                </div>
-                </div>
-
-                <div class="timeFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Time:</p>
-                </div>
-                <div class="timeSent">
-                    <p class="messengerInfoText">00:00am</p>
-                </div>
-                </div>
-
-            </div>
-
-            <!-- Where the users message is displayed -->
-            <div class="messengerMessage">
-                <p id="messageText">Hard Coded Message Test</p>
-            </div>
-        </div>
-        <div class="messageContent"> 
-            <!-- Where the users information is displayed -->
-            <div class="messengerFrame">
-
-                <div class="studentFrame">
-                <div id="studentFrame" class="identifierFrame">
-                    <p class="identifierTextStyle">Student:</p>
-                </div>
-                <div class="studentName">
-                    <p class="messengerInfoText">Test Student</p>
-                </div>
-                </div>
-
-                <div class="dateFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Date:</p>
-                </div>
-                <div class="dateSent">
-                    <p class="messengerInfoText">00/00/0000</p>
-                </div>
-                </div>
-
-                <div class="timeFrame">
-                <div class="identifierFrame">
-                    <p class="identifierTextStyle">Time:</p>
-                </div>
-                <div class="timeSent">
-                    <p class="messengerInfoText">00:00am</p>
-                </div>
-                </div>
-
-            </div>
-
-            <!-- Where the users message is displayed -->
-            <div class="messengerMessage">
-                <p id="messageText">Hard Coded Message Test</p>
-            </div>
-        </div>
+       </form>
+        
+       
     </div>
+
+    <!-- End of messageField --></div>
     </div>
     </div>
     </div>
