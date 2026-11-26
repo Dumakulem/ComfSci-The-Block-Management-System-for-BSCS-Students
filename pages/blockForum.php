@@ -45,15 +45,22 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   border-radius: 16px;
 }
 
+.parentPagerFrame{
+    width: 100%;
+    height: 100%;
+    padding: 0.2px;
+}
+
 .pagerFrame {
   /* Layout */
   display: flex;
   flex-direction: row;
   width: 100%;
   height: 30%;
-  align-items: flex-start;
-  background: #000;
+  align-items: center;
+  background: black;
   border-radius: 16px;
+  padding: .5rem;
 }
 
 #messageFrame {
@@ -67,6 +74,90 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     align-items: flex-start;
     background-color: black;
 }
+.pager {
+  /* Layout */
+  display: flex;
+  align-self: center;
+  width: 100%;
+  height: 30%;
+  align-items: center;
+  background: #FF8800;
+  border-top-left-radius: 15px; 
+  border-top-right-radius: 15px; 
+  border-bottom: .5rem solid #000 ;
+}
+
+.pagerDisplay {
+  /* Layout */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 70%;
+  padding: .5rem;
+  align-items: center;
+  align-self: center;
+  background: #b1ffa2;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+#NoteDisplay {
+   /* Layout */
+  font-family: 'Courier New', Courier, monospace;
+  font-style: monospace;
+  font-weight: bold;
+  color: #000;
+  font-size: 1.5rem;
+  text-align: left; 
+  padding-left: 1rem; 
+}
+
+#MessageDisplay {
+   /* Layout */
+  font-family: 'Courier New', Courier, monospace;
+  font-style: monospace;
+  font-weight: bold;
+  color: #000;
+  font-size: 1.5rem;
+  text-align: left;
+}
+/*
+.pagerButtons {
+ 
+  display: flex;
+  flex-direction: column;
+  width: 6%;
+  height: 100%;
+  margin: .5rem;
+  align-items: center;
+  align-self: center;
+}
+
+.pagerButtonSend {
+   display: flex;
+   align-self: center;
+   width: 100%;
+   height: 60%;
+   padding: .25rem;
+   margin: .25rem;
+   background: red;
+
+   border-radius: 16px;
+}
+
+.pagerButtonDummy {
+   display: flex;
+   align-self: center;
+   width: 100%;
+   height: 60%;
+   padding: .25rem;
+   margin: .25rem;
+   background: red;
+
+   border-radius: 16px; 
+}
+*/
+
 
 .messageStack {
   /* Layout */
@@ -249,7 +340,17 @@ Individual Styling, if Needed
     <!-- Pager -->
     <div class="pagerFrame">
         <!-- Contex -->
-        <h1>Sample Content</h1>
+
+       <div class="parentPagerFrame">
+        <div class="pager"><p id="NoteDisplay"> Enter Note Here.</p></div>
+        <div class="pagerDisplay"><p id="MessageDisplay">Enter Message Here.</p></div>
+       </div>
+        
+        <div class="pagerButtons">
+            <div class="pagerButtonSend"></div>
+            <div class="pagerButtonDummy"></div>
+        </div>
+
     </div>
 
     <!-- Message Stack -->
