@@ -2,36 +2,65 @@
 
 declare(strict_types=1);
 
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
 require_once __DIR__ . '/../config/database.php';
+
+if (empty($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
+
+function e(string $value): string
+{
+    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
 
 $error = '';
 $success = '';
 $accountType = (string) ($_POST['account_type'] ?? 'student');
 $pdo = db();
-$blocks = $pdo->query('SELECT blockID, classBlock FROM tblblock ORDER BY blockID')->fetchAll();
+$blocks = $pdo->query('SELECT blockID, classBlock FROM tblblock ORDER BY blockID')->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $firstName = trim((string) ($_POST['first_name'] ?? ''));
     $lastName = trim((string) ($_POST['last_name'] ?? ''));
-    $email = trim((string) ($_POST['email'] ?? ''));
+    $email = strtolower(trim((string) ($_POST['email'] ?? '')));
     $password = (string) ($_POST['password'] ?? '');
     $middleName = trim((string) ($_POST['middle_name'] ?? ''));
     $extensionName = trim((string) ($_POST['extension_name'] ?? ''));
 
-    if (!in_array($accountType, ['student', 'admin'], true)) {
+    if (!hash_equals($_SESSION['csrf'], (string) ($_POST['csrf'] ?? ''))) {
+        $error = 'Your form expired. Please try again.';
+    } elseif (!in_array($accountType, ['student', 'admin'], true)) {
         $error = 'Invalid account type.';
-    } elseif ($firstName === '' || $lastName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'First name, last name, and a valid email are required.';
+    } elseif ($firstName === '' || $lastName === '') {
+        $error = 'First and last name are required.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL) || !str_ends_with($email, '@gmail.com')) {
+        $error = 'Use a Gmail address (@gmail.com).';
     } elseif (strlen($password) < 8) {
         $error = 'Password must be at least 8 characters.';
+    } elseif ($password !== (string) ($_POST['confirm_password'] ?? '')) {
+        $error = 'Passwords do not match.';
     } elseif (
         $accountType === 'student' &&
         count($blocks) > 0 &&
         !filter_var($_POST['block_id'] ?? null, FILTER_VALIDATE_INT)
     ) {
-        $error = 'A valid block ID is required for student accounts.';
+        $error = 'Please select a valid block.';
     } else {
         try {
+            // The email must be unused in BOTH tables.
+            $taken = $pdo->prepare(
+                'SELECT (SELECT COUNT(*) FROM tblstudent WHERE studentEmail = ?)
+                      + (SELECT COUNT(*) FROM tbladmin WHERE adminEmail = ?)'
+            );
+            $taken->execute([$email, $email]);
+            if ((int) $taken->fetchColumn() > 0) {
+                throw new InvalidArgumentException('That email address is already registered.');
+            }
+
             $pdo->beginTransaction();
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
@@ -84,7 +113,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
             $success = ucfirst($accountType) . ' account created successfully.';
             $_POST = [];
-            $blocks = $pdo->query('SELECT blockID, classBlock FROM tblblock ORDER BY blockID')->fetchAll();
+            $accountType = 'student';
+            $blocks = $pdo->query('SELECT blockID, classBlock FROM tblblock ORDER BY blockID')->fetchAll(PDO::FETCH_ASSOC);
         } catch (InvalidArgumentException $exception) {
             if ($pdo->inTransaction()) {
                 $pdo->rollBack();
@@ -97,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (($exception->errorInfo[1] ?? null) === 1062) {
                 $error = 'That email address is already registered.';
             } else {
+                error_log('Registration failed: ' . $exception->getMessage());
                 $error = 'The account could not be created. Check the database connection and schema.';
             }
         }
@@ -107,83 +138,104 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Create Dummy Account</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f3f3f3; margin: 0; padding: 2rem; }
-    main { background: #fff; max-width: 32rem; margin: auto; padding: 2rem; border-radius: 0.75rem; }
-    h1 { margin-top: 0; }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input, select { width: 100%; padding: 0.65rem; margin-top: 0.35rem; box-sizing: border-box; }
-    button { margin-top: 1.5rem; padding: 0.7rem 1rem; cursor: pointer; }
-    .message { margin: 1rem 0; font-weight: bold; }
-    .error { color: #b00020; }
-    .success { color: #176b2c; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gordon College Portal - Create Account</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/auth/portal-auth.css">
+    <script src="../assets/auth/auth.js" defer></script>
 </head>
 <body>
-  <main>
-    <h1>Create Dummy Account</h1>
-    <p>This standalone page is for local test-account creation.</p>
+    <main class="card">
+        <div class="art">
+            <img class="art__wave art__wave--top" src="../assets/auth/vector-7.svg" alt="">
+            <img class="art__wave art__wave--bottom" src="../assets/auth/vector-5.svg" alt="">
+            <img class="art__cloud" src="../assets/auth/cloud-upload.png" alt="">
+        </div>
+        <section class="panel">
+            <form action="register.php" method="post" class="register">
+                <h1>Create Account</h1>
 
-    <?php if ($error !== ''): ?>
-      <p class="message error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
-    <?php elseif ($success !== ''): ?>
-      <p class="message success"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8') ?></p>
-    <?php endif; ?>
+                <?php if ($error !== ''): ?>
+                    <p class="message error" role="alert"><?= e($error) ?></p>
+                <?php elseif ($success !== ''): ?>
+                    <p class="message success" role="status"><?= e($success) ?></p>
+                <?php endif; ?>
 
-    <form method="post">
-      <label for="account_type">Account type</label>
-      <select id="account_type" name="account_type" onchange="toggleStudentFields()" required>
-        <option value="student" <?= $accountType === 'student' ? 'selected' : '' ?>>Student</option>
-        <option value="admin" <?= $accountType === 'admin' ? 'selected' : '' ?>>Admin</option>
-      </select>
+                <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
 
-      <label for="first_name">First name</label>
-      <input id="first_name" name="first_name" value="<?= htmlspecialchars((string) ($_POST['first_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                <div class="row">
+                    <div>
+                        <label for="account_type">Account type</label>
+                        <select id="account_type" name="account_type">
+                            <option value="student" <?= $accountType === 'student' ? 'selected' : '' ?>>Student</option>
+                            <option value="admin" <?= $accountType === 'admin' ? 'selected' : '' ?>>Admin</option>
+                        </select>
+                    </div>
+                    <div id="block-field">
+                        <label for="block_id">Block</label>
+                        <?php if (count($blocks) > 0): ?>
+                            <select id="block_id" name="block_id">
+                                <?php foreach ($blocks as $block): ?>
+                                    <option value="<?= (int) $block['blockID'] ?>" <?= (string) $block['blockID'] === (string) ($_POST['block_id'] ?? '') ? 'selected' : '' ?>><?= e((string) $block['classBlock']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        <?php else: ?>
+                            <input id="block_id" type="text" value="Dummy block (auto)" readonly>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-      <label for="last_name">Last name</label>
-      <input id="last_name" name="last_name" value="<?= htmlspecialchars((string) ($_POST['last_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                <div class="row">
+                    <div>
+                        <label for="first_name">First name</label>
+                        <input id="first_name" name="first_name" type="text" value="<?= e((string) ($_POST['first_name'] ?? '')) ?>" required>
+                    </div>
+                    <div>
+                        <label for="last_name">Last name</label>
+                        <input id="last_name" name="last_name" type="text" value="<?= e((string) ($_POST['last_name'] ?? '')) ?>" required>
+                    </div>
+                </div>
 
-      <div id="student-fields">
-        <label for="middle_name">Middle name</label>
-        <input id="middle_name" name="middle_name" value="<?= htmlspecialchars((string) ($_POST['middle_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <div id="student-fields">
+                    <div class="row">
+                        <div>
+                            <label for="middle_name">Middle name</label>
+                            <input id="middle_name" name="middle_name" type="text" value="<?= e((string) ($_POST['middle_name'] ?? '')) ?>">
+                        </div>
+                        <div>
+                            <label for="extension_name">Extension name</label>
+                            <input id="extension_name" name="extension_name" type="text" value="<?= e((string) ($_POST['extension_name'] ?? '')) ?>">
+                        </div>
+                    </div>
+                </div>
 
-        <label for="extension_name">Extension name</label>
-        <input id="extension_name" name="extension_name" value="<?= htmlspecialchars((string) ($_POST['extension_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?>">
+                <label for="email">Gmail</label>
+                <input id="email" name="email" type="email" autocomplete="email" value="<?= e((string) ($_POST['email'] ?? '')) ?>" placeholder="yourname@gmail.com" pattern=".+@gmail\.com" required>
 
-        <label for="block_id">Block</label>
-        <?php if (count($blocks) > 0): ?>
-          <select id="block_id" name="block_id">
-            <?php foreach ($blocks as $block): ?>
-              <option value="<?= (int) $block['blockID'] ?>" <?= (string) ($block['blockID'] ?? '') === (string) ($_POST['block_id'] ?? '') ? 'selected' : '' ?>>
-                <?= htmlspecialchars($block['classBlock'], ENT_QUOTES, 'UTF-8') ?>
-              </option>
-            <?php endforeach; ?>
-          </select>
-        <?php else: ?>
-          <input id="block_id" name="block_id" type="text" value="A dummy block will be created automatically" readonly>
-        <?php endif; ?>
-      </div>
+                <div class="row">
+                    <div>
+                        <label for="password">Password</label>
+                        <div class="password">
+                            <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+                            <button type="button" class="toggle" data-toggle="password" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="confirm_password">Confirm password</label>
+                        <div class="password">
+                            <input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+                            <button type="button" class="toggle" data-toggle="confirm_password" aria-pressed="false">Show</button>
+                        </div>
+                    </div>
+                </div>
 
-      <label for="email">Email</label>
-      <input id="email" name="email" type="email" value="<?= htmlspecialchars((string) ($_POST['email'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" required>
+                <button class="button" type="submit">Create Account</button>
 
-      <label for="password">Password</label>
-      <input id="password" name="password" type="password" minlength="8" required>
-
-      <button type="submit">Create account</button>
-    </form>
-  </main>
-  <script>
-    function toggleStudentFields() {
-      const isStudent = document.getElementById('account_type').value === 'student';
-      document.getElementById('student-fields').hidden = !isStudent;
-      document.getElementById('block_id').required = isStudent;
-    }
-
-    toggleStudentFields();
-  </script>
+                <p class="switch">Already have an account? <a href="login.php">Login</a></p>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
