@@ -691,4 +691,28 @@ function checkAllAsOverdue(PDO $pdo): array{
     $stmt->execute(["Overdue", 0]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+function sendNewAsMail(PDO $pdo, string $title, string $subject, string $date, $classCode){
+    try{
+
+    $stmt = $pdo->prepare("SELECT * FROM students WHERE classCode = ? AND is_email_verified = ?");
+    $stmt->execute([$classCode, (int) 1]);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach($rows as $row){
+        sendMail(
+            $row['studentEmail'],
+            "New Assignment!",
+            buildNewAssignmentEmail(
+                $title,
+                $subject,
+                $date
+            )
+        );
+    }
+
+    }catch(Exception $e){
+        throw $e;
+    }
+}
 ?>

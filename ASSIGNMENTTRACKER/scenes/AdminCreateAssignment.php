@@ -20,6 +20,7 @@ $forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
 
 require_once __DIR__ . '/../database/admin.php';
 createAssignment($pdo, $classCode, $name, $title, $subject, getAllStudents($pdo, $classCode), $files, $des, $forDatabase);
+sendNewAsMail($pdo, $title, $subject, $dt->format('M j, Y, g:i A'), $classCode);
 
 //$forDatabase = $dt->format('Y-m-d H:i:s');   // "2026-11-20 23:59:00"
 //$forDisplay  = $dt->format('M j, Y, g:i A'); // "Nov 20, 2026, 11:59 PM"
