@@ -1,14 +1,10 @@
 :root {
     color-scheme: light;
-    --ink: #202b42;
-    --muted: #6d7890;
-    --line: #e2e7f0;
-    --surface: #ffffff;
-    --canvas: #f5f7fb;
-    --accent: #5547c8;
-    --accent-dark: #4033a9;
-    --accent-soft: #efedff;
-    --danger: #a33e42;
+    --surface: var(--card);
+    --canvas: var(--page);
+    --accent: var(--brand);
+    --accent-dark: var(--brand-dark);
+    --accent-soft: var(--brand-soft);
 }
 
 * {
@@ -31,7 +27,7 @@ button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-    outline: 3px solid #a7a0f4;
+    outline: 3px solid var(--brand);
     outline-offset: 2px;
 }
 
@@ -113,7 +109,7 @@ h1 {
 label {
     display: grid;
     gap: 6px;
-    color: #39445b;
+    color: var(--brand-dark);
     font-size: 13px;
     font-weight: 700;
 }
@@ -123,9 +119,9 @@ select,
 textarea {
     width: 100%;
     min-width: 0;
-    border: 1px solid #d6dcea;
+    border: 1px solid var(--brand-line);
     border-radius: 8px;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
     font: inherit;
     font-size: 14px;
@@ -145,7 +141,7 @@ textarea {
 }
 
 input::placeholder {
-    color: #9aa3b5;
+    color: var(--muted-2);
 }
 
 .keyword-field {
@@ -176,7 +172,7 @@ input::placeholder {
 
 .button-primary {
     background: var(--accent);
-    color: #fff;
+    color: var(--card);
 }
 
 .button-primary:hover {
@@ -185,27 +181,27 @@ input::placeholder {
 
 .button-quiet {
     border-color: var(--line);
-    background: #fff;
-    color: #46516a;
+    background: var(--card);
+    color: var(--muted);
 }
 
 .button-quiet:hover {
-    background: #f7f8fc;
+    background: var(--brand-soft);
 }
 
 .notice {
     margin: 0 0 16px;
     padding: 12px 15px;
-    border: 1px solid #cfe7d7;
+    border: 1px solid var(--ok);
     border-radius: 9px;
-    background: #f0faf3;
-    color: #28643c;
+    background: var(--ok-soft);
+    color: var(--ok-dark);
 }
 
 .notice-error {
-    border-color: #f0cecb;
-    background: #fff4f2;
-    color: #8d3935;
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    color: var(--danger);
 }
 
 .admin-tools {
@@ -245,7 +241,7 @@ input::placeholder {
     margin: 0;
     padding: 12px;
     border-radius: 8px;
-    background: #f7f7ff;
+    background: var(--brand-soft);
     color: var(--muted);
 }
 
@@ -363,14 +359,14 @@ input::placeholder {
     padding: 3px 9px;
     border-radius: 20px;
     background: var(--accent-soft);
-    color: #4b40aa;
+    color: var(--brand);
     font-size: 11px;
     font-weight: 700;
 }
 
 .type-tag {
-    background: #f0f3f8;
-    color: #58647c;
+    background: var(--brand-soft);
+    color: var(--muted);
 }
 
 .resource-card h3 {

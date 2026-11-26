@@ -15,6 +15,7 @@ $userId = (int)$current_student['studId'];
 
 // Update profile avatar.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['avatar'])) {
+    csrf_check();
 
     $selected_avatar = $_POST['avatar'];
 
@@ -43,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['avatar'])) {
         flash("Avatar updated successfully!");
     }
 
-    header("Location: student_profile.php");
+    header("Location: profile.php");
     exit;
 }
 
@@ -329,7 +330,8 @@ include __DIR__ . '/includes/header.php';
             Select your favorite character icon to represent you across the platform.
         </p>
 
-        <form action="student_profile.php" method="POST">
+        <form action="profile.php" method="POST">
+            <?= csrf_field() ?>
 
             <div class="avatar-grid">
 

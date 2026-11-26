@@ -1,0 +1,59 @@
+/*
+ * ComfSci shared design tokens.
+ * Every module stylesheet maps its own variable names onto these, so the
+ * whole portal shares one palette, radius scale, and typography.
+ */
+:root {
+    --brand: #ff6b00;
+    --brand-dark: #c94b0d;
+    --brand-soft: #fff1e6;
+    --brand-line: #ffd2b0;
+
+    --ink: #171411;
+    --muted: #786f67;
+    --muted-2: #a39a91;
+    --line: #e8dfd8;
+    --line-strong: #d6cbc2;
+    --page: #f2f0ed;
+    --page-soft: #faf8f6;
+    --card: #ffffff;
+
+    --ok: #16a34a;
+    --ok-dark: #166534;
+    --ok-soft: #e8f7ee;
+    --warn: #b45309;
+    --warn-soft: #fff4d6;
+    --danger: #dc2626;
+    --danger-dark: #991b1b;
+    --danger-soft: #fdeaea;
+
+    --radius-sm: 8px;
+    --radius: 12px;
+    --radius-lg: 18px;
+    --shadow: 0 10px 28px rgba(23, 20, 17, 0.07);
+    --font: Inter, "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+}
+
+body {
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Consistent, visible keyboard focus everywhere. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+}
+
+:where(button, [type="submit"], [type="button"]):disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

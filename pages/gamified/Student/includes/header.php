@@ -14,6 +14,7 @@ $flash_msg = flash();
 
     <title><?= h($page_title) ?></title>
 
+    <link rel="stylesheet" href="../../assets/theme.css?v=1">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="../../assets/sidebar.css?v=1">
 </head>

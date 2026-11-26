@@ -58,6 +58,7 @@ $notificationCount = count($notifications) + count($soonNotifications);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= dashboard_escape($pageTitle) ?></title>
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
     <link rel="stylesheet" href="./assets/dashboard.css?v=9">
     <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>

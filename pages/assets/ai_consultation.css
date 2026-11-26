@@ -1,14 +1,10 @@
 :root {
     color-scheme: light;
-    --ink: #172a3a;
-    --muted: #647789;
-    --line: #dce5eb;
-    --paper: #ffffff;
-    --canvas: #f3f7f9;
-    --teal: #087f82;
-    --teal-dark: #06676a;
-    --soft-teal: #e7f5f4;
-    --danger: #a63d47;
+    --paper: var(--card);
+    --canvas: var(--page);
+    --teal: var(--brand);
+    --teal-dark: var(--brand-dark);
+    --soft-teal: var(--brand-soft);
 }
 
 * {
@@ -139,9 +135,9 @@ label:first-of-type {
 input,
 textarea {
     width: 100%;
-    border: 1px solid #cbd8e0;
+    border: 1px solid var(--brand-line);
     border-radius: 9px;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
     font: inherit;
 }
@@ -160,7 +156,7 @@ textarea {
 input:focus,
 textarea:focus {
     border-color: var(--teal);
-    outline: 3px solid rgba(8, 127, 130, 0.14);
+    outline: 3px solid rgba(255, 107, 0, 0.18);
 }
 
 .field-help {
@@ -194,9 +190,9 @@ button:hover {
 .answer-panel {
     margin-top: 30px;
     padding: 23px;
-    border: 1px solid #c9e6e2;
+    border: 1px solid var(--brand-line);
     border-radius: 12px;
-    background: #f5fbfa;
+    background: var(--brand-soft);
 }
 
 .answer-panel h2 {
@@ -215,21 +211,21 @@ button:hover {
 }
 
 .notice-error {
-    border-color: #f0c9cc;
-    background: #fff5f5;
-    color: #842e38;
+    border-color: var(--danger);
+    background: var(--danger-soft);
+    color: var(--danger-dark);
 }
 
 .notice-success {
-    border-color: #c9e6d3;
-    background: #f2fbf5;
-    color: #24643d;
+    border-color: var(--ok);
+    background: var(--ok-soft);
+    color: var(--ok-dark);
 }
 
 .notice-warning {
-    border-color: #f0dda8;
-    background: #fffaf0;
-    color: #725619;
+    border-color: var(--warn);
+    background: var(--warn-soft);
+    color: var(--warn);
 }
 
 .privacy-note {
@@ -265,17 +261,17 @@ button:hover {
 }
 
 .admin-actions .button-danger:hover {
-    background: #842e38;
+    background: var(--danger-dark);
 }
 
 .admin-actions .button-secondary {
     border: 1px solid var(--line);
-    background: #f5f8fa;
+    background: var(--brand-soft);
     color: var(--ink);
 }
 
 .admin-actions .button-secondary:hover {
-    background: #e8eff3;
+    background: var(--brand-soft);
 }
 
 .access-status {

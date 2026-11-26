@@ -8,6 +8,7 @@ require_once __DIR__ . '/icons.php';
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title><?= h($PAGE_TITLE) ?> – Admin</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../../assets/theme.css?v=1">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="../../assets/sidebar.css?v=1">
 </head>

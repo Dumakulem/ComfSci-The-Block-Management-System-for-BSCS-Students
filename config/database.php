@@ -1,13 +1,20 @@
 <?php
 
-define('DB_HOST', '127.0.0.1');
-define('DB_NAME', 'db_comfysci');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+declare(strict_types=1);
 
-function db(): PDO {
+require_once __DIR__ . '/../config.php';
+
+define('DB_HOST', envValue('COMFSCI_DB_HOST', '127.0.0.1'));
+define('DB_NAME', envValue('COMFSCI_DB_NAME', 'db_comfysci'));
+define('DB_USER', envValue('COMFSCI_DB_USER', 'root'));
+define('DB_PASS', envValue('COMFSCI_DB_PASS', ''));
+
+function db(): PDO
+{
     static $pdo = null;
-    if ($pdo instanceof PDO) return $pdo;
+    if ($pdo instanceof PDO) {
+        return $pdo;
+    }
 
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
     $pdo = new PDO($dsn, DB_USER, DB_PASS, [
