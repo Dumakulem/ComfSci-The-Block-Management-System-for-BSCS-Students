@@ -40,15 +40,19 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   height: 100%;
   align-items: flex-start;
   background: #BC9A89;
-  padding: 1rem;
-  gap: 1rem;
+  padding: .5rem;
+  gap: .5rem;
   border-radius: 16px;
 }
 
+
+/* Pager. Used for creation and submission of Tickets */
+
+
+/*Do not Delete ".parentPagerFrame". Pager will break, under construction */
 .parentPagerFrame{
     width: 100%;
     height: 100%;
-    padding: 0.2px;
 }
 
 .pagerFrame {
@@ -63,6 +67,130 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   padding: .5rem;
 }
 
+
+/*Subject Frame. */
+/*
+.parentTicketFrame{
+    width: 100%;
+    height: 100%;
+    padding: 0.2px;
+}
+*/
+.ticketSubjectDisplay {
+    flex-direction: column;
+    display: inherit;
+    width: 100%;
+    height: 30%;
+}
+
+#ticketSubject {
+    display: inherit;
+    flex-direction: inherit;
+    align-items: inherit;
+    background-color: #FF8800;
+    padding: 1rem 1rem 1rem 1rem; 
+    border-radius: 18px;
+    border: 0.5rem solid black;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: monospace;
+    font-weight: bold;
+    color: #000;
+    font-size: 1rem;
+    text-align: left; 
+    padding-left: 1rem; 
+    width: 100%;
+    height: inherit;
+}
+
+/*Message Frame */
+
+.ticketMessageDisplay {
+    display: flex;
+    width: 100%;
+    height: 50%;
+}
+
+#MessageDisplay {
+    display: inherit;
+    align-items: inherit;
+    background-color: #b1ffa2;
+    padding: 1rem 1rem 1rem 1rem; 
+    border-radius: 18px;
+    border: 0.5rem solid black;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: monospace;
+    font-weight: bold;
+    color: #000;
+    font-size: 1rem;
+    text-align: left; 
+    padding-left: 1rem; 
+    width: 100%;
+    height: 100%;
+}
+
+/*Button for Ticket Types*/
+
+.pagerButtons {
+  display: flex;
+  flex-direction: column;
+  width: 5%;
+  height: 100%;
+  gap: .5rem;
+  align-items: center;
+  align-self: center;
+}
+
+#buttonEmergency {
+   display: flex;
+   align-self: center;
+   width: 100%;
+   height: 100%;
+   background: limegreen;
+   border-radius: 16px;
+   align-items: center;
+   cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: monospace;
+    font-weight: bold;
+    color: #000;
+    font-size: 1rem;
+}
+
+#buttonIllness {
+   display: flex;
+   align-self: center;
+   width: 100%;
+   height: 100%;
+   background: limegreen;
+   border-radius: 16px; 
+   align-items: center;
+   cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: monospace;
+    font-weight: bold;
+    color: #000;
+    font-size: 1rem;
+}
+
+#buttonComplaint {
+   display: flex;
+   align-self: center;
+   width: 100%;
+   height: 100%;
+   background: limegreen;
+   border-radius: 16px; 
+   align-items: center;
+   cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    font-style: monospace;
+    font-weight: bold;
+    color: #000;
+    font-size: 1rem;
+}
+
+/*******************************************Pager Ends Here*******************************************/
+
+
 #messageFrame {
     display: inherit;
     flex-direction: inherit;
@@ -74,90 +202,6 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     align-items: flex-start;
     background-color: black;
 }
-.pager {
-  /* Layout */
-  display: flex;
-  align-self: center;
-  width: 100%;
-  height: 30%;
-  align-items: center;
-  background: #FF8800;
-  border-top-left-radius: 15px; 
-  border-top-right-radius: 15px; 
-  border-bottom: .5rem solid #000 ;
-}
-
-.pagerDisplay {
-  /* Layout */
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 70%;
-  padding: .5rem;
-  align-items: center;
-  align-self: center;
-  background: #b1ffa2;
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-}
-
-#NoteDisplay {
-   /* Layout */
-  font-family: 'Courier New', Courier, monospace;
-  font-style: monospace;
-  font-weight: bold;
-  color: #000;
-  font-size: 1.5rem;
-  text-align: left; 
-  padding-left: 1rem; 
-}
-
-#MessageDisplay {
-   /* Layout */
-  font-family: 'Courier New', Courier, monospace;
-  font-style: monospace;
-  font-weight: bold;
-  color: #000;
-  font-size: 1.5rem;
-  text-align: left;
-}
-/*
-.pagerButtons {
- 
-  display: flex;
-  flex-direction: column;
-  width: 6%;
-  height: 100%;
-  margin: .5rem;
-  align-items: center;
-  align-self: center;
-}
-
-.pagerButtonSend {
-   display: flex;
-   align-self: center;
-   width: 100%;
-   height: 60%;
-   padding: .25rem;
-   margin: .25rem;
-   background: red;
-
-   border-radius: 16px;
-}
-
-.pagerButtonDummy {
-   display: flex;
-   align-self: center;
-   width: 100%;
-   height: 60%;
-   padding: .25rem;
-   margin: .25rem;
-   background: red;
-
-   border-radius: 16px; 
-}
-*/
-
 
 .messageStack {
   /* Layout */
@@ -263,7 +307,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     border-radius: 18px;
     width: 100%;
     height: 20%;
-    padding: 1rem 1rem 1rem 1rem;
+    padding: .5rem .5rem .5rem .5rem;
 }
     
 
@@ -338,17 +382,33 @@ Individual Styling, if Needed
 <!------ Main content ------->
     <div class="contentFrame">
     <!-- Pager -->
-    <div class="pagerFrame">
+    <div class="pagerFrame"> 
         <!-- Contex -->
 
        <div class="parentPagerFrame">
-        <div class="pager"><p id="NoteDisplay"> Enter Note Here.</p></div>
-        <div class="pagerDisplay"><p id="MessageDisplay">Enter Message Here.</p></div>
-       </div>
+        
+        <div id="ticketSubjectDisplay"> 
+            <input id="ticketSubject" placeholder="Enter Ticket Subject Here."></input>
+        </div>
+        
+        <div class="ticketMessageDisplay">
+            <input id="MessageDisplay" placeholder="Enter Ticket Message Here."></input>
+        </div>
+
+     </div>
         
         <div class="pagerButtons">
-            <div class="pagerButtonSend"></div>
-            <div class="pagerButtonDummy"></div>
+
+            <div id="buttonEmergency"><button id="buttonEmergency">btn</button></div>
+
+     
+
+            <div id="buttonIllness"><button id="buttonIllness">btn</button></div>
+
+    
+
+            <div id="buttonComplaint"><button id="buttonComplaint">btn</button></div>
+
         </div>
 
     </div>
