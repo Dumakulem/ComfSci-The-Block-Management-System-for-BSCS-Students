@@ -2,7 +2,11 @@
 
 require_once __DIR__ . '/../auth/require_auth.php';
 require_once __DIR__ . '/../pages/renderers/dashboard_helpers.php';
-require_once __DIR__ . '/../pages/blockForum/message.php';
+require_once __DIR__ . '/blockForum/queryMessage.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forumMessage'])) {
+    require_once __DIR__ . '/../pages/blockForum/userQuery.php';
+}
 
 $userName = $_SESSION['user_name'] ?? $_SESSION['user_email'];
 $userEmail = $_SESSION['user_email'];
@@ -15,7 +19,7 @@ $announcements = $adminData['announcements'];
 $flashMessage = (string) ($_SESSION['dashboard_flash'] ?? '');
 unset($_SESSION['dashboard_flash']);
 
-$i = 0;
+
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light" data-sidebar="closed">
@@ -74,6 +78,15 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     align-items: flex-start;
     background-color: black;
 }
+
+#greetingFrame {
+    width: 100%;
+    height: 10%;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    background: var(--bg, linear-gradient(174deg, #F76E10 -7.13%, #B24B28 44.24%, #682C0C 97.4%));
+}
+
 .pager {
   /* Layout */
   display: flex;
@@ -86,6 +99,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   border-top-right-radius: 15px; 
   border-bottom: .5rem solid #000 ;
 }
+    /* padding: 1rem 1rem 1rem 1rem; */
 
 .pagerDisplay {
   /* Layout */
@@ -182,7 +196,6 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   background: var(--bg, linear-gradient(174deg, #F76E10 -7.13%, #B24B28 44.24%, #682C0C 97.4%));
   padding: 10px;
   gap: 10px;
-
   border-radius: 18px;
 }
 .messengerFrame {
@@ -271,7 +284,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     display: inherit;
     flex-direction: row;
     align-items: inherit;
-    width: 90%;
+    width: 95%;
     height: 100%;
 }
 
@@ -280,11 +293,11 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     flex-direction: inherit;
     align-items: inherit;
     background-color: #b1ffa2;
-    /* padding: 1rem 1rem 1rem 1rem; */
     border-radius: 18px;
-    border: 0.5rem solid black;
+    border: 0.6rem solid black;
     width: 100%;
     height: 100%;
+    padding: 0rem 1rem 0rem 1rem;
 }
 
 #InputButtons {
@@ -354,7 +367,15 @@ Individual Styling, if Needed
     </div>
 
     <!-- Message Stack -->
-    <div id="messageFrame">
+<!-- Parent Frame --> <div id="messageFrame">
+
+<!-- Greeting Card --> <div id="greetingFrame">
+
+    <div>
+
+    </div>
+
+    </div>
     <div class="messageStack">
         <!--
         The div below is to be copied by the Backend
@@ -395,22 +416,19 @@ Individual Styling, if Needed
 
             <!-- Where the users message is displayed -->
             <div class="messengerMessage">
-                <p id="messageText">Hard Coded Message Test</p>
+                <p id="messageText"><?=print_r($_SESSION); echo " Student Block: " . getCurrentStudentBlock(); ?></p>
             </div>
         </div>
         <?php 
-        for ($i = 0; $i <= 100 ; $i++) {
-        sendMessage("Test", "uuiiaiuiiai"); 
+        for ( $i = 0; $i <= 100; $i++) {
         }
         ?>
     <!-- End of messageStack --></div> 
 
     <div id="messageField">
-       <form id="inputForm"> 
-        <input id="inputField" placeholder="Enter a message">
-            <div id="inputButtons">
-
-            </div>
+       <form action="" method="post" id="inputForm"> 
+        <input type="text" name="forumMessage" id="inputField" placeholder="Enter a message">
+        <button type="submit">Send</button>
        </form>
         
        

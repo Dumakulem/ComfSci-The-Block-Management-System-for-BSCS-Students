@@ -78,6 +78,7 @@ $notificationCount = count($notifications) + count($soonNotifications);
                 <li><a href="#notifications" title="Announcements"><?= dashboard_icon('bell') ?><span class="nav-label">Announcements</span></a></li>
                 <li><a href="#academicCalendar" title="Academic Calendar"><?= dashboard_icon('calendar') ?><span class="nav-label">Academic Calendar</span></a></li>
                 <li><a href="#moduleSources" title="Module Sources"><?= dashboard_icon('download') ?><span class="nav-label">Module Sources</span></a></li>
+                <li><a href="../pages/blockForum.php" title="Forum"><?= dashboard_icon('forum') ?><span class="nav-label">Block Forum</span></a></li>
             </ul>
             <a href="../auth/logout.php" class="logout" title="Logout"><?= dashboard_icon('logout') ?><span class="nav-label">Logout</span></a>
         </nav>
