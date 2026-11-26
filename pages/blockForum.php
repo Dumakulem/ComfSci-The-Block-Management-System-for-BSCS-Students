@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../auth/require_auth.php';
 require_once __DIR__ . '/../pages/renderers/dashboard_helpers.php';
 require_once __DIR__ . '/blockForum/queryMessage.php';
+require_once __DIR__ . '/blockForum/message.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forumMessage'])) {
     require_once __DIR__ . '/../pages/blockForum/userQuery.php';
@@ -55,6 +56,9 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
 
 /*Do not Delete ".parentPagerFrame". Pager will break, under construction */
 .parentPagerFrame{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     width: 100%;
     height: 100%;
 }
@@ -80,17 +84,12 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     padding: 0.2px;
 }
 */
-.ticketSubjectDisplay {
-    flex-direction: column;
-    display: inherit;
+#ticketSubjectDisplay {
     width: 100%;
-    height: 30%;
+    height: 50%;
 }
 
 #ticketSubject {
-    display: inherit;
-    flex-direction: inherit;
-    align-items: inherit;
     background-color: #FF8800;
     padding: 1rem 1rem 1rem 1rem; 
     border-radius: 18px;
@@ -103,15 +102,16 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     text-align: left; 
     padding-left: 1rem; 
     width: 100%;
-    height: inherit;
+    height: 100%;
 }
 
-/*Message Frame */
+/* Message Frame 
+
+*/
 
 .ticketMessageDisplay {
-    display: flex;
     width: 100%;
-    height: 50%;
+    height: 100%;
 }
 
 #MessageDisplay {
@@ -192,7 +192,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
     font-size: 1rem;
 }
 
-/*******************************************Pager Ends Here*******************************************/
+/* Pager Ends Here */
 
 
 #messageFrame {
@@ -484,15 +484,14 @@ Individual Styling, if Needed
 
        <div class="parentPagerFrame">
         
-        <div id="ticketSubjectDisplay"> 
-            <input id="ticketSubject" placeholder="Enter Ticket Subject Here."></input>
-        </div>
-        
-        <div class="ticketMessageDisplay">
-            <input id="MessageDisplay" placeholder="Enter Ticket Message Here."></input>
-        </div>
+            <div id="ticketSubjectDisplay"> 
+                <input id="ticketSubject" placeholder="Enter Ticket Subject Here."></input>
+            </div>
+            <div class="ticketMessageDisplay">
+                <input id="MessageDisplay" placeholder="Enter Ticket Message Here."></input>
+            </div>
 
-     </div>
+        </div>
         
         <div class="pagerButtons">
 
@@ -560,7 +559,7 @@ Individual Styling, if Needed
 
             <!-- Where the users message is displayed -->
             <div class="messengerMessage">
-                <p id="messageText"><?=print_r($_SESSION); echo " Student Block: " . getCurrentStudentBlock(); ?></p>
+                <p id="messageText"><?= print_r($_SESSION); echo " Student Block: " . getCurrentStudentBlock() . " isClassRep: "; var_dump(checkIfClassRep())?></p>
             </div>
         </div>
         <?php 
