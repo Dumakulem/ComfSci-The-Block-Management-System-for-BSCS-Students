@@ -49,6 +49,14 @@ if(isset($_POST['editAssignment'])){
   header('Location: AdminEditAssignment.php');
   exit;
 }
+
+if (isset($_POST['viewFile'])) {
+    downloadFile($pdo, (int) $_POST['viewFile'], $classCode, true);   // opens in the browser if PDF/image
+}
+
+if (isset($_POST['downloadFile'])) {
+    downloadFile($pdo, (int) $_POST['downloadFile'], $classCode);     // always downloads
+}
 ?>
 
 <!DOCTYPE html>
@@ -236,35 +244,48 @@ if(isset($_POST['editAssignment'])){
                    Replace the sample text:  file name, file type (PDF), size
                    Close it after the </li> below with:  endforeach;
                    ====================================================== -->
-            <?php $files = getAsFile($pdo, $assignment['as_title'], $classCode)?>
-            <?php foreach($files as $file): ?>
+            <?php $files = getAsFile($pdo, $assignment['as_title'], $classCode); ?>
+<?php foreach ($files as $file): ?>
+  <?php if ($file['as_file_name'] != null): ?>
+    <?php
+      $ext        = strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION));
+      $type       = $file['as_file_type'] ?? '';
+      $canPreview = $type === 'application/pdf' || str_starts_with($type, 'image/');
+      $safeName   = htmlspecialchars($file['as_file_name']);
+    ?>
+    <li class="file">
+      <span class="file-type" aria-hidden="true"><?= $ext ?></span>
+      <span class="file-info">
+        <span class="file-name"><?= $safeName ?></span>
+        <span class="file-meta"><?= $ext ?> &middot; <?= formatFileSize($file['as_file_size']) ?></span>
+      </span>
 
-              <?php if($file['as_file_name'] != null): ?>
-              <li class="file">
-                <span class="file-type" aria-hidden="true"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?></span>
-                <span class="file-info">
-                  <span class="file-name"><?= $file['as_file_name'] ?></span>
-                  <span class="file-meta"><?= strtoupper(pathinfo($file['as_file_name'], PATHINFO_EXTENSION)); ?> &middot; <?= formatFileSize($file['as_file_size']); ?></span>
-                </span>
-                <span class="file-actions">
-                  <a href="#" class="icon-btn" aria-label="View Linked List Guide.pdf" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="icon-btn" aria-label="Download Linked List Guide.pdf" title="Download" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </a>
-                </span>
-              </li>
-            <?php endif; ?>
+      <div class="file-actions">
+        <?php if ($canPreview): ?>
+        <!-- target="_blank" opens the preview in a new tab -->
+        <form method="POST" target="_blank" class="inline-form">
+          <button type="submit" name="viewFile" value="<?= (int) $file['sa_id'] ?>" class="icon-btn" aria-label="View <?= $safeName ?>" title="View">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </form>
+        <?php endif; ?>
 
-            <?php endforeach; ?>
+        <form method="POST" class="inline-form">
+          <button type="submit" name="downloadFile" value="<?= (int) $file['sa_id'] ?>" class="icon-btn" aria-label="Download <?= $safeName ?>" title="Download">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </li>
+  <?php endif; ?>
+<?php endforeach; ?>
 
             </ul>
           </section>
