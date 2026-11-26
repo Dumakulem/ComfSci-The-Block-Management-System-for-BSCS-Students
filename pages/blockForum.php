@@ -73,6 +73,7 @@ layout scales with it and never overflows or needs scrolling.  Reference design:
   background: black;
   border-radius: 16px;
   padding: .5rem;
+  cursor: pointer;
 }
 
 
