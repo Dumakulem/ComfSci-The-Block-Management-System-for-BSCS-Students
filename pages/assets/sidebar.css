@@ -274,3 +274,29 @@ html[data-sidebar="open"] .comfsci-nav-label {
         background: rgba(0, 0, 0, .45);
     }
 }
+
+/* Quiet scrollbars inside the nav panel (matches dashboard thin orange track) */
+.comfsci-nav {
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+}
+
+.comfsci-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.comfsci-nav::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.comfsci-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Avoid horizontal page jump/scroll while the sidebar animates open */
+html {
+    overflow-x: hidden;
+}

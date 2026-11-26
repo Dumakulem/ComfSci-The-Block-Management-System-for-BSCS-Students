@@ -38,7 +38,7 @@ function moduleSourcesEscape(?string $value): string
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Module Sources | ComfSci</title>
     <link rel="stylesheet" href="./assets/theme.css?v=1">
-    <link rel="stylesheet" href="./assets/module_sources.css">
+    <link rel="stylesheet" href="./assets/module_sources.css?v=3">
     <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>
 <body class="comfsci-shell">
@@ -52,15 +52,16 @@ function moduleSourcesEscape(?string $value): string
     data-block-id="<?= (int) ($userContext['blockID'] ?? 0) ?>"
 >
     <header class="module-sources-header">
-        <a class="module-sources-back" href="./dashboard.php">Back to dashboard</a>
+        <a class="module-sources-back" href="./dashboard.php">← Back to dashboard</a>
         <p class="module-sources-eyebrow">COMFSCI LEARNING MATERIALS</p>
         <h1>Module Sources</h1>
-        <p>Browse course links shared for your block. Administrators and block representatives can add and manage sources.</p>
+        <p class="module-sources-intro">Browse course materials shared for your block. Students can view and download files. Only administrators and block representatives can upload or manage sources.</p>
     </header>
 
     <section class="module-sources-toolbar" aria-label="Search module sources">
-        <label for="module-source-search">Search modules</label>
-        <input id="module-source-search" type="search" maxlength="100" placeholder="Search title, subject, course, or link">
+        <label for="module-source-search">Search modules
+            <input id="module-source-search" type="search" maxlength="100" placeholder="Search title, subject, course, filename, or link">
+        </label>
         <?php if (!$isAdmin && $currentBlockName !== ''): ?>
             <span class="module-sources-block">Your block: <?= moduleSourcesEscape($currentBlockName) ?></span>
         <?php elseif (!$isAdmin): ?>
@@ -78,7 +79,7 @@ function moduleSourcesEscape(?string $value): string
                 <button class="module-sources-button module-sources-button-muted" id="module-source-cancel" type="button" hidden>Cancel edit</button>
             </div>
             <p class="module-sources-status" id="module-source-form-status" role="status" aria-live="polite"></p>
-            <form id="module-source-form">
+            <form id="module-source-form" enctype="multipart/form-data">
                 <input id="module-source-id" type="hidden">
                 <div class="module-sources-fields">
                     <?php if ($isAdmin): ?>
@@ -110,8 +111,20 @@ function moduleSourcesEscape(?string $value): string
                         <input id="module-source-title" type="text" maxlength="180" required>
                     </label>
                     <label class="module-sources-field-wide">
-                        Resource URL
-                        <input id="module-source-url" type="url" maxlength="500" placeholder="https://..." required>
+                        Upload file (PDF preferred)
+                        <input id="module-source-file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.png,.jpg,.jpeg,application/pdf">
+                        <span class="module-sources-hint">Max 25 MB. PDF, Word, PowerPoint, Excel, text, or image.</span>
+                    </label>
+                    <div class="module-sources-field-wide module-sources-current-file" id="module-source-current-file" hidden>
+                        <span id="module-source-current-file-name"></span>
+                        <label class="module-sources-remove-file">
+                            <input type="checkbox" id="module-source-remove-file">
+                            Remove current file
+                        </label>
+                    </div>
+                    <label class="module-sources-field-wide">
+                        Resource URL <span class="module-sources-optional">optional if you upload a file</span>
+                        <input id="module-source-url" type="url" maxlength="500" placeholder="https://...">
                     </label>
                     <label class="module-sources-field-wide">
                         Description <span class="module-sources-optional">optional</span>
@@ -126,7 +139,12 @@ function moduleSourcesEscape(?string $value): string
     <p class="module-sources-status" id="module-source-list-status" role="status" aria-live="polite"></p>
     <section class="module-sources-grid" id="module-source-list" aria-live="polite"></section>
 </main>
-<script src="./assets/module_sources.js" defer></script>
-<?php require __DIR__ . '/includes/ai_chat_widget.php'; ?>
+<script src="./assets/module_sources.js?v=3" defer></script>
+<?php
+$aiChatWidget = __DIR__ . '/includes/ai_chat_widget.php';
+if (is_file($aiChatWidget)) {
+    require $aiChatWidget;
+}
+?>
 </body>
 </html>
