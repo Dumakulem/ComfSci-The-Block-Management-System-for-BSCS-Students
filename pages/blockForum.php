@@ -4,6 +4,7 @@ require_once __DIR__ . '/../auth/require_auth.php';
 require_once __DIR__ . '/../pages/renderers/dashboard_helpers.php';
 require_once __DIR__ . '/blockForum/queryMessage.php';
 require_once __DIR__ . '/blockForum/message.php';
+require_once __DIR__ . '/dashboard.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['forumMessage'])) {
     require_once __DIR__ . '/../pages/blockForum/userQuery.php';
@@ -13,14 +14,53 @@ $userName = $_SESSION['user_name'] ?? $_SESSION['user_email'];
 $userEmail = $_SESSION['user_email'];
 $userType = $_SESSION['user_type'];
 
-$pageTitle = 'Administrator Dashboard';
-$adminData = dashboard_load_admin();
-$counts = $adminData['counts'];
-$announcements = $adminData['announcements'];
+$pageTitle = 'Block Forum';
+$dashboardData = dashboard_load_student((int) $userId);
+extract($dashboardData, EXTR_OVERWRITE);
+
+$today = date('Y-m-d');
+$yearMonth = (string) ($_GET['m'] ?? date('Y-m'));
+if (!preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $yearMonth)) {
+    $yearMonth = date('Y-m');
+}
+[$calendarYear, $calendarMonth] = array_map('intval', explode('-', $yearMonth));
+$monthLabel = date('F Y', strtotime($yearMonth . '-01'));
+$previousMonth = date('Y-m', strtotime($yearMonth . '-01 -1 month'));
+$nextMonth = date('Y-m', strtotime($yearMonth . '-01 +1 month'));
+$calendar = dashboard_calendar($calendarYear, $calendarMonth);
+$monthMeetings = dashboard_expand_schedules(
+    $schedules,
+    $yearMonth . '-01',
+    date('Y-m-t', strtotime($yearMonth . '-01'))
+);
+$upcoming = dashboard_expand_schedules($schedules, $today, date('Y-m-d', strtotime('+13 days')));
+$soonNotifications = array_values(array_filter($upcoming, static function (array $meeting) use ($today): bool {
+    return $meeting['date'] <= date('Y-m-d', strtotime('+1 day'));
+}));
+$tasksLeft = count(array_filter($tasks, static function (array $task): bool {
+    return !$task['done'];
+}));
+$calendarItems = [];
+foreach ($monthMeetings as $meeting) {
+    $calendarItems[$meeting['date']][] = $meeting['subject'];
+}
+foreach ($tasks as $task) {
+    if ($task['date'] !== '') {
+        $calendarItems[$task['date']][] = $task['title'];
+    }
+}
+foreach ($assignments as $assignment) {
+    if (!empty($assignment['due'])) {
+        $calendarItems[substr((string) $assignment['due'], 0, 10)][] = $assignment['title'];
+    }
+}
+foreach ($calendarEvents as $event) {
+    $calendarItems[$event['date']][] = $event['title'];
+}
+$editPriorities = ($_GET['edit'] ?? '') === 'assignments';
 $flashMessage = (string) ($_SESSION['dashboard_flash'] ?? '');
 unset($_SESSION['dashboard_flash']);
-
-
+$notificationCount = count($notifications) + count($soonNotifications);
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light" data-sidebar="closed">
@@ -28,7 +68,9 @@ unset($_SESSION['dashboard_flash']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= dashboard_escape($pageTitle) ?></title>
-    <link rel="stylesheet" href="./assets/dashboard.css?v=6">
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
+    <link rel="stylesheet" href="./assets/dashboard.css?v=9">
+    <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>
 <style>
 /* Copied from the template Dashboard, modified for Block Forum Page */
@@ -445,39 +487,24 @@ Individual Styling, if Needed
 
 } */
 </style>
-<body>
+<body class="comfsci-shell">
 <div class="app">
-    <aside class="sidebar" id="dashboardSidebar" aria-label="Administrator navigation">
-        <div class="avatar"><img src="./assets/profileIcon.png" alt="" class="avatarImg"></div>
-        <h2 class="student-name"><?= dashboard_escape($userName) ?></h2>
-        <p class="student-no">Administrator</p>
-        <nav class="nav-panel" aria-label="Main navigation">
-            <ul>
-                <li><a href="#dashboard" class="active" aria-current="page" title="Dashboard"><?= dashboard_icon('dashboard') ?><span class="nav-label">Dashboard</span></a></li>
-                <li><a href="#users" title="Users"><?= dashboard_icon('user') ?><span class="nav-label">Users</span></a></li>
-                <li><a href="#blocks" title="Blocks"><?= dashboard_icon('layout') ?><span class="nav-label">Blocks</span></a></li>
-                <li><a href="#assignments" title="Assignments"><?= dashboard_icon('file') ?><span class="nav-label">Assignments</span></a></li>
-                <li><a href="#events" title="Events"><?= dashboard_icon('calendar') ?><span class="nav-label">Events</span></a></li>
-                <li><a href="#announcements" title="Announcements"><?= dashboard_icon('bell') ?><span class="nav-label">Announcements</span></a></li>
-                <li><a href="../pages/blockForum.php" title="Forum"><?= dashboard_icon('forum') ?><span class="nav-label">Block Forum</span></a></li>
-            </ul>
-            <a href="../auth/logout.php" class="logout" title="Logout"><?= dashboard_icon('logout') ?><span class="nav-label">Logout</span></a>
-        </nav>
-    </aside>
-    <a class="sidebarBackdrop" href="#" data-sidebar-close aria-label="Close navigation"></a>
+    <?php require __DIR__ . '/includes/sidebar.php'; ?>
 
     <div class="main">
         <header class="topbar">
             <div class="top-left">
-                <button class="icon-btn sidebarToggle" type="button" aria-controls="dashboardSidebar" aria-expanded="false" aria-label="Open navigation"><?= dashboard_icon('menu', 18) ?></button>
-                <span class="tab"><?= dashboard_icon('layout', 16) ?>Block Forum</span>
+                <span class="tab"><?= dashboard_icon('layout', 16) ?>Dashboard</span>
             </div>
             <div class="actions">
-                <button class="icon-btn themeToggle" type="button" aria-label="Switch to dark mode" title="Switch theme"><?= dashboard_icon('moon', 18) ?></button>
+                <button class="icon-btn themeToggle" type="button" aria-label="Switch to dark mode" title="Switch theme">
+                    <?= dashboard_icon('moon', 18) ?>
+                </button>
+               
             </div>
         </header>
-<main class="content" id="dashboard">
-<!------ Main content ------->
+        <main>
+        <!------ Main content ------->
     <div class="contentFrame">
     <!-- Pager -->
     <div class="pagerFrame"> 
@@ -582,9 +609,10 @@ Individual Styling, if Needed
     </div>
     </div>
     </div>
-<script src="./assets/dashboard.js?v=6"></script>
-</main>
-</div>
-</div>
+        </main>
+        
+    </div>
+    <script src="./assets/dashboard.js?v=6"></script>
+<?php require __DIR__ . '/../includes/ai_chat_widget.php'; ?>
 </body>
 </html>
