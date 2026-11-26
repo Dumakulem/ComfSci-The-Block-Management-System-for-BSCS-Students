@@ -243,13 +243,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES (?, ?, ?, ?, 'ticket', ?, 'open', NOW())"
                 );
                 $insertTicket->execute([$blockId, $userId, $content, $attachmentPath, $category]);
-            } catch (Throwable $exception) {
+            } catch (Throwable $exception)  {
                 if ($attachmentPath !== null) {
                     $savedPath = __DIR__ . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $attachmentPath);
                     if (is_file($savedPath)) {
                         @unlink($savedPath);
                     }
-                }
+                } 
                 throw $exception;
             }
             forumRedirect('Your support ticket was submitted.');
@@ -548,7 +548,7 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
                     <?php endforeach; ?>
                 </select>
                 <label for="ticket-content">What would you like help with?</label>
-                <textarea id="ticket-content" name="messageContent" maxlength="2000" rows="4" required></textarea>
+                <textarea id="ticket-content" name="messageContent" maxlength="2000" rows="4" required placeholder="Enter Your Message here."></textarea>
                 <label for="ticket-proof">Proof attachment <span>(optional; JPG, PNG, or PDF; max 5 MB)</span></label>
                 <input id="ticket-proof" name="proofAttachment" type="file" accept=".jpg,.png,.pdf,image/jpeg,image/png,application/pdf">
                 <button type="submit">Send private ticket</button>
