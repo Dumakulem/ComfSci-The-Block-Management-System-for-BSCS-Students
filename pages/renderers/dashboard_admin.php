@@ -21,29 +21,7 @@ $announcements = $adminData['announcements'];
 </head>
 <body class="comfsci-shell">
 <div class="app">
-<<<<<<< HEAD
-    <aside class="sidebar" id="dashboardSidebar" aria-label="Administrator navigation">
-        <div class="avatar"><img src="./assets/profileIcon.png" alt="" class="avatarImg"></div>
-        <h2 class="student-name"><?= dashboard_escape($userName) ?></h2>
-        <p class="student-no">Administrator</p>
-        <nav class="nav-panel" aria-label="Main navigation">
-            <ul>
-                <li><a href="#dashboard" class="active" aria-current="page" title="Dashboard"><?= dashboard_icon('dashboard') ?><span class="nav-label">Dashboard</span></a></li>
-                <li><a href="#users" title="Users"><?= dashboard_icon('user') ?><span class="nav-label">Users</span></a></li>
-                <li><a href="#blocks" title="Blocks"><?= dashboard_icon('layout') ?><span class="nav-label">Blocks</span></a></li>
-                <li><a href="#assignments" title="Assignments"><?= dashboard_icon('file') ?><span class="nav-label">Assignments</span></a></li>
-                <li><a href="#events" title="Events"><?= dashboard_icon('calendar') ?><span class="nav-label">Events</span></a></li>
-                <li><a href="#announcements" title="Announcements"><?= dashboard_icon('bell') ?><span class="nav-label">Announcements</span></a></li>
-                <li><a href="../pages/blockForum.php" title="Forum"><?= dashboard_icon('forum') ?><span class="nav-label">Block Forum</span></a></li>
-            </ul>
-            <a href="../auth/logout.php" class="logout" title="Logout"><?= dashboard_icon('logout') ?><span class="nav-label">Logout</span></a>
-        </nav>
-    </aside>
-    <a class="sidebarBackdrop" href="#" data-sidebar-close aria-label="Close navigation"></a>
-=======
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
->>>>>>> main
-
     <div class="main">
         <header class="topbar">
             <div class="top-left">

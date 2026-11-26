@@ -64,32 +64,7 @@ $notificationCount = count($notifications) + count($soonNotifications);
 </head>
 <body class="comfsci-shell">
 <div class="app">
-<<<<<<< HEAD
-    <aside class="sidebar" id="dashboardSidebar" aria-label="Student navigation">
-        <div class="avatar" id="profile">
-            <img src="./assets/profileIcon.png" alt="" class="avatarImg">
-        </div>
-        <h2 class="student-name"><?= dashboard_escape($student['name']) ?></h2>
-        <p class="student-no">Student Number: <?= dashboard_escape((string) $student['number']) ?></p>
-        <nav class="nav-panel" aria-label="Main navigation">
-            <ul>
-                <li><a href="#dashboard" class="active" aria-current="page" title="Dashboard"><?= dashboard_icon('dashboard') ?><span class="nav-label">Dashboard</span></a></li>
-                <li><a href="#profile" title="Profile"><?= dashboard_icon('user') ?><span class="nav-label">Profile</span></a></li>
-                <li><a href="#attendance" title="Attendance"><?= dashboard_icon('attendance') ?><span class="nav-label">Attendance</span></a></li>
-                <li><a href="#gamifiedQuiz" title="Gamified Quiz"><?= dashboard_icon('quiz') ?><span class="nav-label">Gamified Quiz</span></a></li>
-                <li><a href="#assignments" title="Assignments"><?= dashboard_icon('file') ?><span class="nav-label">Assignments</span></a></li>
-                <li><a href="#notifications" title="Announcements"><?= dashboard_icon('bell') ?><span class="nav-label">Announcements</span></a></li>
-                <li><a href="#academicCalendar" title="Academic Calendar"><?= dashboard_icon('calendar') ?><span class="nav-label">Academic Calendar</span></a></li>
-                <li><a href="#moduleSources" title="Module Sources"><?= dashboard_icon('download') ?><span class="nav-label">Module Sources</span></a></li>
-                <li><a href="../pages/blockForum.php" title="Forum"><?= dashboard_icon('forum') ?><span class="nav-label">Block Forum</span></a></li>
-            </ul>
-            <a href="../auth/logout.php" class="logout" title="Logout"><?= dashboard_icon('logout') ?><span class="nav-label">Logout</span></a>
-        </nav>
-    </aside>
-    <a class="sidebarBackdrop" href="#" data-sidebar-close aria-label="Close navigation"></a>
-=======
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
->>>>>>> main
 
     <div class="main">
         <header class="topbar">
