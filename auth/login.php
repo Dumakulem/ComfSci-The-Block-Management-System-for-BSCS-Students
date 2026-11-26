@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $studentStatement = $pdo->prepare(
                 'SELECT studentID, studentFirstName, studentLastName, studentEmail, studentPassword
                  FROM tblstudent
-                 WHERE studentEmail = ?'
+                 WHERE studentEmail = ? AND archivedAt IS NULL'
             );
             $studentStatement->execute([$email]);
             $student = $studentStatement->fetch();
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="password">Password</label>
             </div>
             <?php if ($error !== ''): ?>
-                <p class="login-error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                <p class="login-error" style='color: red; font-weight: bold; font-size: 20px; margin: 0'><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
             <?php endif; ?>
             <button class="submit" type="submit">Login</button>
         </form>

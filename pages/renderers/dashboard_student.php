@@ -58,10 +58,13 @@ $notificationCount = count($notifications) + count($soonNotifications);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= dashboard_escape($pageTitle) ?></title>
-    <link rel="stylesheet" href="./assets/dashboard.css?v=6">
+    <link rel="stylesheet" href="./assets/theme.css?v=1">
+    <link rel="stylesheet" href="./assets/dashboard.css?v=9">
+    <link rel="stylesheet" href="./assets/sidebar.css?v=1">
 </head>
-<body>
+<body class="comfsci-shell">
 <div class="app">
+<<<<<<< HEAD
     <aside class="sidebar" id="dashboardSidebar" aria-label="Student navigation">
         <div class="avatar" id="profile">
             <img src="./assets/profileIcon.png" alt="" class="avatarImg">
@@ -84,13 +87,13 @@ $notificationCount = count($notifications) + count($soonNotifications);
         </nav>
     </aside>
     <a class="sidebarBackdrop" href="#" data-sidebar-close aria-label="Close navigation"></a>
+=======
+    <?php require __DIR__ . '/../includes/sidebar.php'; ?>
+>>>>>>> main
 
     <div class="main">
         <header class="topbar">
             <div class="top-left">
-                <button class="icon-btn sidebarToggle" type="button" aria-controls="dashboardSidebar" aria-expanded="false" aria-label="Open navigation">
-                    <?= dashboard_icon('menu', 18) ?>
-                </button>
                 <span class="tab"><?= dashboard_icon('layout', 16) ?>Dashboard</span>
             </div>
             <div class="actions">
@@ -135,6 +138,7 @@ $notificationCount = count($notifications) + count($soonNotifications);
             <section class="hero">
                 <h1>Hi, <?= dashboard_escape($student['name']) ?>! 👋</h1>
                 <h2>Check out your Assignment!</h2>
+                <p>Account role: <?= $student['isClassRep'] ? 'Block Representative' : ($student['isGroupLeader'] ? 'Group Leader' : 'Student') ?></p>
                 <p>You have <?= count($assignments) ?> <?= count($assignments) === 1 ? 'assignment' : 'assignments' ?>, <?= $tasksLeft ?> <?= $tasksLeft === 1 ? 'task' : 'tasks' ?> left today and <?= count($upcoming) ?> upcoming <?= count($upcoming) === 1 ? 'class' : 'online classes' ?>.</p>
             </section>
             <?php if ($flashMessage !== ''): ?><p class="toast" role="status"><?= dashboard_escape($flashMessage) ?></p><?php endif; ?>
@@ -333,5 +337,6 @@ $notificationCount = count($notifications) + count($soonNotifications);
         </main>
     </div>
     <script src="./assets/dashboard.js?v=6"></script>
+<?php require __DIR__ . '/../includes/ai_chat_widget.php'; ?>
 </body>
 </html>

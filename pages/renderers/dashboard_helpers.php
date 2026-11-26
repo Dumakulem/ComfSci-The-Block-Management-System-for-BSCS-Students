@@ -64,8 +64,8 @@ function dashboard_load_student(int $studentId): array
 {
     $pdo = db();
     $statement = $pdo->prepare(
-        'SELECT studentID, studentFirstName, studentLastName, blockID
-         FROM tblstudent WHERE studentID = ?'
+        'SELECT studentID, studentFirstName, studentLastName, blockID, isClassRep, isGroupLeader
+         FROM tblstudent WHERE studentID = ? AND archivedAt IS NULL'
     );
     $statement->execute([$studentId]);
     $record = $statement->fetch();
@@ -78,6 +78,8 @@ function dashboard_load_student(int $studentId): array
         'name' => trim((string) $record['studentFirstName'] . ' ' . (string) $record['studentLastName']),
         'number' => (int) $record['studentID'],
         'blockID' => (int) $record['blockID'],
+        'isClassRep' => (int) $record['isClassRep'] === 1,
+        'isGroupLeader' => (int) $record['isGroupLeader'] === 1,
     ];
 
     $clearedStatement = $pdo->prepare('SELECT clearedAt FROM tblnotificationclear WHERE studentID = ?');
@@ -87,7 +89,8 @@ function dashboard_load_student(int $studentId): array
     $events = $pdo->prepare(
         "SELECT eventTitle, eventDate, eventStartTime, eventEndTime
          FROM tblevent
-         WHERE eventStatus = 'Upcoming' AND eventDate >= CURDATE() AND createdAt > ?
+         WHERE archivedAt IS NULL AND eventStatus = 'Upcoming'
+           AND eventDate >= CURDATE() AND createdAt > ?
          ORDER BY eventDate, eventStartTime LIMIT 5"
     );
     $events->execute([$clearedAt]);
@@ -111,6 +114,7 @@ function dashboard_load_student(int $studentId): array
          FROM tblmessage m
          JOIN tblstudent s ON s.studentID = m.studentID
          WHERE m.blockID = ? AND m.studentID <> ?
+           AND s.archivedAt IS NULL
            AND m.messageType IN ('message', 'note') AND m.createdAt > ?
          ORDER BY m.createdAt DESC LIMIT 5"
     );
@@ -127,7 +131,7 @@ function dashboard_load_student(int $studentId): array
     $calendarEventStatement = $pdo->query(
         "SELECT eventTitle AS title, eventDate AS date
          FROM tblevent
-         WHERE eventStatus = 'Upcoming' AND eventDate >= CURDATE()"
+         WHERE archivedAt IS NULL AND eventStatus = 'Upcoming' AND eventDate >= CURDATE()"
     );
     $calendarEvents = $calendarEventStatement->fetchAll();
 
@@ -137,7 +141,7 @@ function dashboard_load_student(int $studentId): array
          FROM tblassignment a
          LEFT JOIN tblassignmentpriority p
            ON p.assignmentID = a.assignmentID AND p.studentID = ?
-         WHERE a.blockID = ? AND a.assignmentDeadline >= NOW()
+         WHERE a.blockID = ? AND a.archivedAt IS NULL AND a.assignmentDeadline >= NOW()
          ORDER BY a.assignmentDeadline, a.assignmentID"
     );
     $assignmentStatement->execute([$studentId, $student['blockID']]);
@@ -187,6 +191,29 @@ function dashboard_load_student(int $studentId): array
     return compact('student', 'notifications', 'calendarEvents', 'assignments', 'tasks', 'schedules');
 }
 
+function dashboard_load_student_profile(int $studentId): array
+{
+    $statement = db()->prepare(
+        'SELECT s.studentID, s.studentFirstName, s.studentLastName, s.studentMiddleName,
+                s.studentExtensionName, s.studentEmail, s.isClassRep, s.isGroupLeader,
+                s.blockID, b.classBlock, c.courseName, c.curriculumName,
+                CONCAT(f.facultyFirstName, " ", f.facultyLastName) AS facultyName,
+                f.facultyEmail
+         FROM tblstudent s
+         LEFT JOIN tblblock b ON b.blockID = s.blockID AND b.archivedAt IS NULL
+         LEFT JOIN tblcourse c ON c.courseID = b.courseID
+         LEFT JOIN tblfaculty f ON f.facultyID = b.facultyID
+         WHERE s.studentID = ? AND s.archivedAt IS NULL'
+    );
+    $statement->execute([$studentId]);
+    $profile = $statement->fetch();
+    if (!$profile) {
+        throw new RuntimeException('The authenticated student profile was not found.');
+    }
+
+    return $profile;
+}
+
 function dashboard_expand_schedules(array $schedules, string $from, string $to): array
 {
     $meetings = [];
@@ -216,25 +243,112 @@ function dashboard_expand_schedules(array $schedules, string $from, string $to):
     return $meetings;
 }
 
-function dashboard_load_admin(): array
+function dashboard_load_admin(bool $showArchived = false, ?string $onlyEntity = null): array
 {
-    $pdo = db();
-    $counts = [];
-    foreach ([
-        'students' => 'tblstudent',
-        'blocks' => 'tblblock',
-        'assignments' => 'tblassignment',
-        'events' => 'tblevent',
-    ] as $key => $table) {
-        $counts[$key] = (int) $pdo->query('SELECT COUNT(*) FROM ' . $table)->fetchColumn();
+    $validEntities = ['students', 'blocks', 'assignments', 'events', 'announcements'];
+    if ($onlyEntity !== null && !in_array($onlyEntity, $validEntities, true)) {
+        throw new InvalidArgumentException('Invalid admin management section.');
     }
 
-    $announcements = $pdo->query(
-        'SELECT announcementTitle AS title, announcementContent AS content, createdAt
-         FROM tblannouncement ORDER BY createdAt DESC, announcementID DESC LIMIT 5'
-    )->fetchAll();
+    $pdo = db();
+    $counts = [];
+    $announcements = [];
+    if ($onlyEntity === null) {
+        foreach ([
+            'students' => 'tblstudent',
+            'blocks' => 'tblblock',
+            'assignments' => 'tblassignment',
+            'events' => 'tblevent',
+        ] as $key => $table) {
+            $counts[$key] = (int) $pdo->query(
+                'SELECT COUNT(*) FROM ' . $table . ' WHERE archivedAt IS NULL'
+            )->fetchColumn();
+        }
 
-    return compact('counts', 'announcements');
+        $announcements = $pdo->query(
+            'SELECT announcementTitle AS title, announcementContent AS content, createdAt
+             FROM tblannouncement WHERE archivedAt IS NULL
+             ORDER BY createdAt DESC, announcementID DESC LIMIT 5'
+        )->fetchAll();
+    }
+
+    $archiveCondition = $showArchived ? 'IS NOT NULL' : 'IS NULL';
+    $requestedEntities = $onlyEntity === null ? [] : [$onlyEntity];
+    $records = [];
+    if (in_array('students', $requestedEntities, true)) {
+        $records['students'] = $pdo->query(
+            'SELECT s.studentID, s.studentFirstName, s.studentLastName, s.studentMiddleName,
+                    s.studentExtensionName, s.studentEmail, s.isClassRep, s.isGroupLeader,
+                    s.blockID, s.archivedAt, CONCAT(s.studentFirstName, " ", s.studentLastName) AS displayName,
+                    b.classBlock
+             FROM tblstudent s LEFT JOIN tblblock b ON b.blockID = s.blockID
+             WHERE s.archivedAt ' . $archiveCondition . '
+             ORDER BY s.studentID DESC'
+        )->fetchAll();
+    }
+    if (in_array('blocks', $requestedEntities, true)) {
+        $records['blocks'] = $pdo->query(
+            'SELECT b.blockID, b.classBlock, b.courseID, b.facultyID, b.archivedAt,
+                    c.courseName, CONCAT(f.facultyFirstName, " ", f.facultyLastName) AS facultyName
+             FROM tblblock b
+             JOIN tblcourse c ON c.courseID = b.courseID
+             LEFT JOIN tblfaculty f ON f.facultyID = b.facultyID
+             WHERE b.archivedAt ' . $archiveCondition . '
+             ORDER BY b.blockID DESC'
+        )->fetchAll();
+    }
+    if (in_array('assignments', $requestedEntities, true)) {
+        $records['assignments'] = $pdo->query(
+            'SELECT a.assignmentID, a.blockID, a.assignmentTitle, a.assignmentSubject,
+                    a.assignmentDescription, a.assignmentFilePath, a.assignmentStatus,
+                    a.assignmentDeadline, a.archivedAt, b.classBlock
+             FROM tblassignment a JOIN tblblock b ON b.blockID = a.blockID
+             WHERE a.archivedAt ' . $archiveCondition . '
+             ORDER BY a.assignmentDeadline, a.assignmentID DESC'
+        )->fetchAll();
+    }
+    if (in_array('events', $requestedEntities, true)) {
+        $records['events'] = $pdo->query(
+            'SELECT e.eventID, e.eventTitle, e.eventDescription, e.eventDate, e.eventStartTime,
+                    e.eventEndTime, e.eventLocation, e.participationFee, e.eventStatus,
+                    e.archivedAt, CONCAT(a.adminFirstName, " ", a.adminLastName) AS adminName
+             FROM tblevent e JOIN tbladmin a ON a.adminID = e.adminID
+             WHERE e.archivedAt ' . $archiveCondition . '
+             ORDER BY e.eventDate DESC, e.eventID DESC'
+        )->fetchAll();
+    }
+    if (in_array('announcements', $requestedEntities, true)) {
+        $records['announcements'] = $pdo->query(
+            'SELECT n.announcementID, n.announcementTitle, n.announcementContent,
+                    n.createdAt, n.updatedAt, n.archivedAt,
+                    CONCAT(a.adminFirstName, " ", a.adminLastName) AS adminName
+             FROM tblannouncement n JOIN tbladmin a ON a.adminID = n.adminID
+             WHERE n.archivedAt ' . $archiveCondition . '
+             ORDER BY n.createdAt DESC, n.announcementID DESC'
+        )->fetchAll();
+    }
+
+    $options = [];
+    if (in_array('blocks', $requestedEntities, true)) {
+        $options['courses'] = $pdo->query('SELECT courseID, courseName FROM tblcourse ORDER BY courseName')
+            ->fetchAll(PDO::FETCH_KEY_PAIR);
+        $options['faculty'] = $pdo->query(
+            'SELECT facultyID, CONCAT(facultyFirstName, " ", facultyLastName)
+             FROM tblfaculty ORDER BY facultyFirstName, facultyLastName'
+        )->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+    if (in_array('students', $requestedEntities, true) || in_array('assignments', $requestedEntities, true)) {
+        $options['blocks'] = $pdo->query(
+            'SELECT blockID, classBlock FROM tblblock WHERE archivedAt IS NULL ORDER BY classBlock'
+        )->fetchAll(PDO::FETCH_KEY_PAIR);
+    }
+
+    return [
+        'counts' => $counts,
+        'announcements' => $announcements,
+        'records' => $records,
+        'options' => $options,
+    ];
 }
 
 function dashboard_calendar(int $year, int $month): array

@@ -26,10 +26,10 @@ body {
   overflow-x: hidden;
   font-family: var(--font-ui);
   background: rgb(255, 255, 255);
-  /* background: radial-gradient(
+  background: radial-gradient(
     720px 512px at 50% 50%,
     #ffbf93 45.7%, #e59d6e 59.3%, #ca7b49 72.8%, #b05925 86.4%, #a24812 93.2%, #953800 100%
-  ) #953800;   */
+  ) #953800;
 }
 
 .page-bg {
