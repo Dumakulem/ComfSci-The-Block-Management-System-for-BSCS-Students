@@ -1,0 +1,525 @@
+:root {
+    color-scheme: light;
+    --ink: #1d2b3a;
+    --muted: #64748b;
+    --line: #e4eaf0;
+    --paper: #ffffff;
+    --canvas: #f3f6f9;
+    --blue: #2563a6;
+    --blue-dark: #174979;
+    --mint: #e8f7f1;
+    --rose: #fff0ef;
+    --shadow: 0 14px 36px rgba(31, 52, 74, 0.07);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+.dashboard-link {
+    border: 0;
+    border-radius: 9px;
+    background: var(--blue);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 11px 16px;
+    text-decoration: none;
+    transition: background-color 140ms ease, transform 140ms ease;
+}
+
+button:hover,
+.dashboard-link:hover {
+    background: var(--blue-dark);
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background: #aab8c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.forum-shell {
+    width: min(1120px, calc(100% - 36px));
+    margin: 0 auto;
+    padding: 38px 0 28px;
+}
+
+.forum-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 8px 0 26px;
+}
+
+.forum-header h1,
+.section-heading h2 {
+    margin: 0;
+    letter-spacing: -0.035em;
+}
+
+.forum-header h1 {
+    font-size: clamp(2.2rem, 5vw, 3.25rem);
+    line-height: 1.1;
+}
+
+.header-copy {
+    margin: 12px 0 0;
+    color: var(--muted);
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: var(--blue);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.dashboard-link {
+    flex: 0 0 auto;
+    margin-top: 16px;
+}
+
+.forum-section {
+    margin: 18px 0;
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--paper);
+    box-shadow: var(--shadow);
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.section-heading h2 {
+    font-size: 1.45rem;
+}
+
+.section-count {
+    color: var(--muted);
+    font-size: 0.82rem;
+    white-space: nowrap;
+}
+
+.notice {
+    margin: 0 0 16px;
+    padding: 12px 15px;
+    border: 1px solid #b9e2d2;
+    border-radius: 10px;
+    background: var(--mint);
+    color: #205b45;
+}
+
+.notice-error {
+    border-color: #f2c5c1;
+    background: var(--rose);
+    color: #8e302b;
+}
+
+.block-picker {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.block-picker select {
+    width: auto;
+    min-width: 180px;
+}
+
+.composer,
+.ticket-form,
+.ticket-update-form {
+    display: grid;
+    gap: 10px;
+}
+
+.composer {
+    margin: 0 0 20px;
+}
+
+.note-composer {
+    padding: 16px;
+    border: 1px solid #f0dfab;
+    border-radius: 12px;
+    background: #fffaf0;
+}
+
+label {
+    color: #34465b;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+label span {
+    color: var(--muted);
+    font-weight: 400;
+}
+
+textarea,
+select,
+input[type="file"] {
+    width: 100%;
+    border: 1px solid #d5dee8;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--ink);
+}
+
+textarea,
+select {
+    padding: 11px 12px;
+}
+
+textarea {
+    min-height: 78px;
+    resize: vertical;
+}
+
+textarea:focus,
+select:focus,
+input[type="file"]:focus {
+    outline: 3px solid rgba(37, 99, 166, 0.15);
+    border-color: var(--blue);
+}
+
+.composer-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.composer-footer span,
+.ticket-date {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.note-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 13px;
+}
+
+.sticky-note {
+    display: flex;
+    min-height: 150px;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 17px;
+    border: 1px solid #f0e2b9;
+    border-radius: 12px;
+    background: #fff9e8;
+    box-shadow: 0 5px 13px rgba(109, 88, 31, 0.06);
+    overflow-wrap: anywhere;
+}
+
+.sticky-note p,
+.chat-message p,
+.ticket-content,
+.ticket-response p {
+    margin: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.sticky-note footer,
+.message-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 19px;
+    color: var(--muted);
+    font-size: 0.76rem;
+}
+
+.sticky-note footer span,
+.message-meta strong {
+    color: #42556b;
+    font-weight: 700;
+}
+
+.chat-list {
+    display: grid;
+    max-height: 440px;
+    gap: 10px;
+    overflow-y: auto;
+    padding: 2px 3px 14px 0;
+}
+
+.chat-message {
+    max-width: 88%;
+    padding: 12px 15px;
+    border: 1px solid var(--line);
+    border-radius: 12px 12px 12px 3px;
+    background: #f8fafc;
+}
+
+.chat-message:nth-child(even) {
+    justify-self: end;
+    border-color: #d7e8f8;
+    border-radius: 12px 12px 3px 12px;
+    background: #eff7ff;
+}
+
+.message-meta {
+    justify-content: flex-start;
+    margin: 0 0 5px;
+}
+
+.chat-composer {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    margin: 14px 0 0;
+}
+
+.chat-composer textarea {
+    min-height: 48px;
+}
+
+.ticket-form {
+    max-width: 760px;
+}
+
+.ticket-form button {
+    justify-self: start;
+    margin-top: 5px;
+}
+
+.ticket-form input[type="file"] {
+    padding: 10px;
+}
+
+.ticket-list {
+    display: grid;
+    gap: 14px;
+}
+
+.ticket-card {
+    padding: 17px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fcfdff;
+}
+
+.ticket-header,
+.ticket-header > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 9px;
+}
+
+.ticket-header > div {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.category-pill,
+.block-tag,
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 0.73rem;
+    font-weight: 800;
+}
+
+.category-pill {
+    background: #e8f1fb;
+    color: #245b8f;
+    text-transform: capitalize;
+}
+
+.block-tag {
+    background: #f1f5f9;
+    color: #52657a;
+}
+
+.ticket-owner {
+    color: #52657a;
+    font-size: 0.82rem;
+}
+
+.status-pill {
+    flex: 0 0 auto;
+    background: #fff3d4;
+    color: #815d12;
+}
+
+.status-in_progress {
+    background: #e8f1ff;
+    color: #295991;
+}
+
+.status-closed {
+    background: #e8f7f1;
+    color: #286247;
+}
+
+.ticket-content {
+    margin-top: 14px;
+}
+
+.attachment-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.ticket-date {
+    margin: 10px 0 0;
+}
+
+.ticket-response {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-left: 3px solid #71b89b;
+    border-radius: 0 8px 8px 0;
+    background: #f0faf5;
+}
+
+.ticket-response strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #286247;
+}
+
+.ticket-response time {
+    display: block;
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 0.75rem;
+}
+
+.ticket-update-form {
+    grid-template-columns: minmax(130px, 0.45fr) minmax(0, 1.5fr) auto;
+    align-items: end;
+    margin-top: 16px;
+    padding-top: 15px;
+    border-top: 1px solid var(--line);
+}
+
+.ticket-update-form label {
+    align-self: end;
+}
+
+.ticket-update-form textarea {
+    grid-column: 2;
+}
+
+.ticket-update-form button {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.empty-state {
+    margin: 0;
+    padding: 16px;
+    border: 1px dashed #d5dee8;
+    border-radius: 10px;
+    color: var(--muted);
+    text-align: center;
+}
+
+.forum-footer {
+    padding: 18px 6px;
+    color: var(--muted);
+    font-size: 0.82rem;
+    text-align: center;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 700px) {
+    .forum-shell {
+        width: min(100% - 22px, 560px);
+        padding-top: 20px;
+    }
+
+    .forum-header {
+        display: block;
+        padding-bottom: 18px;
+    }
+
+    .dashboard-link {
+        display: inline-block;
+        margin-top: 18px;
+    }
+
+    .forum-section {
+        padding: 17px;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+    }
+
+    .section-count {
+        text-align: right;
+        white-space: normal;
+    }
+
+    .chat-composer,
+    .ticket-update-form {
+        grid-template-columns: 1fr;
+    }
+
+    .ticket-update-form textarea,
+    .ticket-update-form button {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .chat-composer button {
+        justify-self: end;
+    }
+
+    .chat-message {
+        max-width: 96%;
+    }
+}

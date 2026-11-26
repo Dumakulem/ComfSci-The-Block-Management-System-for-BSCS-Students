@@ -1,0 +1,302 @@
+:root {
+    color-scheme: light;
+    --ink: #172a3a;
+    --muted: #647789;
+    --line: #dce5eb;
+    --paper: #ffffff;
+    --canvas: #f3f7f9;
+    --teal: #087f82;
+    --teal-dark: #06676a;
+    --soft-teal: #e7f5f4;
+    --danger: #a63d47;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background:
+        radial-gradient(ellipse at 85% 0, rgba(126, 212, 199, 0.18), transparent 34rem),
+        var(--canvas);
+    color: var(--ink);
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    line-height: 1.55;
+}
+
+.consultation-shell {
+    width: min(100% - 32px, 860px);
+    margin: 0 auto;
+    padding: 34px 0 64px;
+}
+
+.page-header {
+    margin-bottom: 24px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--teal-dark);
+    font-size: 0.92rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.eyebrow {
+    margin: 0 0 7px;
+    color: var(--teal-dark);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+}
+
+h1,
+h2,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 5px;
+    font-size: clamp(2rem, 5vw, 2.7rem);
+    letter-spacing: -0.045em;
+}
+
+h2 {
+    margin-bottom: 0;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+}
+
+.intro,
+.admin-card > p:not(.eyebrow),
+.privacy-note {
+    color: var(--muted);
+}
+
+.intro {
+    margin-bottom: 0;
+}
+
+.consultation-card,
+.admin-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    box-shadow: 0 14px 40px rgba(27, 55, 74, 0.06);
+}
+
+.consultation-card {
+    padding: clamp(20px, 5vw, 34px);
+}
+
+.card-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+}
+
+.usage-badge {
+    flex: 0 0 auto;
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: var(--soft-teal);
+    color: var(--teal-dark);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.question-form {
+    display: grid;
+}
+
+label {
+    margin: 17px 0 7px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+label:first-of-type {
+    margin-top: 0;
+}
+
+.required,
+.optional {
+    margin-left: 5px;
+    color: var(--muted);
+    font-size: 0.73rem;
+    font-weight: 500;
+}
+
+input,
+textarea {
+    width: 100%;
+    border: 1px solid #cbd8e0;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--ink);
+    font: inherit;
+}
+
+input {
+    min-height: 46px;
+    padding: 10px 12px;
+}
+
+textarea {
+    min-height: 105px;
+    padding: 11px 12px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    border-color: var(--teal);
+    outline: 3px solid rgba(8, 127, 130, 0.14);
+}
+
+.field-help {
+    margin: 7px 0 2px;
+    color: var(--muted);
+    font-size: 0.79rem;
+}
+
+button {
+    min-height: 46px;
+    border: 0;
+    border-radius: 9px;
+    background: var(--teal);
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 750;
+}
+
+.question-form > button {
+    justify-self: start;
+    min-width: 190px;
+    margin-top: 22px;
+    padding: 0 18px;
+}
+
+button:hover {
+    background: var(--teal-dark);
+}
+
+.answer-panel {
+    margin-top: 30px;
+    padding: 23px;
+    border: 1px solid #c9e6e2;
+    border-radius: 12px;
+    background: #f5fbfa;
+}
+
+.answer-panel h2 {
+    margin-bottom: 13px;
+}
+
+.answer-copy {
+    overflow-wrap: anywhere;
+}
+
+.notice {
+    margin-bottom: 18px;
+    padding: 13px 16px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+}
+
+.notice-error {
+    border-color: #f0c9cc;
+    background: #fff5f5;
+    color: #842e38;
+}
+
+.notice-success {
+    border-color: #c9e6d3;
+    background: #f2fbf5;
+    color: #24643d;
+}
+
+.notice-warning {
+    border-color: #f0dda8;
+    background: #fffaf0;
+    color: #725619;
+}
+
+.privacy-note {
+    margin: 14px 3px 30px;
+    font-size: 0.82rem;
+}
+
+.admin-card {
+    padding: 24px;
+}
+
+.admin-card h2 {
+    margin-bottom: 5px;
+}
+
+.admin-form {
+    max-width: 430px;
+}
+
+.admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.admin-actions button {
+    padding: 0 15px;
+}
+
+.admin-actions .button-danger {
+    background: var(--danger);
+}
+
+.admin-actions .button-danger:hover {
+    background: #842e38;
+}
+
+.admin-actions .button-secondary {
+    border: 1px solid var(--line);
+    background: #f5f8fa;
+    color: var(--ink);
+}
+
+.admin-actions .button-secondary:hover {
+    background: #e8eff3;
+}
+
+.access-status {
+    margin: 15px 0 0;
+}
+
+@media (max-width: 600px) {
+    .consultation-shell {
+        width: min(100% - 22px, 860px);
+        padding-top: 20px;
+    }
+
+    .card-heading {
+        flex-direction: column;
+    }
+
+    .usage-badge {
+        flex: initial;
+    }
+
+    .answer-panel {
+        padding: 17px;
+    }
+}
