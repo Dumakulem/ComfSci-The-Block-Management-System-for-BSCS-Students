@@ -1,0 +1,93 @@
+.grade-content {
+    max-width: 1050px;
+    margin: 30px auto;
+}
+
+.grade-card {
+    padding: 22px;
+}
+
+.grade-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.grade-weight {
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.grade-table-wrap {
+    overflow-x: auto;
+}
+
+.grade-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.grade-table th,
+.grade-table td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+}
+
+.grade-table input {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 90px;
+    padding: 9px;
+}
+
+.grade-table input[type="text"] {
+    min-width: 150px;
+}
+
+.grade-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--field);
+}
+
+.grade-results span,
+.grade-results label {
+    display: block;
+    color: var(--muted);
+}
+
+.grade-results strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.grade-results input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px;
+    margin-top: 5px;
+}
+
+.grade-results p {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+@media (max-width: 600px) {
+    .grade-card {
+        padding: 14px;
+    }
+
+    .grade-table th,
+    .grade-table td {
+        padding: 8px 5px;
+    }
+}

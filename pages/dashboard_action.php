@@ -33,6 +33,15 @@ $redirect = static function (string $query = '') use ($returnMonth) {
 
 try {
     $pdo = db();
+    $activeStudent = $pdo->prepare(
+        'SELECT COUNT(*) FROM tblstudent WHERE studentID = ? AND archivedAt IS NULL'
+    );
+    $activeStudent->execute([$studentId]);
+    if (!(int) $activeStudent->fetchColumn()) {
+        http_response_code(403);
+        exit('Archived student accounts cannot use dashboard actions.');
+    }
+
     switch ((string) ($_POST['action'] ?? '')) {
         case 'clear_notifications':
             $statement = $pdo->prepare(
@@ -80,7 +89,7 @@ try {
             }
             $ownsAssignment = $pdo->prepare(
                 'SELECT COUNT(*) FROM tblassignment
-                 WHERE assignmentID = ?
+                 WHERE assignmentID = ? AND archivedAt IS NULL
                    AND blockID = (SELECT blockID FROM tblstudent WHERE studentID = ?)'
             );
             $ownsAssignment->execute([$assignmentId, $studentId]);
