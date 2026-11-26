@@ -48,6 +48,13 @@ if(isset($_POST['viewGroup'])){
   header('Location: AdminGroupStudentSubmission.php');
   exit;
 }
+
+if(isset($_POST['editAssignment'])){
+  $_SESSION['assignment'] = (int)$_SESSION['currentGroupAsID'];
+
+  header('Location: AdminEditAssignment.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>

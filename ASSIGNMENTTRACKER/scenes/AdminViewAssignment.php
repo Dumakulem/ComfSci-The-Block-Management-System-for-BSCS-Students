@@ -44,6 +44,11 @@ if(isset($_POST['viewStudent'])){
   header('Location: AdminStudentSubmission.php');
   exit;
 }
+if(isset($_POST['editAssignment'])){
+
+  header('Location: AdminEditAssignment.php');
+  exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -260,52 +265,6 @@ if(isset($_POST['viewStudent'])){
             <?php endif; ?>
 
             <?php endforeach; ?>
-              <!-- ATTACHMENTS FOREACH END  (put endforeach; here)
-                   The two rows below are extra samples. Delete them when your foreach works. -->
-              <!--<li class="file">
-                <span class="file-type" aria-hidden="true">ZIP</span>
-                <span class="file-info">
-                  <span class="file-name">Starter Code.zip</span>
-                  <span class="file-meta">ZIP &middot; 340 KB</span>
-                </span>
-                <span class="file-actions">
-                  <a href="#" class="icon-btn" aria-label="View Starter Code.zip" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="icon-btn" aria-label="Download Starter Code.zip" title="Download" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </a>
-                </span>
-              </li>
-              <li class="file">
-                <span class="file-type" aria-hidden="true">DOCX</span>
-                <span class="file-info">
-                  <span class="file-name">Grading Rubric.docx</span>
-                  <span class="file-meta">DOCX &middot; 86 KB</span>
-                </span>
-                <span class="file-actions">
-                  <a href="#" class="icon-btn" aria-label="View Grading Rubric.docx" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                      <circle cx="12" cy="12" r="3"/>
-                    </svg>
-                  </a>
-                  <a href="#" class="icon-btn" aria-label="Download Grading Rubric.docx" title="Download" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                      <polyline points="7 10 12 15 17 10"/>
-                      <line x1="12" y1="15" x2="12" y2="3"/>
-                    </svg>
-                  </a>
-                </span>
-              </li>-->
 
             </ul>
           </section>

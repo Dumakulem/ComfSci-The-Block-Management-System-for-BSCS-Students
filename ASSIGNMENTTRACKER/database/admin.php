@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/dbConnection.php';
+require_once __DIR__ . '/../includes/mailer.php';
 
 function createAdmin(PDO $pdo,$name, $password){
     $pdo->beginTransaction();
@@ -146,25 +147,153 @@ function createAssignment(PDO $pdo, $classCode, $prof, $title, $subject, array $
 }
 }
 
-function createAsOnlyForStudent(PDO $pdo, int $as_id, int $classCode, array $studentIDS, string $as_title, string $as_subject, string $as_description, $as_deadline, int $isGroupAs){
-$pdo->beginTransaction();
-try{
+function parseUploadedFiles(?array $files): array {
+    $uploaded = [];
+    if ($files !== null && isset($files['name']) && is_array($files['name'])) {
+        foreach ($files['name'] as $i => $originalName) {
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;   // skips the empty picker
 
-$stmt = $pdo->prepare(
+            if ($files['size'][$i] > 16000000) {
+                throw new Exception("$originalName is too large (max about 16 MB).");
+            }
+            $tmp = $files['tmp_name'][$i];
+            $uploaded[] = [
+                'name' => basename($originalName),
+                'type' => mime_content_type($tmp),
+                'data' => file_get_contents($tmp),
+            ];
+        }
+    }
+    return $uploaded;
+}
+
+/**
+ * Edits an assignment: its details, the copies stored for each student,
+ * removes the files in $removeFileIds and adds the newly uploaded files.
+ * Everything is saved together, or nothing is.
+ */
+function updateAssignment(
+    PDO $pdo,
+    int $as_id,
+    $classCode,
+    string $title,
+    string $subject,
+    string $des,
+    string $deadline,
+    ?array $files = null,
+    array $removeFileIds = []
+ ): void {
+    $maxFiles = 10;
+
+    if ($title === '' || $subject === '' || $des === '') {
+        throw new Exception("Title, subject and description are required.");
+    }
+
+    // sa_id values that were posted -> clean list of ints
+    $removeFileIds = array_values(array_unique(array_filter(array_map('intval', $removeFileIds))));
+
+    // read the uploads before touching the database
+    $uploaded = parseUploadedFiles($files);
+
+    $pdo->beginTransaction();
+    try {
+        // 1. The current title (the files table finds its files by title + classCode)
+        $stmt = $pdo->prepare("SELECT as_title FROM assignments WHERE as_id = ? AND classCode = ?");
+        $stmt->execute([$as_id, (int) $classCode]);
+        $oldTitle = $stmt->fetchColumn();
+        if ($oldTitle === false) {
+            throw new Exception("Assignment not found.");
+        }
+
+        // 2. Titles must stay unique per class, otherwise two assignments would share the same files
+        $dup = $pdo->prepare(
+            "SELECT 1 FROM assignments WHERE classCode = ? AND as_title = ? AND as_id <> ? LIMIT 1"
+        );
+        $dup->execute([(int) $classCode, $title, $as_id]);
+        if ($dup->fetchColumn()) {
+            throw new Exception("Another assignment in this class already uses that title.");
+        }
+
+        // 3. Update the assignment itself
+        $stmt = $pdo->prepare(
+            "UPDATE assignments
+             SET as_title = ?, as_subject = ?, as_description = ?, as_deadline = ?
+             WHERE as_id = ? AND classCode = ?"
+        );
+        $stmt->execute([$title, $subject, $des, $deadline, $as_id, (int) $classCode]);
+
+        // 4. Update the copy every student has
+        $stmt = $pdo->prepare(
+            "UPDATE studentassignments
+             SET as_title = ?, as_subject = ?, as_description = ?, as_deadline = ?
+             WHERE as_id = ? AND classCode = ?"
+        );
+        $stmt->execute([$title, $subject, $des, $deadline, $as_id, (int) $classCode]);
+
+        // 5. If the title changed, keep the existing files attached to the assignment
+        if ($oldTitle !== $title) {
+            $stmt = $pdo->prepare("UPDATE files SET as_title = ? WHERE as_title = ? AND classCode = ?");
+            $stmt->execute([$title, $oldTitle, (int) $classCode]);
+        }
+
+        // 6. Delete the files the admin removed (title + classCode in the WHERE keeps it to this assignment)
+        if (!empty($removeFileIds)) {
+            $del = $pdo->prepare("DELETE FROM files WHERE sa_id = ? AND classCode = ? AND as_title = ?");
+            foreach ($removeFileIds as $fileId) {
+                $del->execute([$fileId, (int) $classCode, $title]);
+            }
+        }
+
+        // 7. Check the 10 file limit (files left + new files)
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM files WHERE classCode = ? AND as_title = ?");
+        $stmt->execute([(int) $classCode, $title]);
+        $remaining = (int) $stmt->fetchColumn();
+        if ($remaining + count($uploaded) > $maxFiles) {
+            throw new Exception("An assignment can have up to $maxFiles files.");
+        }
+
+        // 8. Add the new files
+        $fs = $pdo->prepare(
+            "INSERT INTO files (as_title, classCode, as_file, as_file_name, as_file_type)
+             VALUES (?, ?, ?, ?, ?)"
+        );
+        foreach ($uploaded as $f) {
+            $fs->bindValue(1, $title);
+            $fs->bindValue(2, (int) $classCode, PDO::PARAM_INT);
+            $fs->bindValue(3, $f['data'], PDO::PARAM_LOB);
+            $fs->bindValue(4, $f['name']);
+            $fs->bindValue(5, $f['type']);
+            $fs->execute();
+        }
+
+        $pdo->commit();
+    } catch (Exception $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
+}
+
+function createAsOnlyForStudent(PDO $pdo, int $as_id, int $classCode, array $studentIDS, string $as_title, string $as_subject, string $as_description, $as_deadline, int $isGroupAs){
+ $pdo->beginTransaction();
+ try{
+
+ $stmt = $pdo->prepare(
             "INSERT INTO studentassignments (as_id, classCode, studentID, as_title, as_subject, as_description, as_deadline, is_group_as)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
-foreach($studentIDS as $id){
-$stmt->execute([$as_id, $classCode, $id, $as_title, $as_subject, $as_description, $as_deadline, $isGroupAs]);
-}
+ foreach($studentIDS as $id){
+ $stmt->execute([$as_id, $classCode, $id, $as_title, $as_subject, $as_description, $as_deadline, $isGroupAs]);
+ }
 
-$pdo->commit();
+  $pdo->commit();
 
-}catch(Exception $e){
+  }catch(Exception $e){
     $pdo->rollBack();
     throw $e;
-}
+  }
 }
 
 function getGroupAs($pdo, $as_id, $groupName){

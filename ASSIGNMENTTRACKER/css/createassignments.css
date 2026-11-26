@@ -1010,3 +1010,86 @@ a:focus-visible,
   font-size: 0.875rem;
   text-align: center;
 }
+
+/* ===== Add to the bottom of ../css/createassignments.css ===== */
+/* Colors are neutral guesses (black / white / orange). Swap them for your own variables if you have them. */
+
+/* Files that are already saved on the assignment */
+.existing-files {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.existing-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 12px;
+  border: 1px solid #e3e3e3;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.existing-file-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #f97316;
+}
+
+.existing-file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  color: #111;
+}
+
+.existing-file-size {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #777;
+}
+
+/* Reuses your existing .file-remove look; these only add what the saved rows need */
+.existing-file .file-remove {
+  flex-shrink: 0;
+}
+
+/* A file marked for removal: dimmed and crossed out until the admin saves (or presses Undo) */
+.existing-file.is-removed {
+  opacity: .6;
+  border-style: dashed;
+}
+.existing-file.is-removed .existing-file-name {
+  text-decoration: line-through;
+}
+
+/* The button shows an X normally and the word "Undo" once the file is marked for removal */
+.existing-file .undo-text {
+  display: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+.existing-file.is-removed .file-remove svg {
+  display: none;
+}
+.existing-file.is-removed .undo-text {
+  display: inline;
+}
+
+/* Error message shown above the form when saving fails */
+.form-error {
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border: 1px solid #f5c2c0;
+  border-left: 4px solid #d93025;
+  border-radius: 8px;
+  background: #fdf3f2;
+  color: #8a1f17;
+  font-size: 14px;
+}
