@@ -5,6 +5,8 @@ $classCode = $_SESSION['code'];
 
 require_once __DIR__ . '/../database/admin.php';
 
+sendOverdueEmail($pdo);
+
 $assignments = displayAssignments($pdo, $_SESSION['code']);
 
 if(isset($_POST['toGroupAssignments'])){

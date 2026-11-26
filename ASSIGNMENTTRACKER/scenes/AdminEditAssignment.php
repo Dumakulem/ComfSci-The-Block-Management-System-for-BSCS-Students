@@ -5,6 +5,8 @@ session_start();
 require_once __DIR__ . '/../database/admin.php';
 require_once __DIR__ . '/../controllers/AdminCon.php';
 
+
+
 $name      = $_SESSION['name'] ?? '';
 $classCode = $_SESSION['code'] ?? null;
 $asId      = (int) ($_SESSION['assignment'] ?? 0);
@@ -53,6 +55,9 @@ if (isset($_POST['editAssignment'])) {
         $forDatabase = $dt->format('Y-m-d H:i:s');            // "2026-11-20 23:59:00"
 
         updateAssignment($pdo, $asId, $classCode, $title, $subject, $des, $forDatabase, $files, (array) $remove);
+        restoreExtendedAssignments($pdo);
+
+        sendOverdueEmail($pdo);
 
         header("Location: AdminViewAssignment.php");
         exit;

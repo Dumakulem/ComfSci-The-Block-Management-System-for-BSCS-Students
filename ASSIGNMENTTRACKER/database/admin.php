@@ -275,6 +275,25 @@ function updateAssignment(
     }
 }
 
+function restoreExtendedAssignments(PDO $pdo, $classCode = null): int {
+    $sql = "UPDATE studentassignments
+            SET as_status = 'Pending',
+                is_overdue_email_sent = 0,      -- lets them get a new overdue email if it lapses again
+                edited_at = edited_at           -- keeps the original edited_at value
+            WHERE as_status = 'Overdue'
+              AND NOW() < as_deadline";
+    $params = [];
+
+    if ($classCode !== null) {
+        $sql .= " AND classCode = ?";
+        $params[] = (int)$classCode;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->rowCount();   // how many assignments were restored
+}
+
 function createAsOnlyForStudent(PDO $pdo, int $as_id, int $classCode, array $studentIDS, string $as_title, string $as_subject, string $as_description, $as_deadline, int $isGroupAs){
  $pdo->beginTransaction();
  try{
@@ -610,5 +629,66 @@ function deleteFeedback(PDO $pdo, int $id){
         $pdo->rollBack();
         throw $e;
     }
+}
+
+function sendOverdueEmail(PDO $pdo): int {
+    require_once __DIR__ . '/student.php';
+    $rows = checkAllAsOverdue($pdo);
+
+    // flips 0 -> 1 for one row; only one run can win this
+    $claim   = $pdo->prepare("UPDATE studentassignments SET is_overdue_email_sent = 1
+                              WHERE sa_id = ? AND is_overdue_email_sent = 0");
+    $release = $pdo->prepare("UPDATE studentassignments SET is_overdue_email_sent = 0
+                              WHERE sa_id = ?");
+
+    $sent = 0;
+    foreach ($rows as $row) {
+        $studentEmail = getStudent($pdo, $row['studentID'])['studentEmail'];
+        $claim->execute([$row['sa_id']]);
+        if ($claim->rowCount() !== 1) continue;   // another run already took this one
+
+        try {
+            $ok = sendMail(
+                $studentEmail,
+                'Assignment Overdue: ' . $row['as_title'],
+                buildOverdueEmail($row['as_subject'], $row['as_title'], (new DateTime($row['as_deadline']))->format('M j, Y, g:i A'))
+            );
+
+            if ($ok === false) {          // only if your sendMail() returns true/false
+                $release->execute([$row['sa_id']]);   // try again on the next run
+                continue;
+            }
+            $sent++;
+        } catch (Exception $e) {
+            $release->execute([$row['sa_id']]);
+            error_log('Overdue email failed for sa_id ' . $row['sa_id'] . ': ' . $e->getMessage());
+        }
+    }
+    return $sent;
+}
+
+/*function emailStudentsOverdue(PDO $pdo){
+    $studentAssignments = checkAllAsOverdue($pdo);
+
+     $claim   = $pdo->prepare("UPDATE studentassignments SET is_overdue_email_sent = 1
+                              WHERE sa_id = ? AND is_overdue_email_sent = 0");
+     $release = $pdo->prepare("UPDATE studentassignments SET is_overdue_email_sent = 0
+                              WHERE sa_id = ?");
+
+    try{
+
+    foreach($studentAssignments as $as){
+        
+    }
+
+    }catch(Exception $e){
+        throw $e;
+    }
+}*/
+
+function checkAllAsOverdue(PDO $pdo): array{
+    $stmt = $pdo->prepare("SELECT * FROM studentassignments WHERE as_status = ? AND is_overdue_email_sent = ?");
+    $stmt->execute(["Overdue", 0]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>

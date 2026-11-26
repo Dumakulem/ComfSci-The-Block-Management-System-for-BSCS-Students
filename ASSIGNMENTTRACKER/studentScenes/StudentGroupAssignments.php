@@ -3,6 +3,8 @@ session_start();
 require_once __DIR__ . '/../database/student.php';
 require_once __DIR__ . '/../database/admin.php';
 
+sendOverdueEmail($pdo);
+
 $student = getStudent($pdo, (int) $_SESSION['currentStudent']);
 
 $name = $student['studentFirstName'];
