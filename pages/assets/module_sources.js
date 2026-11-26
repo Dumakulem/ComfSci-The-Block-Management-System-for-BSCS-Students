@@ -114,12 +114,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const actionsRow = document.createElement('div');
             actionsRow.className = 'module-source-links';
 
-            if (module.hasFile && module.viewUrl) {
+            if (module.hasFile) {
                 const viewLink = document.createElement('a');
                 viewLink.className = 'module-source-link module-source-link-file';
-                viewLink.href = module.viewUrl;
-                viewLink.target = '_blank';
-                viewLink.rel = 'noopener noreferrer';
+                // Open in-app viewer so ComfiBot can use the resource context
+                viewLink.href = './module_viewer.php?id=' + encodeURIComponent(String(module.moduleId));
                 const sizeLabel = formatBytes(module.fileSize);
                 const fileLabel = module.originalName
                     ? (isPdf(module) ? 'View PDF' : 'Open file') + ' · ' + module.originalName
