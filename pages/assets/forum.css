@@ -443,6 +443,10 @@ input[type="file"]:focus {
     grid-row: 2;
 }
 
+#ticket-proof, #sendTicketLabel {
+    display: none;
+}
+
 .empty-state {
     margin: 0;
     padding: 16px;

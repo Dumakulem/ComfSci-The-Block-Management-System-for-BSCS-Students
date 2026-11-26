@@ -549,7 +549,7 @@ $statusLabels = ['open' => 'Open', 'in_progress' => 'In progress', 'closed' => '
                 </select>
                 <label for="ticket-content">What would you like help with?</label>
                 <textarea id="ticket-content" name="messageContent" maxlength="2000" rows="4" required></textarea>
-                <label for="ticket-proof">Proof attachment <span>(optional; JPG, PNG, or PDF; max 5 MB)</span></label>
+                <label id="sendTicketLabel" for="ticket-proof">Proof attachment <span>(optional; JPG, PNG, or PDF; max 5 MB)</span></label>
                 <input id="ticket-proof" name="proofAttachment" type="file" accept=".jpg,.png,.pdf,image/jpeg,image/png,application/pdf">
                 <button type="submit">Send private ticket</button>
             </form>
