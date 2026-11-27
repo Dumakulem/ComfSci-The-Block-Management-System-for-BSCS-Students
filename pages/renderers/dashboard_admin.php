@@ -22,7 +22,6 @@ $announcements = $adminData['announcements'];
 <body class="comfsci-shell">
 <div class="app">
     <?php require __DIR__ . '/../includes/sidebar.php'; ?>
-
     <div class="main">
         <header class="topbar">
             <div class="top-left">

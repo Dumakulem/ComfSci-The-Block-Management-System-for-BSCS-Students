@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gordon College Portal - Login</title>
+    <title>Comfy Sci - Log In</title>
     <link rel="stylesheet" href="../assets/auth/styles.css">
 </head>
 <body>
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <header class="brand">
                 <img class="brand__logo" src="../assets/auth/portal.png" alt="">
                 <h1 class="brand__title">
-                    <span class="brand__college">Gordon College</span>
+                    <span class="brand__college">COMFYSCI</span>
                     <span class="brand__portal">Portal</span>
                 </h1>
             </header>

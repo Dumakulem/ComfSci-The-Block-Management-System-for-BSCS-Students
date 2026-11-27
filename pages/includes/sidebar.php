@@ -50,12 +50,12 @@ if ($isAdmin) {
         // ['Events', '/admin_events.php', 'calendar', $scriptName === 'admin_events.php'],
         ['Announcements', '/admin_announcements.php', 'bell', $scriptName === 'admin_announcements.php'],
         ['Gamified Quiz', '/gamified/Admin/quiz1.php?tab=create', 'quiz', $isGamifiedAdminPage],
-        // ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
+        ['Module Sources', '/module_sources.php', 'download', $scriptName === 'module_sources.php'],
         ['Attendance', '/attendance/index.php', 'attendance', $isAttendanceNavActive],
         ['Assignment Tracker', '/assignmenttracker/scenes/AdminClassCodes.php', 'file', $isAssignmentTrackerPage],
         // ['Event operations', '/admin_event_operations.php?tab=approvals', 'calendar', $scriptName === 'admin_event_operations.php'],
         // ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
-        // ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
+        ['Block Forum', '/forum.php', 'forum', $scriptName === 'forum.php'],
     ];
 } else {
     $navigationItems = [
@@ -67,7 +67,7 @@ if ($isAdmin) {
         // ['Assignments', '/assignments.php', 'file', $scriptName === 'assignments.php'],
         ['Campus Events', '/attendance/student/campus-event.php', 'calendar', $isAttendanceEventList || $isLegacyEventPage],
         // ['Group Activities', '/group_activities.php',    'layout', $scriptName === 'group_activities.php'],
-        // ['Block Forum', '/forum.php', 'bell', $scriptName === 'forum.php'],
+        ['Block Forum', '/forum.php', 'forum', $scriptName === 'forum.php'],
         // ['Resources', '/resources.php', 'download', $scriptName === 'resources.php'],
         // ['Grade Breakdown', '/grade_calculator.php', 'checklist', $scriptName === 'grade_calculator.php'],
         // ['Announcements', '/dashboard.php#notifications', 'bell', false],

@@ -13,7 +13,7 @@ require_once __DIR__ . '/dbConnection.php';
 
 
 function getStudent(PDO $pdo, int $id){
-    $stmt = $pdo->prepare("SELECT studentID, studentLastName, studentFirstName, studentMiddleName, studentExtensionName, studentEmail, blockID AS classCode FROM tblstudent WHERE studentID = ? AND archivedAt IS NULL LIMIT 1");
+    $stmt = $pdo->prepare("SELECT s.studentID, s.studentLastName, s.studentFirstName, s.studentMiddleName, s.studentExtensionName, s.studentEmail, s.blockID AS classCode, b.classBlock FROM tblstudent s LEFT JOIN tblblock b ON b.blockID = s.blockID WHERE s.studentID = ? AND s.archivedAt IS NULL LIMIT 1");
     $stmt->execute([$id]);
     return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 }

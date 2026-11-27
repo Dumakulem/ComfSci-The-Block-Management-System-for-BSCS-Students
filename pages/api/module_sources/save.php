@@ -12,12 +12,30 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $context = moduleSourcesContext();
 moduleSourcesRequireManager($context);
 moduleSourcesRequireCsrf();
-$payload = moduleSourcesJsonBody();
+
+$isMultipart = isset($_SERVER['CONTENT_TYPE'])
+    && stripos((string) $_SERVER['CONTENT_TYPE'], 'multipart/form-data') !== false;
+
+if ($isMultipart) {
+    $payload = [
+        'moduleId' => $_POST['moduleId'] ?? null,
+        'course' => (string) ($_POST['course'] ?? ''),
+        'subject' => (string) ($_POST['subject'] ?? ''),
+        'title' => (string) ($_POST['title'] ?? ''),
+        'description' => (string) ($_POST['description'] ?? ''),
+        'resourceUrl' => (string) ($_POST['resourceUrl'] ?? ''),
+        'blockId' => $_POST['blockId'] ?? null,
+        'removeFile' => isset($_POST['removeFile']) && (string) $_POST['removeFile'] === '1',
+    ];
+} else {
+    $payload = moduleSourcesJsonBody();
+    $payload['removeFile'] = !empty($payload['removeFile']);
+}
 
 $moduleId = null;
 if (array_key_exists('moduleId', $payload) && $payload['moduleId'] !== null && $payload['moduleId'] !== '') {
     $rawModuleId = $payload['moduleId'];
-    if ((!is_int($rawModuleId) && !(is_string($rawModuleId) && ctype_digit($rawModuleId)))
+    if ((!is_int($rawModuleId) && !(is_string($rawModuleId) && ctype_digit((string) $rawModuleId)))
         || (int) $rawModuleId < 1
     ) {
         moduleSourcesRespond(400, ['ok' => false, 'message' => 'Choose a valid module.']);
@@ -36,6 +54,7 @@ $subject = trim($payload['subject']);
 $title = trim($payload['title']);
 $description = trim($payload['description']);
 $resourceUrl = trim($payload['resourceUrl']);
+$removeFile = !empty($payload['removeFile']);
 
 if ($title === '' || moduleSourcesTextLength($title) > 180) {
     moduleSourcesRespond(422, ['ok' => false, 'message' => 'Title is required and must be 180 characters or fewer.']);
@@ -49,9 +68,14 @@ if (moduleSourcesTextLength($course) > 125) {
 if (moduleSourcesTextLength($description) > 4000) {
     moduleSourcesRespond(422, ['ok' => false, 'message' => 'Description must be 4,000 characters or fewer.']);
 }
-if (!moduleSourcesValidUrl($resourceUrl)) {
-    moduleSourcesRespond(422, ['ok' => false, 'message' => 'Enter a valid HTTP or HTTPS resource link.']);
+if ($resourceUrl !== '' && !moduleSourcesValidUrl($resourceUrl)) {
+    moduleSourcesRespond(422, ['ok' => false, 'message' => 'Enter a valid HTTP or HTTPS resource link, or leave it blank when uploading a file.']);
 }
+
+$hasUpload = $isMultipart
+    && isset($_FILES['resourceFile'])
+    && is_array($_FILES['resourceFile'])
+    && (int) ($_FILES['resourceFile']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
 
 $isAdmin = in_array('admin', $context['roles'], true);
 $blockId = $isAdmin
@@ -70,8 +94,16 @@ try {
         moduleSourcesRespond(422, ['ok' => false, 'message' => 'The selected block does not exist.']);
     }
 
+    $existingFileName = null;
+    $existingOriginal = null;
+    $existingMime = null;
+    $existingSize = null;
+
     if ($moduleId !== null) {
-        $existingStatement = $pdo->prepare('SELECT moduleId, blockId FROM moduleSources WHERE moduleId = ? LIMIT 1');
+        $existingStatement = $pdo->prepare(
+            'SELECT moduleId, blockId, fileName, originalName, mimeType, fileSize, resourceUrl
+             FROM moduleSources WHERE moduleId = ? LIMIT 1'
+        );
         $existingStatement->execute([$moduleId]);
         $existing = $existingStatement->fetch();
         if (!$existing) {
@@ -80,10 +112,62 @@ try {
         if (!$isAdmin && (int) $existing['blockId'] !== (int) $context['blockID']) {
             moduleSourcesRespond(403, ['ok' => false, 'message' => 'You cannot edit a module from another block.']);
         }
+        $existingFileName = $existing['fileName'] ?? null;
+        $existingOriginal = $existing['originalName'] ?? null;
+        $existingMime = $existing['mimeType'] ?? null;
+        $existingSize = $existing['fileSize'] !== null ? (int) $existing['fileSize'] : null;
+    }
 
+    $fileMeta = null;
+    if ($hasUpload) {
+        $fileMeta = moduleSourcesHandleUpload($_FILES['resourceFile']);
+    }
+
+    // Require at least a URL or a file (existing or new)
+    $willHaveFile = $fileMeta !== null
+        || ($existingFileName !== null && $existingFileName !== '' && !$removeFile);
+    $willHaveUrl = $resourceUrl !== '';
+
+    if (!$willHaveFile && !$willHaveUrl) {
+        if ($fileMeta !== null) {
+            moduleSourcesDeleteFile($fileMeta['fileName']);
+        }
+        moduleSourcesRespond(422, [
+            'ok' => false,
+            'message' => 'Provide a resource URL or upload a PDF/document file.',
+        ]);
+    }
+
+    $finalFileName = $existingFileName;
+    $finalOriginal = $existingOriginal;
+    $finalMime = $existingMime;
+    $finalSize = $existingSize;
+
+    if ($fileMeta !== null) {
+        // Replace previous file
+        if ($existingFileName) {
+            moduleSourcesDeleteFile($existingFileName);
+        }
+        $finalFileName = $fileMeta['fileName'];
+        $finalOriginal = $fileMeta['originalName'];
+        $finalMime = $fileMeta['mimeType'];
+        $finalSize = $fileMeta['fileSize'];
+    } elseif ($removeFile) {
+        if ($existingFileName) {
+            moduleSourcesDeleteFile($existingFileName);
+        }
+        $finalFileName = null;
+        $finalOriginal = null;
+        $finalMime = null;
+        $finalSize = null;
+    }
+
+    if ($moduleId !== null) {
         $statement = $pdo->prepare(
             'UPDATE moduleSources
-             SET course = ?, subject = ?, title = ?, description = ?, resourceUrl = ?, blockId = ?, blockName = ?
+             SET course = ?, subject = ?, title = ?, description = ?, resourceUrl = ?,
+                 fileName = ?, originalName = ?, mimeType = ?, fileSize = ?,
+                 blockId = ?, blockName = ?
              WHERE moduleId = ?'
         );
         $statement->execute([
@@ -91,7 +175,11 @@ try {
             $subject,
             $title,
             $description !== '' ? $description : null,
-            $resourceUrl,
+            $resourceUrl !== '' ? $resourceUrl : null,
+            $finalFileName,
+            $finalOriginal,
+            $finalMime,
+            $finalSize,
             (int) $block['blockID'],
             (string) $block['classBlock'],
             $moduleId,
@@ -101,15 +189,21 @@ try {
 
     $statement = $pdo->prepare(
         'INSERT INTO moduleSources
-            (course, subject, title, description, resourceUrl, blockId, blockName, addedBy, addedByType)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            (course, subject, title, description, resourceUrl,
+             fileName, originalName, mimeType, fileSize,
+             blockId, blockName, addedBy, addedByType)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     $statement->execute([
         $course !== '' ? $course : null,
         $subject,
         $title,
         $description !== '' ? $description : null,
-        $resourceUrl,
+        $resourceUrl !== '' ? $resourceUrl : null,
+        $finalFileName,
+        $finalOriginal,
+        $finalMime,
+        $finalSize,
         (int) $block['blockID'],
         (string) $block['classBlock'],
         (int) $context['id'],
@@ -122,6 +216,9 @@ try {
         'moduleId' => (int) $pdo->lastInsertId(),
     ]);
 } catch (PDOException $exception) {
+    if (isset($fileMeta['fileName'])) {
+        moduleSourcesDeleteFile($fileMeta['fileName']);
+    }
     error_log('Module source save failed (code ' . (string) $exception->getCode() . ').');
     moduleSourcesRespond(500, ['ok' => false, 'message' => 'The module could not be saved. Please try again.']);
 }
